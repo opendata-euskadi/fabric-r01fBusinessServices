@@ -35,7 +35,7 @@
 		<!-- BusinessServices CORE                     -->
 		<!-- ///////////////////////////////////////// -->
 		<dependency>
-			<groupId>r01.r01f.businessservices</groupId>
+			<groupId>r01.r01f.businessservices.core</groupId>
 			<artifactId>r01fBusinessServicesCoreClasses</artifactId>
 			<version>${r01f.version}</version>
 		</dependency>

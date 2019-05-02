@@ -27,7 +27,7 @@
 		<!-- SearchPersistence guice                     -->
 		<!-- ///////////////////////////////////////// -->
 		<dependency>
-			<groupId>r01.r01f.businessservices.core.persistence.search</groupId>
+			<groupId>r01.r01f.businessservices.guice.core</groupId>
 			<artifactId>r01fBusinessServicesCoreSearchPersistenceGuiceClasses</artifactId>
 			<version>${r01f.version}</version>
 		</dependency>
