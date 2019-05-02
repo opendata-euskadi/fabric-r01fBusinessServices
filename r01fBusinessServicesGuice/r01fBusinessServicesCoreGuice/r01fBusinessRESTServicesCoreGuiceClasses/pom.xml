@@ -27,13 +27,13 @@
 		<!-- R01: BusinessServices                     -->
 		<!-- ///////////////////////////////////////// -->
 		<dependency>
-			<groupId>r01.r01f.businessservices</groupId>
-			<artifactId>r01fBusinessRESTServicesClasses</artifactId>
+			<groupId>r01.r01f.businessservices.core</groupId>
+			<artifactId>r01fBusinessRESTServicesCoreClasses</artifactId>
 			<version>${r01f.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>r01.r01f.businessservices.guice</groupId>
-			<artifactId>r01fBusinessWebServicesGuiceClasses</artifactId>
+			<groupId>r01.r01f.businessservices.guice.core</groupId>
+			<artifactId>r01fBusinessWebServicesCoreGuiceClasses</artifactId>
 			<version>${r01f.version}</version>
 		</dependency>
 	</dependencies>

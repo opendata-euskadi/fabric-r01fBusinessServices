@@ -4,6 +4,8 @@
 			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 
+
+
 <!-- ====================================================================== -->
 <!-- PARENT                                                                 -->
 <!-- ====================================================================== -->
@@ -27,7 +29,7 @@
 		<!-- BusinessServices Guice                    -->
 		<!-- ///////////////////////////////////////// -->
 		<dependency>
-			<groupId>r01.r01f.businessservices.guice</groupId>
+			<groupId>r01.r01f.businessservices.guice.core</groupId>
 			<artifactId>r01fBusinessServicesCoreGuiceClasses</artifactId>
 			<version>${r01f.version}</version>
 		</dependency>
