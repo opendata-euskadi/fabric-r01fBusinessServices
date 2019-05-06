@@ -162,38 +162,14 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 										  			 final PersistencePerformedOperation persistenceOp) {
 		// ensure some common fields are set
 		// (the user provided setDBEntityFieldsFromModelObject() method might not fill some dbEntity important info)
+		if (dbEntity instanceof HasEntityVersion) {
+			HasEntityVersion hasEntityVersion = (HasEntityVersion)dbEntity;
+			hasEntityVersion.setEntityVersion(modelObj.getEntityVersion());
+		}
 		if (persistenceOp == PersistencePerformedOperation.CREATED) {
 			if (Strings.isNullOrEmpty(dbEntity.getOid())) {
 				dbEntity.setOid(modelObj.getOid().asString());
 			}
-		}
-		if (dbEntity instanceof HasTrackingInfo) {
-			HasTrackingInfo dbEntityHasTrackingInfo = (HasTrackingInfo)dbEntity;
-			ModelObjectTracking dbEntityTracking = dbEntityHasTrackingInfo.getTrackingInfo();		// always return a tracking info obj
-			dbEntityTracking.mergeWith(modelObj.getTrackingInfo())
-							.when(persistenceOp)
-						    .by(securityContext);
-
-			if (persistenceOp == PersistencePerformedOperation.CREATED) {
-				if (dbEntityTracking.getCreatorUserCode() == null) dbEntityTracking.setCreatorUserCode(securityContext.getUserCode());
-				dbEntityHasTrackingInfo.setCreatorUserCode(dbEntityTracking.getCreatorUserCode());
-
-				// beware that the model object tracking info can be null when creating
-				// ... since some tracking info has been computed here for the dbEntity,
-				//	   just copy this info to the model object
-				// ... this way, we're sure that the descriptor will have tracking info even if
-				//	   the model obj to be created do
-				if (modelObj.getTrackingInfo() == null) {
-					modelObj.setTrackingInfo(dbEntityHasTrackingInfo.getTrackingInfo());
-				}
-			}
-			else if (persistenceOp == PersistencePerformedOperation.UPDATED) {
-				dbEntityHasTrackingInfo.setLastUpdatorUserCode(dbEntityTracking.getLastUpdatorUserCode());
-			}
-		}
-		if (dbEntity instanceof HasEntityVersion) {
-			HasEntityVersion hasEntityVersion = (HasEntityVersion)dbEntity;
-			hasEntityVersion.setEntityVersion(modelObj.getEntityVersion());
 		}
 		if (dbEntity instanceof DBEntityHasID
 		 && modelObj instanceof HasID) {
@@ -202,18 +178,32 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 			dbHasId.setId(hasId.getId() != null ? hasId.getId().asString()
 												: null);
 		}
-		if (dbEntity instanceof DBEntityHasModelObjectDescriptor) {
-			/*DBEntityHasModelObjectDescriptor hasDescriptor = (DBEntityHasModelObjectDescriptor)dbEntity;
-			hasDescriptor.setDescriptor(_modelObjectsMarshaller.xmlFromBean(modelObj));*/
-			this.setDescriptorForDBEntity(modelObj,dbEntity);
-		}
 		// set the db entity fields from the model object data
 		this.setDBEntityFieldsFromModelObject(securityContext,
 						     	  			  modelObj,dbEntity);
+		// BEWARE!! do NOT move
+		if (dbEntity instanceof HasTrackingInfo) {
+			if (modelObj.getTrackingInfo() == null) modelObj.setTrackingInfo(new ModelObjectTracking());
+			
+			// compute the dbentity tracking info
+			HasTrackingInfo dbEntityHasTrackingInfo = (HasTrackingInfo)dbEntity;
+			ModelObjectTracking dbEntityTracking = dbEntityHasTrackingInfo.getTrackingInfo();		// always return a tracking info obj
+			dbEntityTracking.mergeWith(modelObj.getTrackingInfo())	// modelObj.getTrackingInfo() can be null; if so, nothing is done
+							.when(persistenceOp)
+						    .by(securityContext);
+			
+			// update back the model object tracking info since this info is persisted in the xml descriptor
+			modelObj.setTrackingInfo(dbEntityTracking);
+		}
+		// the xml descriptor MUST be the last field to be set
+		if (dbEntity instanceof DBEntityHasModelObjectDescriptor) {
+			this.setDescriptorForDBEntity(modelObj,dbEntity);
+		}
 	}
     protected void setDescriptorForDBEntity(final M modelObj,final DB dbEntity) {
 		DBEntityHasModelObjectDescriptor hasDescriptor = (DBEntityHasModelObjectDescriptor)dbEntity;
-		hasDescriptor.setDescriptor(_modelObjectsMarshaller.forWriting().toXml(modelObj));
+		String xmlDescriptor = _modelObjectsMarshaller.forWriting().toXml(modelObj);
+		hasDescriptor.setDescriptor(xmlDescriptor);
     }
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CRUD
@@ -372,6 +362,8 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 		_setDBEntityFieldsFromModelObject(securityContext,
 							   			  modelObj,dbEntityToPersist,
 							   			  performedOp);
+		
+		
 
 		// [4]: call the persistence event listeners
 		if (CollectionUtils.hasData(_dbEntityPersistenceEventsListeners)) {

@@ -123,6 +123,11 @@ public abstract class DBEntityBase
 	@Column(name="ENTITY_VERSION") @Version	
 	@Getter @Setter protected long _entityVersion;
 	
+	/**
+	 * Holds info about tracking info
+	 */
+	private final transient ModelObjectTracking _modelObjectTracking = new ModelObjectTracking();
+	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  AUTO-UPDATE CREATE_DATE AND LAST_UPDATE_DATE
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -176,11 +181,10 @@ public abstract class DBEntityBase
 	}
 	@Override
 	public ModelObjectTracking getTrackingInfo() {
-		ModelObjectTracking outTrck = new ModelObjectTracking();
-		if (_createDate != null) outTrck.setCreateDate(_createDate.getTime());
-		if (_lastUpdateDate != null) outTrck.setLastUpdateDate(_lastUpdateDate.getTime());
-		if (_creator != null) outTrck.setCreatorUserCode(UserCode.forId(_creator));
-		if (_lastUpdator != null) outTrck.setLastUpdatorUserCode(UserCode.forId(_lastUpdator));
-		return outTrck;
+		if (_createDate != null) _modelObjectTracking.setCreateDate(_createDate.getTime());
+		if (_lastUpdateDate != null) _modelObjectTracking.setLastUpdateDate(_lastUpdateDate.getTime());
+		if (_creator != null) _modelObjectTracking.setCreatorUserCode(UserCode.forId(_creator));
+		if (_lastUpdator != null) _modelObjectTracking.setLastUpdatorUserCode(UserCode.forId(_lastUpdator));
+		return _modelObjectTracking;
 	}
 }
