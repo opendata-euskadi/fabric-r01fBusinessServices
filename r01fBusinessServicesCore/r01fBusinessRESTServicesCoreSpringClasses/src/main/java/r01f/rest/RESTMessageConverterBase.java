@@ -111,12 +111,15 @@ public abstract class RESTMessageConverterBase<T>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  PROTECTED METHODS
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	@SuppressWarnings("null")
 	protected void _doWrite(final T object, final HttpOutputMessage outputMessage) throws IOException {
 		  String json = object != null ? this.getModelObjectsMarshaller().forWriting().toJson(object)
 							  		     : null;
 			// write
 		  if (Strings.isNOTNullOrEmpty(json)) {
 			  outputMessage.getBody().write(json.getBytes());
+		  }else {
+			  log.error("Received JSON Error !!");
 		  }
 	}
 
