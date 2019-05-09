@@ -194,6 +194,12 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 			
 			// update back the model object tracking info since this info is persisted in the xml descriptor
 			modelObj.setTrackingInfo(dbEntityTracking);
+			
+			// set the dbentity data
+			if (persistenceOp == PersistencePerformedOperation.CREATED) {
+				if (dbEntityTracking.getCreatorUserCode() != null) 	dbEntityHasTrackingInfo.setCreatorUserCode(dbEntityTracking.getCreatorUserCode());
+			}
+			if (dbEntityTracking.getLastUpdatorUserCode() != null)	dbEntityHasTrackingInfo.setLastUpdatorUserCode(dbEntityTracking.getLastUpdatorUserCode());
 		}
 		// the xml descriptor MUST be the last field to be set
 		if (dbEntity instanceof DBEntityHasModelObjectDescriptor) {

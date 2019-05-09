@@ -22,9 +22,7 @@ import r01f.guids.CommonOIDs.UserCode;
 import r01f.guids.OID;
 import r01f.model.HasTrackingInfo;
 import r01f.model.ModelObjectTracking;
-import r01f.model.facets.HasCreationData;
 import r01f.model.facets.HasEntityVersion;
-import r01f.model.facets.HasLastUpdateData;
 import r01f.persistence.db.DBEntity;
 import r01f.util.types.Dates;
 import r01f.util.types.Strings;
@@ -42,8 +40,7 @@ import r01f.util.types.Strings;
 public abstract class DBEntityBase 
 		   implements DBEntity,
 		   			  HasEntityVersion,
-		   			  HasTrackingInfo,
-		   			  HasCreationData,HasLastUpdateData {
+		   			  HasTrackingInfo {
 
 	private static final long serialVersionUID = -2168679594935612325L;
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +130,8 @@ public abstract class DBEntityBase
 /////////////////////////////////////////////////////////////////////////////////////////
 	@PrePersist
 	void createdAt() {
-		_createDate = _lastUpdateDate = Calendar.getInstance();
+		_createDate = Calendar.getInstance();
+		_lastUpdateDate = _createDate;
 		_preCreate();
 	}
 	@PreUpdate

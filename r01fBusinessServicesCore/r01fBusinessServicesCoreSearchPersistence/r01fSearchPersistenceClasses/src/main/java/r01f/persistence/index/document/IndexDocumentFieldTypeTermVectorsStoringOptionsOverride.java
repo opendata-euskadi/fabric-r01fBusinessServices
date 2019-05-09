@@ -1,6 +1,5 @@
 package r01f.persistence.index.document;
 
-import javax.xml.bind.annotation.XmlAttribute;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,7 +55,7 @@ public class IndexDocumentFieldTypeTermVectorsStoringOptionsOverride {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  METHODS
 /////////////////////////////////////////////////////////////////////////////////////////
-	public void merge(IndexDocumentFieldTypeTermVectorsStoringOptionsOverride options) {
+	public void merge(final IndexDocumentFieldTypeTermVectorsStoringOptionsOverride options) {
 		if (!_enabled) _enabled = options.isEnabled();
 		if (!_includeTermPayLoads) _includeTermPayLoads = options.isIncludeTermPayLoads();
 		if (!_includeTermPositions) _includeTermPositions = options.isIncludeTermPositions();
