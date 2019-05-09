@@ -57,7 +57,7 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 
 		CRUDResult<M> loadResult = _persistenceServices.load(securityContext,
 									  					     oid);
-		ResponseEntity<M> outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
+		ResponseEntity<M> outResponse = RESTOperationsSpringResponseEntityBuilder.crudOn(_modelObjectType)
 																		.at(URI.create(resourcePath))
 																		.withContentType(mediaType)
 																	  .build(loadResult);
@@ -76,7 +76,7 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 
 		CRUDResult<M> createResult = _persistenceServices.create(securityContext,
 										   	   					 modelObject);
-		ResponseEntity<M> outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
+		ResponseEntity<M> outResponse = RESTOperationsSpringResponseEntityBuilder.crudOn(_modelObjectType)
 																	    .at(URI.create(resourcePath))
 																	    .withContentType(mediaType)
 																	   .build(createResult);
@@ -94,7 +94,7 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 						   			final M modelObject) throws PersistenceException {
 		CRUDResult<M> updateResult = _persistenceServices.update(securityContext,
 										   	      				 modelObject);
-		ResponseEntity<M> outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
+		ResponseEntity<M> outResponse = RESTOperationsSpringResponseEntityBuilder.crudOn(_modelObjectType)
 																		 .at(URI.create(resourcePath))
 																	     .withContentType(mediaType)
 																	    .build(updateResult);
@@ -112,7 +112,7 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 									final O oid) throws PersistenceException {
 		CRUDResult<M> deleteResult = _persistenceServices.delete(securityContext,
 																 oid);
-		ResponseEntity<M> outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
+		ResponseEntity<M> outResponse = RESTOperationsSpringResponseEntityBuilder.crudOn(_modelObjectType)
 														    				.at(URI.create(resourcePath))
 																	     .withContentType(mediaType)
 																	     .build(deleteResult);

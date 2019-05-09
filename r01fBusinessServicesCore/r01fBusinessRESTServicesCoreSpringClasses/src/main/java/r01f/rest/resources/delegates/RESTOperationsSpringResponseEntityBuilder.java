@@ -35,25 +35,25 @@ import r01f.util.types.collections.CollectionUtils;
  * </pre>
  */
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
-public abstract class RESTOperationsResponseBuilder
+public abstract class RESTOperationsSpringResponseEntityBuilder
   implements IsBuilder {
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static <M> RESTCRUDOperationResponseBuilderForModelObjectURIStep<M> crudOn(final Class<M> modelObjectType) {
-		return new RESTOperationsResponseBuilder() { /* nothing */ }
+		return new RESTOperationsSpringResponseEntityBuilder() { /* nothing */ }
 						.new RESTCRUDOperationResponseBuilderForModelObjectURIStep<M>(modelObjectType);
 	}
 	public static <O extends PersistableObjectOID,M extends PersistableModelObject<O>> RESTFindOperationResponseBuilderForModelObjectURIStep<O,M> findOn(final Class<M> modelObjectType) {
-		return new RESTOperationsResponseBuilder() { /* nothing */ }
+		return new RESTOperationsSpringResponseEntityBuilder() { /* nothing */ }
 						.new RESTFindOperationResponseBuilderForModelObjectURIStep<O,M>(modelObjectType);
 	}
 	public static RESTExecOperationResponseBuilderForModelObjectURIStep executed() {
-		return new RESTOperationsResponseBuilder() { /* nothing */ }
+		return new RESTOperationsSpringResponseEntityBuilder() { /* nothing */ }
 						.new RESTExecOperationResponseBuilderForModelObjectURIStep();
 	}
 	public static RESTSearchIndexOperationResponseBuilderForModelObjectURIStep searchIndex() {
-		return new RESTOperationsResponseBuilder() { /* nothing */ }
+		return new RESTOperationsSpringResponseEntityBuilder() { /* nothing */ }
 						.new RESTSearchIndexOperationResponseBuilderForModelObjectURIStep();
 	}
 /////////////////////////////////////////////////////////////////////////////////////////

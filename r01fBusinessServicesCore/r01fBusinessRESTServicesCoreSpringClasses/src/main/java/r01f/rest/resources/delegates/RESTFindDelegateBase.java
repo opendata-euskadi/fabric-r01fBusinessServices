@@ -58,7 +58,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 */
 	public ResponseEntity<FindOIDsResult<O>> findAll(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType) {
 		FindOIDsResult<O> findResult = _findServices.findAll(securityContext);
-		ResponseEntity<FindOIDsResult<O>> outResponse = RESTOperationsResponseBuilder.findOn(_modelObjectType)
+		ResponseEntity<FindOIDsResult<O>> outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
 																				    	.at(URI.create(resourcePath))
 																				    	.withContentType(mediaType)
 																				    .build(findResult);
@@ -76,7 +76,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 									 						   final Range<Date> createDate) {
 		FindOIDsResult<O> findResult = _findServices.findByCreateDate(securityContext,
 																	  createDate);
-		ResponseEntity<FindOIDsResult<O>>  outResponse = RESTOperationsResponseBuilder.findOn(_modelObjectType)
+		ResponseEntity<FindOIDsResult<O>>  outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
 																						.at(URI.create(resourcePath))
 																						.withContentType(mediaType)
 																					.build(findResult);
@@ -94,7 +94,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 																  final Range<Date> lastUpdateDate) {
 		FindOIDsResult<O> findResult = _findServices.findByLastUpdateDate(securityContext,
 																		 lastUpdateDate);
-		ResponseEntity<FindOIDsResult<O>> outResponse = RESTOperationsResponseBuilder.findOn(_modelObjectType)
+		ResponseEntity<FindOIDsResult<O>> outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
 																.at(URI.create(resourcePath))
 																.withContentType(mediaType)
 															.build(findResult);
@@ -112,7 +112,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 														   final UserCode creatorUserCode) {
 		FindOIDsResult<O> findResult = _findServices.findByCreator(securityContext,
 																   creatorUserCode);
-		ResponseEntity<FindOIDsResult<O>> outResponse = RESTOperationsResponseBuilder.findOn(_modelObjectType)
+		ResponseEntity<FindOIDsResult<O>> outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
 															                          .at(URI.create(resourcePath))
 															                          .withContentType(mediaType)
 															                         .build(findResult);
@@ -131,7 +131,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 		FindOIDsResult<O> findResult = _findServices.findByLastUpdator(securityContext,
 																	   lastUpdtorUserCode);
 
-		ResponseEntity<FindOIDsResult<O>> outResponse = RESTOperationsResponseBuilder.findOn(_modelObjectType)
+		ResponseEntity<FindOIDsResult<O>> outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
 																						  .at(URI.create(resourcePath))
 																						  .withContentType(mediaType)
 																					.build(findResult);
