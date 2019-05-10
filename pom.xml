@@ -256,34 +256,18 @@
 	
 	<!-- Maven deploy -->
 	<distributionManagement>
-		<repository>			
+		<repository>
 			<id>maven-public-releases</id>
 			<name>maven-public-releases</name>
 			<layout>default</layout>
 			<url>https://bin1.alm02.itbatera.euskadi.eus/repository/maven-public-releases/</url>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
 		</repository>
 		<snapshotRepository>
 			<id>maven-snapshots</id>
 			<name>maven-public-releases</name>
 			<layout>default</layout>
 			<url>https://bin1.alm02.itbatera.euskadi.eus/repository/maven-snapshots/</url>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
 		</snapshotRepository>
-	</distributionManagement>	
+	</distributionManagement>
 	
 </project>

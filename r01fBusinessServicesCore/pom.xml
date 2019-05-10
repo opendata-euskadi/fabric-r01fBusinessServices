@@ -27,6 +27,7 @@
     <module>r01fBusinessServicesCoreDBPersistence</module>
     <module>r01fBusinessServicesCoreSearchPersistence</module>
     <module>r01fBusinessRESTServicesCoreClasses</module>
+    <module>r01fBusinessRESTServicesCoreSpringClasses</module>
   </modules>
 	
 <!-- ====================================================================== -->
