@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+		xmlns="http://maven.apache.org/POM/4.0.0"
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+
+<!-- ====================================================================== -->
+<!-- PARENT                                                                 -->
+<!-- ====================================================================== -->
+	<parent>
+		<groupId>r01.r01f.businessservices</groupId>
+    	<artifactId>r01fBusinessServices</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+  	</parent>
+  	
+<!-- ====================================================================== -->
+<!-- ARTIFACT                                                               -->
+<!-- ====================================================================== -->
+	<name>r01fBusinessServicesTestClasses</name>
+	<artifactId>r01fBusinessServicesTestClasses</artifactId>
+	
+<!-- ====================================================================== -->
+<!-- DEPENDENCIES                                                           -->
+<!-- ====================================================================== -->
+	<dependencies>
+		<!-- ///////////////////////////////////////// -->
+		<!-- R01: BusinessServices                     -->
+		<!-- ///////////////////////////////////////// -->
+		<dependency>
+			<groupId>r01.r01f.businessservices</groupId>
+			<artifactId>r01fBusinessServicesClasses</artifactId>
+			<version>${r01f.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r01.r01f.businessservices.core.persistence.db</groupId>
+			<artifactId>r01fBusinessServicesCoreDBPersistenceGuiceClasses</artifactId>
+			<version>${r01f.version}</version>
+		</dependency>
+		
+		<!-- ///////////////////////////////////////// -->
+		<!-- TEST                                      -->
+		<!-- ///////////////////////////////////////// -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>provided</scope>		<!-- junit should be a TEST dependency of the module using this module -->
+		</dependency>
+	</dependencies>
+</project>

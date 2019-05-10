@@ -42,7 +42,8 @@
 		<module>r01fBusinessServicesClient</module>
 		<module>r01fBusinessServicesCore</module>
 		<module>r01fBusinessServicesGuice</module>
-	</modules>
+    <module>r01fBusinessServicesTestClasses</module>
+  </modules>
   
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->
