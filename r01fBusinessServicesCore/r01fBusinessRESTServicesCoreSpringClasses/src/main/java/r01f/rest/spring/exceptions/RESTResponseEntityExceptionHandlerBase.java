@@ -1,4 +1,4 @@
-package r01f.rest.exceptions;
+package r01f.rest.spring.exceptions;
 
 
 

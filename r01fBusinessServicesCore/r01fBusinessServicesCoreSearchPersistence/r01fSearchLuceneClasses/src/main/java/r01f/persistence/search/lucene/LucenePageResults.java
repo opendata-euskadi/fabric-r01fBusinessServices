@@ -9,18 +9,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import r01f.util.types.collections.CollectionUtils;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 
-import r01f.util.types.collections.CollectionUtils;
+
 
 /**
- * Encapsula los resultados devueltos por lucene para una página
+ * Encapsula los resultados devueltos por lucene para una pï¿½gina
  * <pre>
- * NOTA:	Lucene como resultado de una búsqueda devuelve un objeto TopDocs
+ * NOTA:	Lucene como resultado de una busqueda devuelve un objeto TopDocs
  * 			que contiene un array de objetos {@link ScoreDoc} cada uno de los cuales
  * 			contiene doc que es un int identificador del registro devuelto.
  * 			Para obtener el documento hay que utilizar el metodo {@link IndexSearcher}#doc(int) 

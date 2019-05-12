@@ -1,4 +1,4 @@
-package r01f.rest;
+package r01f.rest.spring;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

@@ -1,4 +1,4 @@
-package r01f.rest.resources.delegates;
+package r01f.rest.spring.resources.delegates;
 
 import java.net.URI;
 import java.util.Date;
@@ -13,6 +13,7 @@ import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable;
 import r01f.model.persistence.FindOIDsResult;
 import r01f.model.persistence.PersistenceOperationResult;
+
 import r01f.securitycontext.SecurityContext;
 import r01f.services.interfaces.FindServicesForModelObject;
 import r01f.types.Range;

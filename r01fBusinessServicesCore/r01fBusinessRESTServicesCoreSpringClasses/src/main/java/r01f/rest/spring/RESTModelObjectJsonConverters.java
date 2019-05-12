@@ -1,4 +1,4 @@
-package r01f.rest;
+package r01f.rest.spring;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,8 +34,8 @@ import r01f.types.jobs.EnqueuedJob;
  * 		<li>serializes the method return type TO the {@link Response} {@link OutputStream}</li>
  * 		<li>... or serializes a method param FROM the {@link Request} {@link InputStream}</li>
  * </ul>
- * JAX-RS scans the classpath searching the types that must be published as REST resources and also scans searching
- * types implementing {@link MessageBodyReader} or {@link MessageBodyWriter}
+ * Spring scans the classpath searching the types that must be published as REST resources and also scans searching
+ * types implementing {@link GenericHttpMessageConverter}
  * <pre>
  * NOTE:	As an alternative of JAX-RS scanning the classpath for the types, these can be issued at the
  * 			getClasses() method of the REST {@link Application} instance
@@ -88,17 +88,19 @@ import r01f.types.jobs.EnqueuedJob;
  *
  */
 
-public class RESTModelObjectXmlConverters {
+public class RESTModelObjectJsonConverters {
 
 	@Accessors(prefix="_")
-	public static abstract class ObjectMessageXmlConverter<T>
-					extends RESTMessageConverterBase<T>
+	public static abstract class ObjectMessageJsonConverter<T>
+	   extends RESTMessageConverterBase<T>
 	   implements GenericHttpMessageConverter<T> {
 
-		public ObjectMessageXmlConverter(final Class<?> mappedType, final Marshaller modelObjectsMarshaller) {
-			super(mappedType, MediaType.APPLICATION_XML, modelObjectsMarshaller);
+		public ObjectMessageJsonConverter(final Class<?> mappedType, final Marshaller modelObjectsMarshaller) {
+			super(mappedType, MediaType.APPLICATION_JSON, modelObjectsMarshaller);
 		}
 	}
+
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //	ModelObject
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -107,7 +109,7 @@ public class RESTModelObjectXmlConverters {
 	 */
 	@Accessors(prefix="_")
 	public static abstract class ModelObjectConverterBase<M extends ModelObject>
-		        		 extends ObjectMessageXmlConverter<M> {
+		        		 extends ObjectMessageJsonConverter<M> {
 		public ModelObjectConverterBase(final Marshaller marshaller) {
 			super(ModelObject.class,
 				  marshaller);
@@ -121,7 +123,7 @@ public class RESTModelObjectXmlConverters {
 	 */
 	@Accessors(prefix="_")
 	public static abstract class SearchModelObjectConverter
-		     			 extends ObjectMessageXmlConverter<SearchModelObject> {
+		     			 extends ObjectMessageJsonConverter<SearchModelObject> {
 
 		public SearchModelObjectConverter(final Marshaller marshaller) {
 			super(SearchModelObject.class,
@@ -134,13 +136,14 @@ public class RESTModelObjectXmlConverters {
 	/**
 	 * GenericHttpMessageConverter for all {@link PersistenceOperationResult}
 	 */
-	public static abstract class PersistenceOperationConverter
-		                 extends ObjectMessageXmlConverter<PersistenceOperationResult> {
+	public static class PersistenceOperationConverter
+		                 extends ObjectMessageJsonConverter<PersistenceOperationResult> {
 		public PersistenceOperationConverter(final Marshaller modelObjectsMarshaller) {
 			super(PersistenceOperationResult.class,
 				  modelObjectsMarshaller);
 		}
 	}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //	IndexManagementCommand & EnqueuedJob
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -149,7 +152,7 @@ public class RESTModelObjectXmlConverters {
 	 */
 	@Accessors(prefix="_")
 	public static abstract class IndexManagementCommandConverter
-		     			 extends ObjectMessageXmlConverter<IndexManagementCommand> {
+		     			 extends ObjectMessageJsonConverter<IndexManagementCommand> {
 
 		public IndexManagementCommandConverter(final Marshaller marshaller) {
 			super(IndexManagementCommand.class,
@@ -161,10 +164,12 @@ public class RESTModelObjectXmlConverters {
 	 */
 	@Accessors(prefix="_")
 	public static abstract class EnqueuedJobConverter
-		     			 extends ObjectMessageXmlConverter<EnqueuedJob> {
+		     			 extends ObjectMessageJsonConverter<EnqueuedJob> {
+
 		public EnqueuedJobConverter(final Marshaller marshaller) {
 			super(EnqueuedJob.class,
 				  marshaller);
 		}
 	}
+
 }

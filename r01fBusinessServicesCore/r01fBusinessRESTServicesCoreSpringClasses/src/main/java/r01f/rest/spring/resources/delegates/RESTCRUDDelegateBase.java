@@ -1,4 +1,4 @@
-package r01f.rest.resources.delegates;
+package r01f.rest.spring.resources.delegates;
 
 import java.net.URI;
 
@@ -10,6 +10,7 @@ import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.PersistenceException;
+
 import r01f.securitycontext.SecurityContext;
 import r01f.services.interfaces.CRUDServicesForModelObject;
 
@@ -23,7 +24,6 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 //  NOT INJECTED STATUS
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected final CRUDServicesForModelObject<O,M> _persistenceServices;
-
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,6 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 		_persistenceServices = persistenceServices;
 
 	}
-
 /////////////////////////////////////////////////////////////////////////////////////////
 //  PERSISTENCE
 /////////////////////////////////////////////////////////////////////////////////////////

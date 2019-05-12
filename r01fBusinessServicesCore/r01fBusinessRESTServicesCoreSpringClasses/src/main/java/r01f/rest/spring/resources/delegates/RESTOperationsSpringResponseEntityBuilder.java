@@ -1,4 +1,4 @@
-package r01f.rest.resources.delegates;
+package r01f.rest.spring.resources.delegates;
 
 import java.net.URI;
 import java.util.Collection;
@@ -269,7 +269,7 @@ public abstract class RESTOperationsSpringResponseEntityBuilder
 			}
 			return outResponse;
 		}
-		@SuppressWarnings("unchecked")
+
 		public ResponseEntity<FindSummariesResult<M>> build(final FindSummariesResult<M> persistenceOpResult) throws PersistenceException {
 			ResponseEntity<FindSummariesResult<M> > outResponse = null;
 

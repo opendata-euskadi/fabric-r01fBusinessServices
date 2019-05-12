@@ -1,4 +1,4 @@
-package r01f.rest.resources.delegates;
+package r01f.rest.spring.resources.delegates;
 
 import lombok.experimental.Accessors;
 import r01f.model.ModelObject;
