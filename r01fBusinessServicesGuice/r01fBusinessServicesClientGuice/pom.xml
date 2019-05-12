@@ -30,6 +30,14 @@
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->
 	<dependencies>
-
+		<!-- ///////////////////////////////////////// -->
+		<!-- R01F: Business Services                   -->
+		<!-- ///////////////////////////////////////// -->
+		<!-- this dep is NOT really needed to compile this module, BUT wherever this module is used this dep is needed -->
+		<dependency>
+			<groupId>r01.r01f.businessservices.guice</groupId>
+			<artifactId>r01fBusinessServicesGuiceClasses</artifactId>
+			<version>${r01f.version}</version>
+		</dependency>
 	</dependencies>
 </project>
