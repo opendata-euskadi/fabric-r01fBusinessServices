@@ -6,6 +6,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import r01f.file.FileName;
 import r01f.guids.CommonOIDs.AppCode;
+import r01f.internal.R01HomeLocation;
 import r01f.types.Path;
 import r01f.util.types.Strings;
 import r01f.xmlproperties.XMLPropertiesForAppComponent;
@@ -89,8 +90,9 @@ public class DBSchemaCreation {
 		String ddlScriptPath = xmlProps.propertyAt("persistence/schema/writeDDLScriptTo")
 								 			.asString();	// Path.from(Strings.customized("d:/temp_dev/{}",appCode))
 		if (Strings.isNOTNullOrEmpty(ddlScriptPath)) {
-			String theDDLScriptPath = ddlScriptPath		// the properties specified path can have placeholders for the appCode
-											 .replaceAll("\\{APPCODE\\}",appCode.asString());
+			String theDDLScriptPath = ddlScriptPath		// the properties specified path can have placeholders for the appCode or the home location
+											 .replaceAll("\\{APPCODE\\}",appCode.asString())
+											 .replaceAll("\\{R01_HOME\\}",R01HomeLocation.guessHomeLocationFromSystemEnvProp().asAbsoluteString());
 			_ddlScriptPath = Path.from(theDDLScriptPath);
 		} else {
 			_ddlScriptPath = null;
