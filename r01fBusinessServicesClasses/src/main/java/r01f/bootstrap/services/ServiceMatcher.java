@@ -183,13 +183,8 @@ public class ServiceMatcher {
 	
 		// [2.2] - client proxy to CORE impl matchings
 		for (final ServicesClientConfigForCoreModule<?,?> clientCfgForCore : clientBootstrapCfg.getCoreModuleConfigs()) {
-			
-			System.out.println(clientCfgForCore.getCoreImplType());
-			System.out.println(clientCfgForCore.getClientProxyToCoreConfig().debugInfo());
-			
+
 			if (clientCfgForCore.getCoreImplType() == ServicesImpl.Bean) continue;		// skip bean cores (no client proxy is used)
-			
-			
 			
 			Class<? extends ServiceProxyImpl> serviceProxyImplsBaseType = clientCfgForCore.getServiceProxyImplsBaseType();
 
