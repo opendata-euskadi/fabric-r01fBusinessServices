@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 import r01f.objectstreamer.Marshaller;
 import r01f.securitycontext.SecurityContext;
 import r01f.services.interfaces.ServiceInterface;
+import r01f.types.AppVersion;
 
 
 
@@ -20,6 +21,10 @@ public abstract class ClientAPIImplBase
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR INJECTED
 /////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * The api version
+	 */
+	protected final AppVersion _version;
 	/**
 	 * Model objects marshaller
 	 */
@@ -40,9 +45,20 @@ public abstract class ClientAPIImplBase
 	public ClientAPIImplBase(final Provider<SecurityContext> securityContextProvider,
 							 final Marshaller modelObjectsMarshaller,
 							 final Map<Class,ServiceInterface> srvcIfaceMappings) {
+		this(securityContextProvider,
+			 modelObjectsMarshaller,
+			 srvcIfaceMappings,
+			 null);		// No version
+	}
+	@SuppressWarnings("rawtypes") 
+	public ClientAPIImplBase(final Provider<SecurityContext> securityContextProvider,
+							 final Marshaller modelObjectsMarshaller,
+							 final Map<Class,ServiceInterface> srvcIfaceMappings,
+							 final AppVersion version) {
 		_securityContextProvider = securityContextProvider;
 		_modelObjectsMarshaller = modelObjectsMarshaller;
 		_srvcIfaceMappings = srvcIfaceMappings;
+		_version = version != null ? version : AppVersion.from("unknown-api-version");
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CAST
@@ -57,6 +73,12 @@ public abstract class ClientAPIImplBase
 	@Override
 	public Marshaller getModelObjectsMarshaller() {
 		return _modelObjectsMarshaller;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	API VERSION                                                                          
+/////////////////////////////////////////////////////////////////////////////////////////
+	public AppVersion getApiVersion() {
+		return _version;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  SECURITY CONTEXT
