@@ -200,6 +200,7 @@ public abstract class CorePersistenceServicesBase
 		//if (!outEntityManager.isJoinedToTransaction()) {
 //			outEntityManager.clear();	// BEWARE that in the SAME thread the EntityManagerProvider reuses EntityManager storing it at a ThreadLocal store
 										// since the EntityManager could have cached entity instances... discard them all
+		    outEntityManager.clear();
 			outEntityManager.setFlushMode(FlushModeType.COMMIT);
 		//}
 		return outEntityManager;
