@@ -98,7 +98,7 @@ public class ServiceMatcher {
 											  		  })
 											  .toSet();
 		
-		System.out.println("\n\n ******* Found Server Interfaces : " + serviceInterfaceTypes.size());
+	
 		// [2] - checkings
 		if (CollectionUtils.hasData(serviceInterfaceTypes)) {
 			for (Class<? extends ServiceInterface> serviceInterfaceType : serviceInterfaceTypes) {
@@ -249,7 +249,7 @@ public class ServiceMatcher {
 	 * @param coreImplsPckg
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "null" })
 	public Map<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> findServiceInterfaceMatchings(final Set<Class<? extends ServiceInterface>> serviceInterfaceTypes,
 																						 						  final Class<? extends ServiceProxyImpl> serviceProxyImplsBaseType,
 																						 						  final Class<? extends CoreService> coreServiceBaseType) {
