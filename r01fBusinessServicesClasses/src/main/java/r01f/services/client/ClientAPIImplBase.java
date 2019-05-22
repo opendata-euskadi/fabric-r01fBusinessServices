@@ -58,7 +58,7 @@ public abstract class ClientAPIImplBase
 		_securityContextProvider = securityContextProvider;
 		_modelObjectsMarshaller = modelObjectsMarshaller;
 		_srvcIfaceMappings = srvcIfaceMappings;
-		_version = version != null ? version : AppVersion.from("unknown-api-version");
+		_version = version != null ? version : AppVersion.from("0.0.0");
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CAST
