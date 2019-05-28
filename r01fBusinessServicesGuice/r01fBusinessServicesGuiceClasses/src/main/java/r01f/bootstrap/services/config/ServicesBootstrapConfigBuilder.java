@@ -45,6 +45,10 @@ public abstract class ServicesBootstrapConfigBuilder
 			return new ServicesClientBootstrapConfigCoreModulesEventsStep(_clientCfg,
 																	      Lists.newArrayList(coreModsCfg));
 		}
+		public ServicesClientBootstrapConfigCoreModulesEventsStep ofCoreModules(final Collection<ServicesCoreBootstrapConfig> coreModsCfg) {
+			return new ServicesClientBootstrapConfigCoreModulesEventsStep(_clientCfg,
+																	      coreModsCfg);
+		}
 		public ServicesClientBootstrapConfigCoreModulesBuildStep notBootstrappingCoreModules() {
 			return new ServicesClientBootstrapConfigCoreModulesBuildStep(_clientCfg,
 					 													 null,		// no cores
