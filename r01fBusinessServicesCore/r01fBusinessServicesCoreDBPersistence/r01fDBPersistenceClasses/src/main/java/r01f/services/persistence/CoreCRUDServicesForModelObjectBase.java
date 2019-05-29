@@ -88,13 +88,12 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 								  oid);
 	}
 	@Transactional
-	@Override @SuppressWarnings("unchecked")
+	@Override 
 	public CRUDResult<M> create(final SecurityContext securityContext, 
 								final M record) {
-		return this.forSecurityContext(securityContext)
-						.createDelegateAs(CRUDServicesForModelObject.class)
-							.create(securityContext,
-									record);
+		return this.create(securityContext,
+						   record,
+						   null);	// no callback
 	}
 	@Transactional
 	@Override @SuppressWarnings("unchecked")
@@ -108,13 +107,12 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 									callbackSpec);
 	}
 	@Transactional
-	@Override @SuppressWarnings("unchecked")
+	@Override 
 	public CRUDResult<M> update(final SecurityContext securityContext, 
 								final M record) {
-		return this.forSecurityContext(securityContext)
-						.createDelegateAs(CRUDServicesForModelObject.class)
-							.update(securityContext,
-									record);
+		return this.update(securityContext,
+						   record,
+						   null);		// no callback
 	}
 	@Transactional
 	@Override @SuppressWarnings("unchecked")
@@ -128,13 +126,12 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 									callbackSpec);
 	}
 	@Transactional
-	@Override @SuppressWarnings("unchecked")
+	@Override 
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 							    final O oid) {		
-		return this.forSecurityContext(securityContext)
-						.createDelegateAs(CRUDServicesForModelObject.class)
-							.delete(securityContext,
-									oid);
+		return this.delete(securityContext,
+						   oid,
+						   null);	// no callback
 	}
 	@Transactional
 	@Override @SuppressWarnings("unchecked")
