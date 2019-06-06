@@ -442,7 +442,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final OID value) {
 								_createOidField(fieldsFactory,
 												luceneFieldId,
-											   	indexableField.getValue());
+											   	value);
 							}
 				 });
 	}
@@ -464,7 +464,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final Class<?> value) {
 								_createJavatypeField(fieldsFactory,
 												  	 luceneFieldId,
-												  	 indexableField.getValue());
+												  	 value);
 							}
 				 });
 	}
@@ -486,7 +486,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final String value) {
 								_createStringField(fieldsFactory,
 												   luceneFieldId,
-											       indexableField.getValue());
+											       value);
 							}
 				 });
 	}
@@ -508,7 +508,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final CanBeRepresentedAsString value) {
 								_createCanBeRepresentedAsStringField(fieldsFactory,
 												 		  			 luceneFieldId,
-												 		  			 indexableField.getValue());
+												 		  			 value);
 							}
 				 });
 	}
@@ -531,7 +531,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final Reader value) {
 								_createReaderField(fieldsFactory,
 												   luceneFieldId,
-											       indexableField.getValue());
+											       value);
 							}
 				 });
 	}
@@ -553,7 +553,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final Boolean value) {
 								_createBooleanField(fieldsFactory,
 													luceneFieldId,
-											   		indexableField.getValue());
+											   		value);
 							}
 				 });
 	}
@@ -573,7 +573,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final Integer value) {
 								_createIntegerField(fieldsFactory,
 													luceneFieldId,
-											   		indexableField.getValue());
+											   		value);
 							}
 				 });
 	}
@@ -592,7 +592,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final Long value) {
 								_createLongField(fieldsFactory,
 												 luceneFieldId,
-											   	 indexableField.getValue());
+											   	 value);
 							}
 				 });
 	}
@@ -611,7 +611,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final Double value) {
 								_createDoubleField(fieldsFactory,
 												   luceneFieldId,
-											   	   indexableField.getValue());
+											   	   value);
 							}
 				 });
 	}
@@ -630,7 +630,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final Float value) {
 								_createFloatField(fieldsFactory,
 												 luceneFieldId,
-											   	 indexableField.getValue());
+											   	 value);
 							}
 				 });
 	}
@@ -652,7 +652,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final Date value) {
 								_createDateField(fieldsFactory,
 												 luceneFieldId,
-											   	 indexableField.getValue());
+											   	 value);
 							}
 				 });
 	}
@@ -674,7 +674,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final Range<? extends Comparable<?>> value) {
 								_createRangeField(fieldsFactory,
 												  luceneFieldId,
-											   	  indexableField.getValue());
+											   	  value);
 							}
 				 });
 	}
@@ -765,7 +765,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final IsPath value) {
 								_createPathField(fieldsFactory,
 												 luceneFieldId,
-											   	 indexableField.getValue());
+											   	 value);
 							}
 				 });
 	}
@@ -787,7 +787,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final Url value) {
 								_createSerializedUrlField(fieldsFactory,
 												 		  luceneFieldId,
-												 		  indexableField.getValue());
+												 		  value);
 							}
 				 });
 	}
@@ -809,7 +809,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final Enum<? extends Enum<?>> value) {
 								_createEnumField(fieldsFactory,
 												 luceneFieldId,
-											   	 indexableField.getValue());
+											   	 value);
 							}
 				 });
 	}
@@ -858,7 +858,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final LanguageTexts value) {
 								_createLanguageTextsField(fieldsFactory,
 												 		  luceneFieldId,
-												 		  indexableField.getValue());
+												 		  value);
 							}
 				 });
 	}
@@ -884,7 +884,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 											   final Summary value) {
 								_createSummaryField(fieldsFactory,
 													luceneFieldId,
-											   	 	indexableField.getValue());
+											   	 	value);
 							}
 				 });
 	}
