@@ -36,7 +36,7 @@ import r01f.util.types.collections.Lists;
 @Slf4j
 @Configuration
 public abstract class SpringRootConfigBootstrapGuiceBase
-        extends  SpringRootConfigBootstrapBase  {
+              extends  SpringRootConfigBootstrapBase  {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -95,33 +95,32 @@ public abstract class SpringRootConfigBootstrapGuiceBase
 
     @Bean (initMethod="startServices" , destroyMethod = "stopServices")
 	public ServiceBootstrapSpringHandler bootstrapSpring() {
-       return new  ServiceBootstrapSpringHandler() {
-    	   			Injector  GUICE_INJECTOR =  createInjector();
-
-					@Override
-					public void startServices() {
-						ServicesBootstrapUtil.startServices(GUICE_INJECTOR);
-					}
-
-					@Override
-					public void stopServices() {
-						ServicesBootstrapUtil.stopServices(GUICE_INJECTOR);
-					}
-					@Override
-					public Injector getInjector() {
-						return GUICE_INJECTOR;
-					}};
-
+       return new ServiceBootstrapSpringHandler() {
+	    	   			Injector  GUICE_INJECTOR =  createInjector();
+	
+						@Override
+						public void startServices() {
+							ServicesBootstrapUtil.startServices(GUICE_INJECTOR);
+						}
+	
+						@Override
+						public void stopServices() {
+							ServicesBootstrapUtil.stopServices(GUICE_INJECTOR);
+						}
+						@Override
+						public Injector getInjector() {
+							return GUICE_INJECTOR;
+						}
+			 };
     }
 //////////////////////////////////////////////////////////////////////////////////
 // EXPOSED SERVICES
 //////////////////////////////////////////////////////////////////////////////////
     @Bean
     @Inject
-    public  GuiceExposedServicesToBeanProcessor exposeGuiceServicesToBeans (final ServiceBootstrapSpringHandler servicesBootstrap) {
+    public  GuiceExposedServicesToBeanProcessor exposeGuiceServicesToBeans(final ServiceBootstrapSpringHandler servicesBootstrap) {
       return new GuiceExposedServicesToBeanProcessor(servicesBootstrap);
     }
-
     @Bean
     @Inject
     public Marshaller marshaller(final ServiceBootstrapSpringHandler servicesBootstrap) {
@@ -138,9 +137,8 @@ public abstract class SpringRootConfigBootstrapGuiceBase
 
 		return GUICE_INJECTOR;
 	}
-
 	public class GuiceExposedServicesToBeanProcessor
-   				implements BeanDefinitionRegistryPostProcessor {
+   	  implements BeanDefinitionRegistryPostProcessor {
 
 	    final ServiceBootstrapSpringHandler _servicesBootstrap;
 
@@ -148,16 +146,15 @@ public abstract class SpringRootConfigBootstrapGuiceBase
 	    	  _servicesBootstrap = servicesBootstrap;
       	}
 		@Override
-		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+		public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) throws BeansException {
 	       List<Class<?>>  exposedClass = _getExposedServicesAsClass();
 	       for (final Class<?> serviceClass : exposedClass  ){
 	    	   BeanDefinitionBuilder  beanDefBuilder =  BeanDefinitionBuilder.genericBeanDefinition(serviceClass).setLazyInit(true);
 	    	   registry.registerBeanDefinition( serviceClass.getName(),beanDefBuilder.getBeanDefinition());
 	       }
 	    }
-
 		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		public void postProcessBeanFactory(final ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		    List<Class<?>>  exposedClass = _getExposedServicesAsClass();
 	        for (final Class<?> serviceClass : exposedClass  ) {
 	    	    log.warn(" >> Registred bean {}  ", serviceClass.getName());
@@ -165,7 +162,6 @@ public abstract class SpringRootConfigBootstrapGuiceBase
 	    	   			                                                                 .getInstance(serviceClass));
 	       }
 		}
-
 		private List<Class<?>> _getExposedServicesAsClass() {
 			List<Class<?>> servicesInterfaces = Lists.newArrayList();
 			for (Binding<?> b : _servicesBootstrap.getInjector().getBindings().values()) {

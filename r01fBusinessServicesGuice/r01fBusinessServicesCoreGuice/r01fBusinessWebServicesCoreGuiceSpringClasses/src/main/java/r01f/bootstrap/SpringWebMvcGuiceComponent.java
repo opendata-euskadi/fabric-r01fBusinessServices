@@ -21,27 +21,26 @@ import r01f.servlet.spring.SpringWebMvcComponent;
 @EnableWebMvc
 @Accessors(prefix="_")
 public abstract class SpringWebMvcGuiceComponent
-	 extends SpringWebMvcComponent {
+	          extends SpringWebMvcComponent {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Members
+// 	FIELDS
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	@Getter final protected Marshaller _marshaller;
 	@Getter final protected ServiceBootstrapSpringHandler _servicesBootstrap;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// CONSTRUCTOR
+// 	CONSTRUCTOR
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	@Inject
-	public SpringWebMvcGuiceComponent( final ServiceBootstrapSpringHandler servicesBootstrap ){
+	public SpringWebMvcGuiceComponent(final ServiceBootstrapSpringHandler servicesBootstrap) {
 		_marshaller = servicesBootstrap.getInjector()
 									   .getInstance(Key.get(Marshaller.class,ModelObjectsMarshaller.class));
 		_servicesBootstrap = servicesBootstrap;
 	}
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// METHODS
+// 	METHODS
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	public abstract void configureMessageConverters(List<HttpMessageConverter<?>> converters) ;
+	public abstract void configureMessageConverters(final List<HttpMessageConverter<?>> converters) ;
 	/*@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 		if ( converters == null) {
