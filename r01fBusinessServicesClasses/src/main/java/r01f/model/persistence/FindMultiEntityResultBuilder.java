@@ -13,18 +13,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import r01f.model.ModelObject;
-import r01f.model.persistence.FindError;
-import r01f.model.persistence.FindOK;
-import r01f.model.persistence.FindResult;
-import r01f.model.persistence.PersistenceErrorType;
-import r01f.model.persistence.PersistencePerformedOperation;
-import r01f.model.persistence.PersistenceRequestedOperation;
+import r01f.model.persistence.FindResultBuilder.FindResultBuilderForError;
 import r01f.patterns.IsBuilder;
 import r01f.persistence.db.DBEntity;
-import r01f.persistence.db.DBEntityToModelObjectTransformerBuilder;
-import r01f.persistence.db.TransformsDBEntityIntoModelObject;
 import r01f.securitycontext.SecurityContext;
-import r01f.util.types.Strings;
 import r01f.util.types.collections.CollectionUtils;
 
 /**
@@ -48,14 +40,15 @@ import r01f.util.types.collections.CollectionUtils;
  * </pre>
  */
 @GwtIncompatible
-@NoArgsConstructor(access=AccessLevel.PACKAGE)
-public class FindResultBuilder 
+@NoArgsConstructor(access=AccessLevel.PRIVATE)
+public class FindMultiEntityResultBuilder 
   implements IsBuilder {
+	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static FindResultBuilderEntityStep using(final SecurityContext securityContext) {
-		return new FindResultBuilder() {/* nothing */}
+		return new FindMultiEntityResultBuilder() {/* nothing */}
 						.new FindResultBuilderEntityStep(securityContext);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -70,6 +63,7 @@ public class FindResultBuilder
 														 entityType);
 		}
 	}
+	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  Operation
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -78,22 +72,18 @@ public class FindResultBuilder
 		protected final SecurityContext _securityContext;
 		protected final Class<T> _entityType;
 		
-		
 		//  --------- ERROR
 		public FindResultBuilderForError<T> errorFindingEntities() {
-			return new FindResultBuilderForError<T>(_securityContext,
-													_entityType);	
+			return (new FindResultBuilder()).new FindResultBuilderForError<T>(_securityContext,
+																			  _entityType);	
 		}
-		// ---------- SUCCESS FINDING 
-		public FindOK<T> foundEntities(final Collection<T> entities) {
-			return _buildFoundEntitiesCollection(entities,
-												 _entityType);
-		}
-		public <DB extends DBEntity> FindResultBuilderDBEntityTransformerStep<DB,T> foundDBEntities(final Collection<DB> dbEntities) {
+		// ---------- SUCCESS FINDING
+		public <DB extends DBEntity> FindResultBuilderDBEntityTransformerStep<DB,T> foundDBMultiEntities(final Collection<Object> dbEntities) {
 			return new FindResultBuilderDBEntityTransformerStep<DB,T>(_securityContext,
 																	  _entityType,
 																	  dbEntities);
 		}
+		
 		public FindOK<T> noEntityFound() {
 			FindOK<T> outFoundEntities = new FindOK<T>();
 			outFoundEntities.setFoundObjectType(_entityType);
@@ -105,67 +95,26 @@ public class FindResultBuilder
 	}	
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class FindResultBuilderDBEntityTransformerStep<DB extends DBEntity,
-														  T> {
+																T> {
 		protected final SecurityContext _securityContext;
 		protected final Class<T> _entityType;
-		protected final Collection<DB> _dbEntities;
+		protected final Collection<Object> _dbEntities;
 		
-		public <M extends ModelObject> FindOK<M> transformedToModelObjectsUsing(final TransformsDBEntityIntoModelObject<DB,M> dbEntityToModelObjectTransformer) {
-			return this.transformedToModelObjectsUsing(DBEntityToModelObjectTransformerBuilder.<DB,M>createFor(_securityContext,
-													  													  		 dbEntityToModelObjectTransformer));
-		}
 		@SuppressWarnings("unchecked")
-		public <M extends ModelObject> FindOK<M> transformedToModelObjectsUsing(final Function<DB,M> transformer) {
+		public <M extends ModelObject> FindOK<M> transformedToModelObjectsUsing(final Function<Object,M> transformer) {
 			Collection<M> entities = null;
 			if (CollectionUtils.hasData(_dbEntities)) {
-				Function<DB,M> dbEntityToModelObjectTransformer = DBEntityToModelObjectTransformerBuilder.createFor(_securityContext,
-																								  					transformer);
 				entities = FluentIterable.from(_dbEntities)
-										 .transform(dbEntityToModelObjectTransformer)
+										 .transform(transformer)
 										  .filter(Predicates.notNull())
 										  	.toList();
 			} else {
 				entities = Sets.newHashSet();
 			}
-			return _buildFoundEntitiesCollection(entities,
+			return FindResultBuilder._buildFoundEntitiesCollection(entities,
 												 (Class<M>)_entityType);
 		}
 		
 	}
-	static <T> FindOK<T> _buildFoundEntitiesCollection(final Collection<T> entities,
-													   final Class<T> entityType) {
-		FindOK<T> outFoundEntities = new FindOK<T>();
-		outFoundEntities.setFoundObjectType(entityType);
-		outFoundEntities.setRequestedOperation(PersistenceRequestedOperation.FIND);
-		outFoundEntities.setPerformedOperation(PersistencePerformedOperation.FOUND);
-		outFoundEntities.setOperationExecResult(entities);
-		return outFoundEntities;
-	}
-/////////////////////////////////////////////////////////////////////////////////////////
-//  ERROR
-/////////////////////////////////////////////////////////////////////////////////////////
-	@RequiredArgsConstructor(access=AccessLevel.PACKAGE)
-	public final class FindResultBuilderForError<T> {
-		protected final SecurityContext _securityContext;
-		protected final Class<T> _entityType;
-		
-		public FindError<T> causedBy(final Throwable th) {
-			return new FindError<T>(_entityType,
-									th);
-		}
-		public FindError<T> causedBy(final String cause) {
-			return new FindError<T>(_entityType,
-									cause,
-									PersistenceErrorType.SERVER_ERROR);
-		}
-		public FindError<T> causedBy(final String cause,final Object... vars) {
-			return this.causedBy(Strings.customized(cause,vars));
-		}
-		public FindError<T> causedByClientBadRequest(final String msg,final Object... vars) {
-			FindError<T> outError = new FindError<T>(_entityType,
-											     	 Strings.customized(msg,vars),			// the error message
-											     	 PersistenceErrorType.BAD_REQUEST_DATA);	// is a client error?
-			return outError;
-		}
-	}
+
 }
