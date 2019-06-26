@@ -104,6 +104,7 @@ public abstract class CorePersistenceServicesBase
 																 tenantId,tenantIdShouldNOTBeNull,
 																 CorePersistenceServicesBase.class);
 	}
+	@SuppressWarnings("null")
 	public static EntityManager freshNewEntityManager(final Provider<EntityManager> entityManagerProvider,
 													  final TenantID tenantId,
 													  final boolean tenantIdShouldNOTBeNull,
@@ -152,6 +153,9 @@ public abstract class CorePersistenceServicesBase
 		} else {
 			if (tenantIdShouldNOTBeNull) log.warn("A call to get an entity manager for a tenant BUT no tenant id was provided; if no tenancy is used, do NOT call {}.getFreshNewEntityManager(tenantId) method, call {}.getFreshNewEntityManager() instead!",
 					 							  callerType.getName(),callerType.getName());
+			if (entityManagerProvider == null) {
+				log.error(" Entity Manager is null , check any error in logs...." );
+			}
 			outEntityManager = entityManagerProvider.get();
 		}
 
