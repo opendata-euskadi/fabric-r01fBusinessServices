@@ -54,6 +54,7 @@ public abstract class CoreCRUDServicesForVersionableModelObjectBase<O extends OI
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CRUD DELEGATE
 /////////////////////////////////////////////////////////////////////////////////////////
+	@SuppressWarnings("unchecked")
 	@Transactional
 	@Override 
 	public CRUDResult<M> loadActiveVersionAt(final SecurityContext securityContext,
@@ -63,6 +64,7 @@ public abstract class CoreCRUDServicesForVersionableModelObjectBase<O extends OI
 							.loadActiveVersionAt(securityContext,
 									 	   		 oid,date);
 	}
+	@SuppressWarnings("unchecked")
 	@Transactional
 	@Override 
 	public CRUDResult<M> loadWorkVersion(final SecurityContext securityContext,
@@ -72,6 +74,7 @@ public abstract class CoreCRUDServicesForVersionableModelObjectBase<O extends OI
 							.loadWorkVersion(securityContext,
 									   		 oid);
 	}
+	@SuppressWarnings("unchecked")
 	@Transactional
 	@Override 
 	public CRUDResult<M> activate(final SecurityContext securityContext,

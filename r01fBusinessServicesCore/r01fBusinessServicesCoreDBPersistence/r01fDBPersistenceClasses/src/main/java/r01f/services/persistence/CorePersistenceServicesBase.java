@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 
 import com.google.common.eventbus.EventBus;
+import com.google.inject.ProvisionException;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -19,6 +20,7 @@ import r01f.objectstreamer.HasMarshaller;
 import r01f.objectstreamer.Marshaller;
 import r01f.persistence.db.HasEntityManagerProvider;
 import r01f.securitycontext.SecurityContext;
+import r01f.util.types.Strings;
 
 @Slf4j
 @Accessors(prefix="_")
@@ -104,6 +106,7 @@ public abstract class CorePersistenceServicesBase
 																 tenantId,tenantIdShouldNOTBeNull,
 																 CorePersistenceServicesBase.class);
 	}
+
 	public static EntityManager freshNewEntityManager(final Provider<EntityManager> entityManagerProvider,
 													  final TenantID tenantId,
 													  final boolean tenantIdShouldNOTBeNull,
@@ -152,7 +155,16 @@ public abstract class CorePersistenceServicesBase
 		} else {
 			if (tenantIdShouldNOTBeNull) log.warn("A call to get an entity manager for a tenant BUT no tenant id was provided; if no tenancy is used, do NOT call {}.getFreshNewEntityManager(tenantId) method, call {}.getFreshNewEntityManager() instead!",
 					 							  callerType.getName(),callerType.getName());
-			outEntityManager = entityManagerProvider.get();
+			if (entityManagerProvider == null) {			
+				throw new IllegalArgumentException(Strings.customized("EntityManager Provider is null for services of {} , check any error in logs at bootstraping....",callerType)) ;
+			} else {	
+				try {
+					outEntityManager = entityManagerProvider.get();
+				} catch (final ProvisionException provex) {
+					throw new IllegalArgumentException(Strings.customized("\n\n Internal Provision Exception for services of {} ,"
+																			+ " check any error in logs at bootstraping !! (at begining of log ) . This could be caused by a configuration error of DB, so check db.persitence ",callerType)) ;
+				}
+			}
 		}
 
 
