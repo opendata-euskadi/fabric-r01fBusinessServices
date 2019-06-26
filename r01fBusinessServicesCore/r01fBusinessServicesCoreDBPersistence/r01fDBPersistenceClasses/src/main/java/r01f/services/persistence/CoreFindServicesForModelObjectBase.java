@@ -79,12 +79,14 @@ public abstract class CoreFindServicesForModelObjectBase<O extends PersistableOb
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIND
 /////////////////////////////////////////////////////////////////////////////////////////
+	@SuppressWarnings("unchecked")
 	@Override 
 	public FindOIDsResult<O> findAll(final SecurityContext securityContext) {
 		return this.forSecurityContext(securityContext)
 						.createDelegateAs(FindServicesForModelObject.class)
 							.findAll(securityContext);
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public FindOIDsResult<O> findByCreateDate(final SecurityContext securityContext,
 											  final Range<Date> createDate) {
@@ -93,6 +95,7 @@ public abstract class CoreFindServicesForModelObjectBase<O extends PersistableOb
 							.findByCreateDate(securityContext,
 											  createDate);
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public FindOIDsResult<O> findByLastUpdateDate(final SecurityContext securityContext,
 												  final Range<Date> lastUpdateDate) {
