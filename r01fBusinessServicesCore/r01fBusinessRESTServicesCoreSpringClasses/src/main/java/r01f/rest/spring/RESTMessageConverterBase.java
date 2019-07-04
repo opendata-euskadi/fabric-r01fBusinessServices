@@ -52,12 +52,9 @@ public abstract class RESTMessageConverterBase<T>
 	@Override
 	public boolean canWrite(final Type type, final Class<?> contextClass, final  MediaType mediaType){
 		boolean outWriteable = false;
-		System.out.println(ReflectionUtils.classOfType(type));
-		System.out.println(_mappedType);
-		System.out.println(ReflectionUtils.isImplementingAny(ReflectionUtils.classOfType(type),_mappedType));;
 		if (mediaType.equals(_mediaType)
 				&& ReflectionUtils.isImplementingAny(ReflectionUtils.classOfType(type),_mappedType)) {
-		     outWriteable = true;
+			outWriteable = true;
 		}
 		log.warn(" \n The {} type is {} writeable with {}",ReflectionUtils.classOfType(type),
 													       outWriteable ? "" : "NOT",
