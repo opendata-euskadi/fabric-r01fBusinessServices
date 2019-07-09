@@ -39,7 +39,7 @@ public abstract class ServicesClientBootstrapConfigBuilder
 	public final class ServicesClientBootstrapConfigBuilderApiTypeStep {
 		protected final ClientApiAppCode _clientApiAppCode;
 		
-		public ServicesClientBootstrapConfigBuilderServiceInterfacesStep exposingApi(Class<? extends ClientAPI> clientApiType) {
+		public ServicesClientBootstrapConfigBuilderServiceInterfacesStep exposingApi(final Class<? extends ClientAPI> clientApiType) {
 			return new ServicesClientBootstrapConfigBuilderServiceInterfacesStep(_clientApiAppCode,
 																				 clientApiType);
 		}
@@ -56,7 +56,7 @@ public abstract class ServicesClientBootstrapConfigBuilder
 		public ServicesClientBootstrapConfigBuilderCoreConfigStep doNotFindServiceInterfaces() {
 			return new ServicesClientBootstrapConfigBuilderCoreConfigStep(_clientApiAppCode,
 																		  _clientApiType,
-																		  null);	// no service interfacers
+																		  null);	// no service interfaces
 		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
