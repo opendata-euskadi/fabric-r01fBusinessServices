@@ -25,7 +25,7 @@ import r01f.util.types.Strings;
 
 /**
  * JVM arguments:
- * -javaagent:d:/eclipse/local_libs/aspectj/lib/aspectjweaver.jar -Daj.weaving.verbose=true
+ * -javaagent:d:/develop/local_libs/aspectj/lib/aspectjweaver.jar -Daj.weaving.verbose=true
  */
 @Slf4j
 @Accessors(prefix="_")

@@ -7,7 +7,7 @@ import r01f.services.client.api.delegates.ClientAPIDelegateForModelObjectFindSer
 
 /**
  * JVM arguments:
- * -javaagent:D:/eclipse/local_libs/aspectj/lib/aspectjweaver.jar -Daj.weaving.verbose=true
+ * -javaagent:D:/develop/local_libs/aspectj/lib/aspectjweaver.jar -Daj.weaving.verbose=true
  */
 public abstract class TestPersistableDelegateForDependentModelObject<O extends PersistableObjectOID,M extends PersistableModelObject<O>,
 							  		 				 		  		 P extends PersistableModelObject<?>> 
