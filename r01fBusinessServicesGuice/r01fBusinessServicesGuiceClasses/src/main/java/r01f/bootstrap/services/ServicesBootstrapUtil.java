@@ -125,33 +125,31 @@ public class ServicesBootstrapUtil {
 		return new Module() {
 						@Override
 						public void configure(final Binder binder) {
-							if (coreModuleEventsConfig != null) {
-								log.warn("EVENT HANDLING: {}",coreModuleEventsConfig.debugInfo());
-								
-								// The EventBus needs an ExecutorService (a thread pool) to manage events in the background
-								if (coreModuleEventsConfig.getExecutionMode() == ExecutionMode.ASYNC) {
-									ExecutorServiceManagerProvider execServiceManagerProvider = new ExecutorServiceManagerProvider(coreModuleEventsConfig.getNumberOfBackgroundThreads());
-									binder.bind(ExecutorServiceManager.class)
-										  .toProvider(execServiceManagerProvider)
-										  .in(Singleton.class);
-									// Expose the ServiceHandler to stop the exec manager threads
-									String bindingName = Strings.customized("{}.backgroundTasksExecService",
-																			clientApiAppCode);
-									// do NO forget!!
-									ServicesBootstrapUtil.bindServiceHandler(binder,
-																			 ExecutorServiceManager.class,bindingName);
-	
-									// create the event bus provider
-									binder.bind(EventBus.class)
-										  .toProvider(AsyncEventBusProvider.class)	// AsyncEventBusProvider needs an ExecutorServiceManager that MUST be binded
-										  .in(Singleton.class);
-								} else {
-									binder.bind(EventBus.class)
-											 .toProvider(SyncEventBusProvider.class)
-											 .in(Singleton.class);
-								}
+							if (coreModuleEventsConfig == null) {
+								log.warn("NO [EventBus] is configured: if you're using events, review the [core] bootstrapping code (if a common [EventBus] is supposed to be used, remember to configure it!!)");
+								return;
+							}
+
+							log.warn("EVENT HANDLING: {}",coreModuleEventsConfig.debugInfo());
+
+							// The EventBus needs an ExecutorService (a thread pool) to manage events in the background
+							if (coreModuleEventsConfig.getExecutionMode() == ExecutionMode.ASYNC) {
+								ExecutorServiceManagerProvider execServiceManagerProvider = new ExecutorServiceManagerProvider(coreModuleEventsConfig.getNumberOfBackgroundThreads());
+								binder.bind(ExecutorServiceManager.class)
+									  .toProvider(execServiceManagerProvider)
+									  .in(Singleton.class);
+								// Expose the ServiceHandler to stop the exec manager threads
+								String bindingName = Strings.customized("{}.backgroundTasksExecService",
+																		clientApiAppCode);
+								// do NO forget!!
+								ServicesBootstrapUtil.bindServiceHandler(binder,
+																		 ExecutorServiceManager.class,bindingName);
+
+								// create the event bus provider
+								binder.bind(EventBus.class)
+									  .toProvider(AsyncEventBusProvider.class)	// AsyncEventBusProvider needs an ExecutorServiceManager that MUST be binded
+									  .in(Singleton.class);
 							} else {
-								log.warn("NO [EventBus] is configured: if you're using events, review the [core] bootstrapping code > a default SYNC event bus is binded by default!!");
 								binder.bind(EventBus.class)
 										 .toProvider(SyncEventBusProvider.class)
 										 .in(Singleton.class);

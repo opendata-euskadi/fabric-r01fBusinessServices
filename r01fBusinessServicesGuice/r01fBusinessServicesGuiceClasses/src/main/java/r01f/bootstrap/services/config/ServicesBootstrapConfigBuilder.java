@@ -15,16 +15,16 @@ import r01f.types.ExecutionMode;
 
 /**
  * Builder for ServicesConfig
- * Usage: 
+ * Usage:
  * <pre class='brush:java'>
- * 
+ *
  * </pre>
  */
 @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
-public abstract class ServicesBootstrapConfigBuilder 
+public abstract class ServicesBootstrapConfigBuilder
 	       implements IsBuilder {
 /////////////////////////////////////////////////////////////////////////////////////////
-//  BUILD 
+//  BUILD
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static ServicesBootstrapConfigCoreModulesStep forClient(final ServicesClientBootstrapConfig clientCfg) {
 		return new ServicesBootstrapConfigBuilder() { /* nothing */ }
@@ -36,11 +36,11 @@ public abstract class ServicesBootstrapConfigBuilder
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CORE MODULES
-/////////////////////////////////////////////////////////////////////////////////////////	
+/////////////////////////////////////////////////////////////////////////////////////////
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class ServicesBootstrapConfigCoreModulesStep {
 		private final ServicesClientBootstrapConfig _clientCfg;
-		
+
 		public ServicesClientBootstrapConfigCoreModulesEventsStep ofCoreModules(final ServicesCoreBootstrapConfig... coreModsCfg) {
 			return new ServicesClientBootstrapConfigCoreModulesEventsStep(_clientCfg,
 																	      Lists.newArrayList(coreModsCfg));
@@ -61,12 +61,12 @@ public abstract class ServicesBootstrapConfigBuilder
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CORE EVENTS
-/////////////////////////////////////////////////////////////////////////////////////////	
+/////////////////////////////////////////////////////////////////////////////////////////
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class ServicesClientBootstrapConfigCoreModulesEventsStep {
 		private final ServicesClientBootstrapConfig _clientCfg;
 		private final Collection<? extends ServicesCoreBootstrapConfig> _coreModulesConfig;
-		
+
 		public ServicesBootstrapConfig build() {
 			return this.notUsingCoreEvents()
 					   .build();
@@ -95,23 +95,23 @@ public abstract class ServicesBootstrapConfigBuilder
 		private ServicesClientBootstrapConfigCoreModulesBuildStep _build(final ServicesCoreModuleEventsConfig eventsCfg) {
 			return new ServicesClientBootstrapConfigCoreModulesBuildStep(_clientCfg,
 					 													 _coreModulesConfig,
-					 													 eventsCfg);		 
+					 													 eventsCfg);
 		}
-		
+
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class ServicesClientBootstrapConfigCoreModulesBuildStep {
 		private final ServicesClientBootstrapConfig _clientCfg;
 		private final Collection<? extends ServicesCoreBootstrapConfig> _coreModulesConfig;
 		private final ServicesCoreModuleEventsConfig _eventsCfg;
-		
+
 		public ServicesBootstrapConfig build() {
 			return new ServicesBootstrapConfig(_clientCfg,
 											   _coreModulesConfig,
-											   _eventsCfg);		 
+											   _eventsCfg);
 		}
 	}
 }

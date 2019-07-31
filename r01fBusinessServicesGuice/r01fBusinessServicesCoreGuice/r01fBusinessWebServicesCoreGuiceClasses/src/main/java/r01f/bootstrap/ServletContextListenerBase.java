@@ -62,19 +62,19 @@ public abstract class ServletContextListenerBase
 										 final Module... commonModules) {
 		this(bootstrapCfgs,buildCommonModuleEventsConfig,
 			 CollectionUtils.hasData(commonModules) ? Lists.<Module>newArrayList(commonModules) : Lists.<Module>newArrayList());
-	}	
-	
+	}
+
 	protected ServletContextListenerBase(final Collection<ServicesBootstrapConfig> bootstrapCfgs,
 										 final Module... commonModules) {
 		this(bootstrapCfgs,
 			 CollectionUtils.hasData(commonModules) ? Lists.<Module>newArrayList(commonModules) : Lists.<Module>newArrayList());
-	}	
-	
-	protected ServletContextListenerBase(final Collection<ServicesBootstrapConfig> bootstrapCfg,										
+	}
+
+	protected ServletContextListenerBase(final Collection<ServicesBootstrapConfig> bootstrapCfg,
 										 final Collection<Module> commonGuiceModules) {
 		this(bootstrapCfg,null,commonGuiceModules);
 	}
-	
+
 	protected ServletContextListenerBase(final Collection<ServicesBootstrapConfig> bootstrapCfg,
 										 final ServicesCoreModuleEventsConfig commonEventsConfig,
 										 final Collection<Module> commonGuiceModules) {
@@ -91,8 +91,8 @@ public abstract class ServletContextListenerBase
 	protected Injector getInjector() {
 		if (_injector == null) {
 			_injector = Guice.createInjector(ServicesBootstrapUtil.getBootstrapGuiceModules(_servicesBootstrapConfig)
-											 					                          .withCommonEventsExecutor(_commonEventsConfig)
-																						  .withCommonBindingModules(_commonGuiceModules));
+							 					                          .withCommonEventsExecutor(_commonEventsConfig)
+																		  .withCommonBindingModules(_commonGuiceModules));
 		} else {
 			log.warn("The Guice Injector is already created!!!");
 		}
