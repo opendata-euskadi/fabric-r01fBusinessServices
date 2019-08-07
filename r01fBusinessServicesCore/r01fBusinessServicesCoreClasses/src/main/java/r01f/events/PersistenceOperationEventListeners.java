@@ -12,13 +12,15 @@ public class PersistenceOperationEventListeners {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  Listens to OK PersistenceOperationOKEvent
 /////////////////////////////////////////////////////////////////////////////////////////
-	public static interface PersistenceOperationOKEventListener {
+	public static interface PersistenceOperationOKEventListener
+					extends COREEventBusEventListener {
 		public void onPersistenceOperationOK(final PersistenceOperationOKEvent opOKEvent);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  Listens to NOK PersistenceOperationErrorEvent
 /////////////////////////////////////////////////////////////////////////////////////////
-	public static interface PersistenceOperationErrorEventListener {
+	public static interface PersistenceOperationErrorEventListener
+					extends COREEventBusEventListener {
 		public void onPersistenceOperationError(final PersistenceOperationErrorEvent opErrorEvent);
-	}	
+	}
 }

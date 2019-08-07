@@ -21,6 +21,7 @@ import r01f.bootstrap.services.config.core.ServicesCoreGuiceBootstrapConfigWhenB
 import r01f.bootstrap.services.core.BeanImplementedServicesCoreBootstrapGuiceModuleBase;
 import r01f.bootstrap.services.core.DBPersistenceGuiceModule;
 import r01f.bootstrap.services.core.SearchEnginePersistenceGuiceModule;
+import r01f.events.COREEventBusEventListener;
 import r01f.events.PersistenceOperationEventListeners.PersistenceOperationErrorEventListener;
 import r01f.events.PersistenceOperationEventListeners.PersistenceOperationOKEventListener;
 import r01f.events.crud.CRUDOperationErrorEventListener;
@@ -118,14 +119,13 @@ public abstract class BeanImplementedPersistenceServicesCoreBootstrapGuiceModule
 		// ==================================================
 		// Event Bus & Background jobs
 		if (this instanceof ServicesBootstrapGuiceModuleBindsCRUDEventListeners) {
-			// Automatic registering of event listeners to the event bus avoiding the manual registering of every listener; 
+			// Automatic registering of event listeners to the event bus avoiding the manual registering of every listener;
 			// this code simply listen for guice's binding events: when an event listener gets binded, it's is automatically registered at the event bus
 			// 		Listen to injection of CRUDOperationOKEventListener & CRUDOperationNOKEventListener subtypes (indexers are CRUD events listeners)
 			// 		(when indexers are being injected)
 			Provider<EventBus> eventBusProvider = theBinder.getProvider(EventBus.class);
 			EventBusSubscriberTypeListener typeListener = new EventBusSubscriberTypeListener(eventBusProvider);	// inject an event bus provider !!!
-			theBinder.bindListener(Matchers.subclassesOf(PersistenceOperationOKEventListener.class,
-													     PersistenceOperationErrorEventListener.class),
+			theBinder.bindListener(Matchers.subclassesOf(COREEventBusEventListener.class),
 							       typeListener);	// registers the event listeners at the EventBus
 
 			// Bind every listener
@@ -138,9 +138,11 @@ public abstract class BeanImplementedPersistenceServicesCoreBootstrapGuiceModule
 		}
 	}
 	/**
-	 * Guice {@link TypeListener} that gets called when a {@link PersistenceOperationOKEventListener} subtype (the indexer is a CRUD events listener)
+	 * Guice {@link TypeListener} that gets called when a {@link COREEventBusEventListener} subtype
 	 * is injected (or created) (this is called ONCE per type)
-	 * AFTER the {@link PersistenceOperationOKEventListener} subtype is injected (or created), it MUST be registered at the {@link EventBus}
+	 *
+	 * ... so a {@link COREEventBusEventListener} subtype (ie  {@link PersistenceOperationOKEventListener} or {@link PersistenceOperationErrorEventListener})
+	 * is AUTOMATICALLY registered as listener at the {@link EventBus}
 	 */
 	@RequiredArgsConstructor
 	protected class EventBusSubscriberTypeListener
