@@ -33,7 +33,7 @@ public class ServiceInterfaceMatch
 /////////////////////////////////////////////////////////////////////////////////////////
 	private final transient Memoized<Boolean> _isProxy = new Memoized<Boolean>() {
 																	@Override
-																	protected Boolean supply() {
+																	public Boolean supply() {
 																		return _proxyOrImplMatchingType != null 
 																					? ReflectionUtils.isImplementing(_proxyOrImplMatchingType,ServiceProxyImpl.class)
 																					: false; 
@@ -44,7 +44,7 @@ public class ServiceInterfaceMatch
 	}
 	private final transient Memoized<Boolean> _isCoreImpl = new Memoized<Boolean>() {
 																	@Override
-																	protected Boolean supply() {
+																	public Boolean supply() {
 																		return _proxyOrImplMatchingType != null 
 																					? ReflectionUtils.isImplementing(_proxyOrImplMatchingType,CoreService.class)
 																					: false;

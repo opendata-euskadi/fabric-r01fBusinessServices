@@ -21,7 +21,7 @@ public abstract class IndexDocumentBase<M extends IndexableModelObject>
 	 */
 	private Memoized<Map<FieldID,IndexDocumentFieldValue<?>>> _fields = new Memoized<Map<FieldID,IndexDocumentFieldValue<?>>>() {
 																				@Override
-																				protected Map<FieldID,IndexDocumentFieldValue<?>> supply() {
+																				public Map<FieldID,IndexDocumentFieldValue<?>> supply() {
 																					return IndexDocumentBase.this.getFields();
 																				}
 																		};

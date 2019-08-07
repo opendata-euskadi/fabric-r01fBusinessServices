@@ -87,7 +87,7 @@ public class IndexDocumentFieldValueSet
 	 */
 	@Getter private Memoized<String> _fieldIdsAsString = new Memoized<String>() {
 																@Override
-																protected String supply() {
+																public String supply() {
 																	return CollectionUtils.of(IndexDocumentFieldValueSet.this.fieldIndexableFieldsIds())
 																				  		  .toStringCommaSeparated();
 																}
