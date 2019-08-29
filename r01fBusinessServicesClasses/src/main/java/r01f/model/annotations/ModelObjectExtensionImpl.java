@@ -5,7 +5,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.google.inject.BindingAnnotation;
+import javax.inject.Qualifier;
+
+import r01f.model.ModelObject;
 
 
 
@@ -31,7 +33,7 @@ import com.google.inject.BindingAnnotation;
  * 		} 
  *	</pre>    
  */
-@BindingAnnotation						// it's used to select the fields to be injected with guice at types annotated with @R01MModelObjectExtended
+@Qualifier //@BindingAnnotation						// it's used to select the fields to be injected with guice at types annotated with @R01MModelObjectExtended
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.FIELD})
 public @interface ModelObjectExtensionImpl {

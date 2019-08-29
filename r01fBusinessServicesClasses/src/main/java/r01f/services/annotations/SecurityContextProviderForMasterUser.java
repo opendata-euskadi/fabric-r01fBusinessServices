@@ -1,11 +1,11 @@
-package r01f.model.annotations;
+package r01f.services.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.google.inject.BindingAnnotation;
+import javax.inject.Qualifier;
 
 import r01f.securitycontext.SecurityContextProviderForMasterUserBase;
 
@@ -14,10 +14,10 @@ import r01f.securitycontext.SecurityContextProviderForMasterUserBase;
 /**
  * see {@link SecurityContextProviderForMasterUserBase}
  */
-@BindingAnnotation						
+@Qualifier //@BindingAnnotation			
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD,ElementType.FIELD})
-public @interface ClientAPIForMasterUser {
+@Target({ElementType.METHOD,ElementType.PARAMETER})
+public @interface SecurityContextProviderForMasterUser {
 	/* nothing to do */
 }
  

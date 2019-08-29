@@ -24,7 +24,6 @@
 <!-- ====================================================================== -->
   <modules>
     <module>r01fBusinessServicesGuiceClasses</module>
-    <module>r01fBusinessServicesClientGuice</module>
     <module>r01fBusinessServicesCoreGuice</module>
   </modules>
 	

@@ -36,8 +36,8 @@ import r01f.types.ExecutionMode;
 import r01f.util.types.Strings;
 import r01f.util.types.collections.CollectionUtils;
 import r01f.xmlproperties.XMLProperties;
-import r01f.xmlproperties.XMLPropertiesComponentImpl;
 import r01f.xmlproperties.XMLPropertiesForAppComponent;
+import r01f.xmlproperties.annotations.XMLPropertiesComponentImpl;
 
 /**
  * Utility type that encapsulates the services life cycle operations
