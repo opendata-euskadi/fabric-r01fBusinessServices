@@ -79,7 +79,9 @@ public class PersistenceOperationExecResultBuilder
 		protected final SecurityContext _securityContext;
 		protected final String _requestedOpName;
 		
-		
+		public <T> PersistenceOperationExecError<T> because(final PersistenceOperationExecError<?> other) {
+			return this.because(other.getError());
+		}
 		public <T> PersistenceOperationExecError<T> because(final Throwable th) {
 			PersistenceOperationExecError<T> outError = new PersistenceOperationExecError<T>(PersistenceRequestedOperation.OTHER,
 																							 th);
