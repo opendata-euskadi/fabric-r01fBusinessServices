@@ -16,7 +16,7 @@ import r01f.securitycontext.SecurityContextProviderForMasterUserBase;
  */
 @Qualifier //@BindingAnnotation						
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD,ElementType.FIELD})
+@Target({ElementType.METHOD,ElementType.FIELD,ElementType.PARAMETER})
 public @interface ClientAPIForMasterUser {
 	/* nothing to do */
 }

@@ -54,7 +54,6 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 		if (outRecord instanceof DirtyStateTrackable) {
 			ClientAPIModelObjectChangesTrack.startTrackingChangesOnLoaded(outRecord);
 		}
-		
 		return outRecord;
 	}
 	/**

@@ -225,7 +225,7 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 	@Override
 	public CRUDResult<M> create(final SecurityContext securityContext,
 								final M modelObj) {
-		if (modelObj.getEntityVersion() > 0) throw new IllegalStateException(Throwables.message("Cannot create a {} entity because the model object received at the persistence layer received does have the entityVersion attribute with a NON ZERO value. This is a developer's fault; please check that when persisting the model object, the entityVersion is NOT set",
+		if (modelObj.getEntityVersion() > 0) throw new IllegalStateException(Throwables.message("Cannot create a {} entity because the model object received at the persistence layer does have the entityVersion attribute with a NON ZERO value. This is a developer's fault; please check that when persisting the model object, the entityVersion is NOT set",
 																							     _modelObjectType));
 		return this.doCreateOrUpdateEntity(securityContext,
 									  	   modelObj,
@@ -242,7 +242,7 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 	public CRUDResult<M> update(final SecurityContext securityContext,
 								final M entity) {
 		// some checks to help developers...
-		if (entity.getEntityVersion() == 0) throw new IllegalStateException(Throwables.message("Cannot update a {} entity because the model object received at the persistence layer received does NOT have the entityVersion attribute. This is a developer's fault; please check that when persisting the model object, the entityVersion is set",
+		if (entity.getEntityVersion() == 0) throw new IllegalStateException(Throwables.message("Cannot update a {} entity because the model object received at the persistence layer does NOT have the entityVersion attribute. This is a developer's fault; please check that when persisting the model object, the entityVersion is set",
 																							   _modelObjectType));
 
 		return this.doCreateOrUpdateEntity(securityContext,
