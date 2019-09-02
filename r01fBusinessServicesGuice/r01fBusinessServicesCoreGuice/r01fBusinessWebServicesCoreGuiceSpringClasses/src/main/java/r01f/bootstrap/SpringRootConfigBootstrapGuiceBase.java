@@ -6,6 +6,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -121,7 +122,7 @@ public abstract class SpringRootConfigBootstrapGuiceBase
     public  GuiceExposedServicesToBeanProcessor exposeGuiceServicesToBeans(final ServiceBootstrapSpringHandler servicesBootstrap) {
       return new GuiceExposedServicesToBeanProcessor(servicesBootstrap);
     }
-    @Bean
+    @Bean @ModelObjectsMarshaller 
     @Inject
     public Marshaller marshaller(final ServiceBootstrapSpringHandler servicesBootstrap) {
     	return servicesBootstrap.getInjector()
