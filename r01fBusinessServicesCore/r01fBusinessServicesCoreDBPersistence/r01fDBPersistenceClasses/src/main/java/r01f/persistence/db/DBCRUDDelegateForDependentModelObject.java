@@ -66,7 +66,7 @@ public abstract class DBCRUDDelegateForDependentModelObject<O extends Persistabl
 	@Override 
 	public <PR extends ModelObjectRef<P>> CRUDResult<M> create(final SecurityContext securityContext,
 															   final PR parentRef,final M modelObj) {
-		if (modelObj.getEntityVersion() > 0) throw new IllegalStateException(Throwables.message("Cannot create a {} entity because the model object received at the persistence layer received does have the entityVersion attribute with a NON ZERO value. This is a developer's fault; please check that when persisting the model object, the entityVersion is NOT set",
+		if (modelObj.getEntityVersion() > 0) throw new IllegalStateException(Throwables.message("Cannot create a {} entity because the model object received at the persistence layer does have the entityVersion attribute with a NON ZERO value. This is a developer's fault; please check that when persisting the model object, the entityVersion is NOT set",
 																							     _dbCRUD.getModelObjectType()));
 		return _dbCRUD.doCreateOrUpdateEntity(securityContext,
 									   		   modelObj,
