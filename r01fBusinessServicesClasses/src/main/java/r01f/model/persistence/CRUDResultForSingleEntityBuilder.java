@@ -12,11 +12,6 @@ import r01f.guids.OID;
 import r01f.guids.VersionIndependentOID;
 import r01f.guids.VersionOID;
 import r01f.model.PersistableModelObject;
-import r01f.model.persistence.CRUDError;
-import r01f.model.persistence.CRUDOK;
-import r01f.model.persistence.PersistenceErrorType;
-import r01f.model.persistence.PersistencePerformedOperation;
-import r01f.model.persistence.PersistenceRequestedOperation;
 import r01f.persistence.db.DBEntity;
 import r01f.persistence.db.DBEntityToModelObjectTransformerBuilder;
 import r01f.persistence.db.TransformsDBEntityIntoModelObject;
@@ -44,9 +39,10 @@ public class CRUDResultForSingleEntityBuilder {
 			return new CRUDResultBuilderForErrorAboutStep<T>(_securityContext,
 												 			 err);
 		}
-		public CRUDResultBuilderForErrorAboutStep<T> because(final CRUDError<?> otherCRUDError) {
-			CRUDError<T> err = new CRUDError<T>(_entityType,
-												otherCRUDError);
+		public CRUDResultBuilderForErrorAboutStep<T> because(final PersistenceOperationExecError<?> otherError) {
+			CRUDError<T> err = new CRUDError<T>(_requestedOp,
+												_entityType,
+												otherError);
 			return new CRUDResultBuilderForErrorAboutStep<T>(_securityContext,
 															 err);
 		}

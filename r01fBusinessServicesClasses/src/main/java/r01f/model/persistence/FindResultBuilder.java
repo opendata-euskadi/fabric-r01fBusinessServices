@@ -13,12 +13,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import r01f.model.ModelObject;
-import r01f.model.persistence.FindError;
-import r01f.model.persistence.FindOK;
-import r01f.model.persistence.FindResult;
-import r01f.model.persistence.PersistenceErrorType;
-import r01f.model.persistence.PersistencePerformedOperation;
-import r01f.model.persistence.PersistenceRequestedOperation;
 import r01f.patterns.IsBuilder;
 import r01f.persistence.db.DBEntity;
 import r01f.persistence.db.DBEntityToModelObjectTransformerBuilder;
@@ -152,6 +146,10 @@ public class FindResultBuilder
 		public FindError<T> causedBy(final Throwable th) {
 			return new FindError<T>(_entityType,
 									th);
+		}
+		public FindError<T> causedBy(final PersistenceOperationExecError<?> otherError) {
+			return new FindError<T>(_entityType,
+									otherError);
 		}
 		public FindError<T> causedBy(final String cause) {
 			return new FindError<T>(_entityType,
