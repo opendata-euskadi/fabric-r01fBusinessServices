@@ -227,6 +227,9 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 	protected DB doLoadDBEntity(final SecurityContext securityContext,
 							    final PK pk) {
 		log.debug("> loading a {} entity with pk={}",_DBEntityType,pk.asString());
+		
+	
+
 		DB dbEntity = this.getEntityManager()
 						  .find(_DBEntityType,
 							    pk);

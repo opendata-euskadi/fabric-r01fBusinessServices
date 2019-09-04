@@ -18,7 +18,7 @@ import javax.inject.Qualifier;
  * </pre>
  */
 @Qualifier //@BindingAnnotation 
-@Target({ ElementType.FIELD,ElementType.PARAMETER}) 
+@Target({ ElementType.FIELD,ElementType.PARAMETER,ElementType.METHOD }) 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ModelObjectsMarshaller {
 	/* nothing to do */
