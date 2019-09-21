@@ -24,4 +24,11 @@ public class LuceneSearchModuleConfig
 	public static LuceneSearchModuleConfig storingIndexAt(final Path indexFilexPath) {
 		return new LuceneSearchModuleConfig(indexFilexPath);
 	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	                                                                          
+/////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public SearchEnginePlatform getPlatform() {
+		return SearchEnginePlatform.LUCENE;
+	}
 }

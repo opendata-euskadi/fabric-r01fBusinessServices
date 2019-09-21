@@ -17,13 +17,10 @@ import r01f.model.IndexableModelObject;
 import r01f.model.search.SearchFilter;
 import r01f.model.search.SearchResultItem;
 import r01f.persistence.index.Indexer;
-import r01f.persistence.index.IndexerProvider;
 import r01f.persistence.index.document.IndexDocumentFieldConfigSet;
 import r01f.persistence.search.Searcher;
-import r01f.persistence.search.SearcherProvider;
 import r01f.persistence.search.config.SearchModuleConfig;
 import r01f.util.types.collections.CollectionUtils;
-import r01f.util.types.collections.Lists;
 
 /**
  * Base {@link Guice} module for search engine (index / search) bindings
@@ -41,33 +38,20 @@ public abstract class SearchGuiceModuleBase
 	/**
 	 * Factories for indexers 
 	 */
-	protected final Collection<Class<? extends IndexerProvider<?>>> _indexerFactoryTypes;
+	protected final Collection<IndexerProviderBinding<?>> _indexerProviderBindings;
 	/**
 	 * Factories for searchers
 	 */
-	protected final Collection<Class<? extends SearcherProvider<?,?>>> _searcherFactoryTypes;
+	protected final Collection<SearcherProviderBinding<?,?>> _searcherProviderBindings;
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected SearchGuiceModuleBase(final SearchModuleConfig searchEngineConfig,
-									final Collection<Class<? extends IndexerProvider<?>>> indexerFactoryTypes,
-									final Collection<Class<? extends SearcherProvider<?,?>>> searcherFactoryTypes) {
+									final Collection<IndexerProviderBinding<?>> indexerProviderBindings,
+									final Collection<SearcherProviderBinding<?,?>> searcherProviderBindings) {
 		_searchEngineConfig = searchEngineConfig;
-		_indexerFactoryTypes = indexerFactoryTypes;
-		_searcherFactoryTypes = searcherFactoryTypes;
-	}
-	protected SearchGuiceModuleBase(final SearchModuleConfig searchEngineConfig,
-									final Collection<Class<? extends SearcherProvider<?,?>>> searcherFactoryTypes) {
-		_searchEngineConfig = searchEngineConfig;
-		_indexerFactoryTypes = null;
-		_searcherFactoryTypes = searcherFactoryTypes;
-	}
-	protected SearchGuiceModuleBase(final SearchModuleConfig searchEngineConfig,
-									final Class<? extends SearcherProvider<?,?>>... searcherFactoryTypes) {
-		_searchEngineConfig = searchEngineConfig;
-		_indexerFactoryTypes = null;
-		_searcherFactoryTypes = searcherFactoryTypes != null ? Lists.newArrayList(searcherFactoryTypes)
-													 : null;
+		_indexerProviderBindings = indexerProviderBindings;
+		_searcherProviderBindings = searcherProviderBindings;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
@@ -76,24 +60,28 @@ public abstract class SearchGuiceModuleBase
 	public void configure(final Binder binder) {	
 		// Bind searchers
 		log.warn("\t\t...binding searchers: {} providers",
-				 _searcherFactoryTypes != null ? _searcherFactoryTypes.size() : 0);
-		if (CollectionUtils.hasData(_searcherFactoryTypes)) {
-			for (Class<? extends SearcherProvider<?,?>> searcherFactoryType : _searcherFactoryTypes) {
-				log.warn("\t\t\t-searcher provider type {}",
-						 searcherFactoryType);
-				binder.bind(searcherFactoryType) 
-					  .in(Singleton.class);      
+				 _searcherProviderBindings != null ? _searcherProviderBindings.size() : 0);
+		if (CollectionUtils.hasData(_searcherProviderBindings)) {
+			for (SearcherProviderBinding<?,?> searcherProviderBinding : _searcherProviderBindings) {
+				try {
+					_bind(binder,
+						  searcherProviderBinding);
+				} catch (Throwable th) {
+					log.error("searcher provider binding error: {}",th.getMessage(),th);
+				}
 			}
 		}
 		// Bind indexers
 		log.warn("\t\t...binding indexers: {} providers",
-				 _indexerFactoryTypes != null ? _indexerFactoryTypes.size() : 0);
-		if (CollectionUtils.hasData(_indexerFactoryTypes)) {
-			for (final Class<? extends IndexerProvider<?>> indexerProviderType : _indexerFactoryTypes) {
-				log.warn("\t\t\t-indexer provider type {}",
-						 indexerProviderType);
-				binder.bind(indexerProviderType)
-					  .in(Singleton.class);			
+				 _indexerProviderBindings != null ? _indexerProviderBindings.size() : 0);
+		if (CollectionUtils.hasData(_indexerProviderBindings)) {
+			for (final IndexerProviderBinding<?> indexerProviderBinding : _indexerProviderBindings) {
+				try {
+					_bind(binder,
+						  indexerProviderBinding);
+				} catch (Throwable th) {
+					log.error("indexer provider binding error: {}",th.getMessage(),th);
+				}
 			}
 		}
 		// Give chance to sub-types to do more bindings
@@ -101,6 +89,32 @@ public abstract class SearchGuiceModuleBase
 			((HasMoreBindings)this).configureMoreBindings(binder);
 		}
 	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	GENERICS TRICK TO BIND (uses generics capture to bind)
+/////////////////////////////////////////////////////////////////////////////////////////
+	private static <F extends SearchFilter,I extends SearchResultItem> void _bind(final Binder binder,
+																				  final SearcherProviderBinding<F,I> binding) {
+		log.warn("\t\t\t-searcher/indexer provider type {}",
+				 binding.getImplementingType());
+		
+		binder.bind(binding.getGenericType())
+			  .to(binding.getImplementingType());
+		binder.bind(binding.getImplementingType()) 
+			  .in(Singleton.class);
+	}
+	private static <M extends IndexableModelObject> void _bind(final Binder binder,
+															   final IndexerProviderBinding<M> binding) {
+		log.warn("\t\t\t-indexer provider type {}",
+				 binding.getImplementingType());
+		
+		binder.bind(binding.getGenericType())
+			  .to(binding.getImplementingType());
+		binder.bind(binding.getImplementingType()) 
+			  .in(Singleton.class);
+	}
+	
+	
+	
 //	public Collection<TypeLiteral<?>> getServicesToExpose() {
 //		Collection<TypeLiteral<?>> outServicesToExpose = Lists.newArrayList();
 //		// indexers

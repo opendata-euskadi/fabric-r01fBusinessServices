@@ -19,5 +19,10 @@ import r01f.persistence.search.Searcher;
 @RequiredArgsConstructor
 public class SearchModuleConfig 
   implements ContainsConfigData {
-	// just extend if needed
+/////////////////////////////////////////////////////////////////////////////////////////
+//	                                                                          
+/////////////////////////////////////////////////////////////////////////////////////////
+	public SearchEnginePlatform getPlatform() {
+		return SearchEnginePlatform.DB;
+	}
 }

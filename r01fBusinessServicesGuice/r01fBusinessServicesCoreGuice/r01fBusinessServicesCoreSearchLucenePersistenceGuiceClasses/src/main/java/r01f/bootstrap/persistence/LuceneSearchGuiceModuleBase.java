@@ -17,10 +17,8 @@ import com.google.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import r01f.inject.HasMoreBindings;
 import r01f.persistence.index.IndexManager;
-import r01f.persistence.index.IndexerProvider;
 import r01f.persistence.index.lucene.LuceneIndexManager;
 import r01f.persistence.lucene.LuceneIndex;
-import r01f.persistence.search.SearcherProvider;
 import r01f.persistence.search.config.LuceneSearchModuleConfig;
 import r01f.persistence.search.lucene.LuceneLanguageDependentAnalyzer;
 import r01f.types.Path;
@@ -35,11 +33,11 @@ public abstract class LuceneSearchGuiceModuleBase
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected LuceneSearchGuiceModuleBase(final LuceneSearchModuleConfig searchEngineConfig,
-										  final Collection<Class<? extends IndexerProvider<?>>> indexerFactoryTypes,
-										  final Collection<Class<? extends SearcherProvider<?,?>>> searcherFactoryTypes) {
+										  final Collection<IndexerProviderBinding<?>> indexerProviderBindings,
+										  final Collection<SearcherProviderBinding<?,?>> searcherProviderBindings) {
 		super(searchEngineConfig,
-			  indexerFactoryTypes,
-			  searcherFactoryTypes);
+			  indexerProviderBindings,
+			  searcherProviderBindings);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
