@@ -1,11 +1,6 @@
-package r01f.persistence.search;
+package r01f.persistence.search.lucene;
 
-import java.util.Map;
-
-import com.google.common.collect.Maps;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import r01f.model.IndexableModelObject;
 import r01f.model.metadata.TypeMetaData;
 import r01f.model.metadata.TypeMetaDataInspector;
@@ -13,21 +8,31 @@ import r01f.model.search.SearchFilter;
 import r01f.model.search.SearchResultItem;
 import r01f.objectstreamer.Marshaller;
 import r01f.persistence.index.document.IndexDocumentFieldConfigSet;
+import r01f.persistence.lucene.LuceneIndex;
+import r01f.persistence.search.SearcherProviderBase;
 
-@RequiredArgsConstructor(access=AccessLevel.PROTECTED)
-public abstract class SearcherProviderBase<F extends SearchFilter,I extends SearchResultItem> 
-	       implements SearcherProvider<F,I> {
+@Accessors(prefix="_")
+public abstract class LuceneSearcherProviderBase<F extends SearchFilter,I extends SearchResultItem>
+  			  extends SearcherProviderBase<F,I> {
+/////////////////////////////////////////////////////////////////////////////////////////
+//	FIELDS                                                                          
+/////////////////////////////////////////////////////////////////////////////////////////	
+	protected final LuceneIndex _luceneIndex;
+/////////////////////////////////////////////////////////////////////////////////////////
+//	CONSTRUCTOR                                                                          
+/////////////////////////////////////////////////////////////////////////////////////////	
+	protected LuceneSearcherProviderBase(final Class<? extends IndexableModelObject> indexableObjectType,
+										 final Marshaller marshaller,
+										 final LuceneIndex luceneIndex) {
+		super(indexableObjectType,
+			  marshaller);
+		_luceneIndex = luceneIndex;
+	}	
 /////////////////////////////////////////////////////////////////////////////////////////
 //	                                                                          
 /////////////////////////////////////////////////////////////////////////////////////////	
-	protected final Class<? extends IndexableModelObject> _indexableObjectType;
-	protected final Map<Class<? extends IndexableModelObject>,IndexDocumentFieldConfigSet<? extends IndexableModelObject>> _fieldsConfigSetByIndexableObjType = Maps.newHashMap();
-	protected final Marshaller _marshaller;
-	
-/////////////////////////////////////////////////////////////////////////////////////////
-//	                                                                          
-/////////////////////////////////////////////////////////////////////////////////////////	
-	@SuppressWarnings({ "rawtypes","unchecked" })
+	@Override
+	@SuppressWarnings({ "unchecked","rawtypes" })
 	protected IndexDocumentFieldConfigSet<? extends IndexableModelObject> getIndexableObjTypeFieldsConfigSet() {
 		IndexDocumentFieldConfigSet<? extends IndexableModelObject> outFieldsConfigSet = _fieldsConfigSetByIndexableObjType.get(_indexableObjectType);
 		if (outFieldsConfigSet == null) {

@@ -1,4 +1,4 @@
-package r01f.persistence.search.db;
+package r01f.persistence.index.db;
 
 import javax.inject.Inject;
 

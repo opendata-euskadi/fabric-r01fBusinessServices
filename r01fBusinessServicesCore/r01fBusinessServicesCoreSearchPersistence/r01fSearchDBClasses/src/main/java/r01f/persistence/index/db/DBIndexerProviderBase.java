@@ -1,30 +1,42 @@
-package r01f.persistence.index;
+package r01f.persistence.index.db;
 
-import java.util.Map;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
 
-import com.google.common.collect.Maps;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import r01f.model.IndexableModelObject;
 import r01f.model.metadata.TypeMetaData;
 import r01f.model.metadata.TypeMetaDataInspector;
 import r01f.objectstreamer.Marshaller;
+import r01f.persistence.db.config.DBModuleConfig;
+import r01f.persistence.index.IndexerProviderBase;
 import r01f.persistence.index.document.IndexDocumentFieldConfigSet;
 
-@RequiredArgsConstructor(access=AccessLevel.PROTECTED)
-public abstract class IndexerProviderBase<M extends IndexableModelObject> 
-		   implements IndexerProvider<M> {
-/////////////////////////////////////////////////////////////////////////////////////////
-//	FIELDS                                                                          
-/////////////////////////////////////////////////////////////////////////////////////////	
-	protected final Class<M> _indexableObjectType;
-	protected final Map<Class<? extends IndexableModelObject>,IndexDocumentFieldConfigSet<? extends IndexableModelObject>> _fieldsConfigSetByIndexableObjType = Maps.newHashMap();
-	protected final Marshaller _marshaller;
+@Accessors(prefix="_")
+public abstract class DBIndexerProviderBase<M extends IndexableModelObject>
+  			  extends IndexerProviderBase<M> {
 
+/////////////////////////////////////////////////////////////////////////////////////////
+//  FIELDS
+/////////////////////////////////////////////////////////////////////////////////////////	
+	protected final DBModuleConfig _dbModuleConfig;
+	protected final Provider<EntityManager> _entityManagerProvider;
+/////////////////////////////////////////////////////////////////////////////////////////
+//	CONSTRUCTOR                                                                          
+/////////////////////////////////////////////////////////////////////////////////////////
+	protected DBIndexerProviderBase(final Class<M> indexableObjectType,
+									final Marshaller marshaller,
+									final DBModuleConfig dbModuleConfig,
+									final Provider<EntityManager> entityManagerProvider) {
+		super(indexableObjectType,
+			  marshaller);
+		_dbModuleConfig = dbModuleConfig;
+		_entityManagerProvider = entityManagerProvider;
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	                                                                          
 /////////////////////////////////////////////////////////////////////////////////////////	
+	@Override
 	@SuppressWarnings("unchecked")
 	protected IndexDocumentFieldConfigSet<M> getIndexableObjTypeFieldsConfigSet() {
 		IndexDocumentFieldConfigSet<M> outFieldsConfigSet = (IndexDocumentFieldConfigSet<M>)_fieldsConfigSetByIndexableObjType.get(_indexableObjectType);

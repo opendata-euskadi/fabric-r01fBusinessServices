@@ -1,30 +1,36 @@
-package r01f.persistence.index;
+package r01f.persistence.index.lucene;
 
-import java.util.Map;
-
-import com.google.common.collect.Maps;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import r01f.model.IndexableModelObject;
 import r01f.model.metadata.TypeMetaData;
 import r01f.model.metadata.TypeMetaDataInspector;
 import r01f.objectstreamer.Marshaller;
+import r01f.persistence.index.IndexerProviderBase;
 import r01f.persistence.index.document.IndexDocumentFieldConfigSet;
+import r01f.persistence.lucene.LuceneIndex;
 
-@RequiredArgsConstructor(access=AccessLevel.PROTECTED)
-public abstract class IndexerProviderBase<M extends IndexableModelObject> 
-		   implements IndexerProvider<M> {
+@Accessors(prefix="_")
+public abstract class LuceneIndexerProviderBase<M extends IndexableModelObject>
+  			  extends IndexerProviderBase<M> {
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //	FIELDS                                                                          
 /////////////////////////////////////////////////////////////////////////////////////////	
-	protected final Class<M> _indexableObjectType;
-	protected final Map<Class<? extends IndexableModelObject>,IndexDocumentFieldConfigSet<? extends IndexableModelObject>> _fieldsConfigSetByIndexableObjType = Maps.newHashMap();
-	protected final Marshaller _marshaller;
-
+	protected final LuceneIndex _luceneIndex;
+/////////////////////////////////////////////////////////////////////////////////////////
+//	CONSTRUCTOR                                                                          
+/////////////////////////////////////////////////////////////////////////////////////////
+	protected LuceneIndexerProviderBase(final Class<M> indexableObjectType,
+										final Marshaller marshaller,
+										final LuceneIndex luceneIndex) {
+		super(indexableObjectType,
+			  marshaller);
+		_luceneIndex = luceneIndex;
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	                                                                          
 /////////////////////////////////////////////////////////////////////////////////////////	
+	@Override
 	@SuppressWarnings("unchecked")
 	protected IndexDocumentFieldConfigSet<M> getIndexableObjTypeFieldsConfigSet() {
 		IndexDocumentFieldConfigSet<M> outFieldsConfigSet = (IndexDocumentFieldConfigSet<M>)_fieldsConfigSetByIndexableObjType.get(_indexableObjectType);
