@@ -53,6 +53,12 @@ public abstract class SearchGuiceModuleBase
 		_indexerProviderBindings = indexerProviderBindings;
 		_searcherProviderBindings = searcherProviderBindings;
 	}
+	protected SearchGuiceModuleBase(final SearchModuleConfig searchEngineConfig,
+									final Collection<SearcherProviderBinding<?,?>> searcherProviderBindings) {
+		this(searchEngineConfig,
+			 null,							// no indexer providers
+			 searcherProviderBindings);
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////	
@@ -135,7 +141,7 @@ public abstract class SearchGuiceModuleBase
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked","unused" })
 	private static <F extends SearchFilter,I extends SearchResultItem> TypeLiteral<Searcher<?,?>> _searcherGuiceKeyFor(final Class<F> filterType,final Class<I> resultItemType) {
 		ParameterizedType pt = Types.newParameterizedType(Searcher.class, 
 														  filterType,resultItemType);
