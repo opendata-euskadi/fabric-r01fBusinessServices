@@ -23,6 +23,14 @@
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->
 	<dependencies>
+		<!-- ///////////////////////////////////////////////////////// -->
+		<!-- R01: Config (Needed always at test final classes !!       -->
+		<!-- ///////////////////////////////////////////////////////// -->
+		<dependency>
+			<groupId>r01.r01f.config</groupId>
+			<artifactId>r01fConfig</artifactId>
+			<version>${r01f.version}</version>
+		</dependency>	
 		<!-- ///////////////////////////////////////// -->
 		<!-- R01: BusinessServices                     -->
 		<!-- ///////////////////////////////////////// -->
