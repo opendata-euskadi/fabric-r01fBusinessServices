@@ -118,11 +118,11 @@ public abstract class BeanImplementedPersistenceServicesCoreBootstrapGuiceModule
 		// [2]: Bind event listeners
 		// ==================================================
 		// Event Bus & Background jobs
-		if (this instanceof ServicesBootstrapGuiceModuleBindsCRUDEventListeners) {
+		if (this instanceof ServicesBootstrapGuiceModuleBindsCRUDEventListeners
+		 || this instanceof CoreServicesBootstrapGuiceModuleBindsEventListeners) {
 			// Automatic registering of event listeners to the event bus avoiding the manual registering of every listener;
 			// this code simply listen for guice's binding events: when an event listener gets binded, it's is automatically registered at the event bus
-			// 		Listen to injection of CRUDOperationOKEventListener & CRUDOperationNOKEventListener subtypes (indexers are CRUD events listeners)
-			// 		(when indexers are being injected)
+			// 		Listen to injection of COREEventBusEventListener subtypes 
 			Provider<EventBus> eventBusProvider = theBinder.getProvider(EventBus.class);
 			EventBusSubscriberTypeListener typeListener = new EventBusSubscriberTypeListener(eventBusProvider);	// inject an event bus provider !!!
 			theBinder.bindListener(Matchers.subclassesOf(COREEventBusEventListener.class),
@@ -132,9 +132,13 @@ public abstract class BeanImplementedPersistenceServicesCoreBootstrapGuiceModule
 			// 		These fires the creation of event listeners and thus them being registered at the event bus
 			// 		by means of the EventBusSubscriberTypeListener bindListener (see below)
 			theBinder.bind(CRUDOperationErrorEventListener.class)
-				  	 .toInstance(new CRUDOperationErrorEventListener());				// CRUDOperationNOKEvent for EVERY model object
-
-			((ServicesBootstrapGuiceModuleBindsCRUDEventListeners)this).bindCRUDEventListeners(theBinder);
+				  	 .toInstance(new CRUDOperationErrorEventListener());		// CRUDOperationNOKEvent for EVERY model object
+			if (this instanceof CoreServicesBootstrapGuiceModuleBindsEventListeners) {
+				((CoreServicesBootstrapGuiceModuleBindsEventListeners)this).bindEventListeners(theBinder);
+			}
+			else if (this instanceof ServicesBootstrapGuiceModuleBindsCRUDEventListeners) {
+				((ServicesBootstrapGuiceModuleBindsCRUDEventListeners)this).bindCRUDEventListeners(theBinder);
+			}
 		}
 	}
 	/**
