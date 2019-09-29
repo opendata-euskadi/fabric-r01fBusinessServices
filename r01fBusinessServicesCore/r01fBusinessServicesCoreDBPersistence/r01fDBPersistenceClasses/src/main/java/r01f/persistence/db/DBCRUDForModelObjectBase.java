@@ -393,7 +393,10 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 								   		singleUseDBEntityPersistenceEventListener);
 
 		} catch (PersistenceException persistEx) {
-			// the previous existence of the entity is checked at the beginning of this method
+			log.error("Error while persisting a db entity of type {}: {}",
+					  _DBEntityType,
+					  persistEx.getMessage(),persistEx);
+			// the previous existence of the entity was checked at the beginning of this method
 			// BUT there's an edge case where the two threads concurrently try to create the same entity at the same moment
 			// ... if both threads check the entity existence at the same time there's a remote situation in which both gets
 			// a false result (the entity does not previously exists) BUT one thread create the entity and the other fails

@@ -57,7 +57,7 @@ public class DBEntityToModelObjectTransformerBuilder
 	 */
 	public static <DB extends DBEntity,
 				   M extends ModelObject> Function<DB,M> createFor(final SecurityContext securityContext,
-						  				   						 							 final Function<DB,M> transformer) {
+						  				   						   final Function<DB,M> transformer) {
 		return new Function<DB,M>() {
 						@SuppressWarnings("unchecked")
 						@Override

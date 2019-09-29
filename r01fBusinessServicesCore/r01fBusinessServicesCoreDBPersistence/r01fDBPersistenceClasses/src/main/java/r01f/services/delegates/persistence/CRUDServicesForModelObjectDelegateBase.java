@@ -206,6 +206,9 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 									.update(securityContext,
 									   		theModelObjToPersist);
 		}
+		else {
+			throw new IllegalArgumentException("doUpdateOrCreate() just can be called if the operation is CREATE or UPDATE, NOT " + requestedOperation);
+		}
 		// [6] throw CRUD event
 		_fireEvent(securityContext,
 				   outOpResult,
