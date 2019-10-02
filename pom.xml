@@ -194,13 +194,13 @@
 	      		<!--
 	      			[0] - Clean
 	      			https://maven.apache.org/plugins/maven-clean-plugin/
-	      			The Clean Plugin is used when you want to remove files generated at build-time in a project's ServiceCatalog. 
+	      			The Clean Plugin is used when you want to remove files generated at build-time in a project's ServiceCatalog.
 	      		-->
 		        <plugin>
 		        	<artifactId>maven-clean-plugin</artifactId>
 		          	<version>3.1.0</version>
 		        </plugin>
-		        <!-- 
+		        <!--
 		        	PHASES: see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_war_packaging
 		        		[1] - process-resources
 		        			  process-test-resources
@@ -213,7 +213,7 @@
 	      		<!--
 	      			[1] - RESOURCES: https://maven.apache.org/plugins/maven-resources-plugin/
 	      				  The Resources Plugin handles the copying of project resources to the output directory
-	      			There are two different kinds of resources: main resources and test resources 
+	      			There are two different kinds of resources: main resources and test resources
 	      		-->
 		        <plugin>
 		          	<artifactId>maven-resources-plugin</artifactId>
@@ -240,8 +240,8 @@
 	      				  The WAR Plugin is responsible for collecting all artifact dependencies, classes and resources of the web application and packaging them into a web application archive
 	      		-->
 		        <plugin>
-		          	<artifactId>maven-jar-plugi</artifactId>
-		          	<version>3.1.2</version>
+		          	<artifactId>maven-jar-plugin</artifactId>
+		          	<version>3.1.1</version>
 		        </plugin>
 		        <plugin>
 		          	<artifactId>maven-war-plugin</artifactId>
@@ -254,9 +254,9 @@
 		        <plugin>
 		          	<artifactId>maven-install-plugin</artifactId>
 		          	<version>3.0.0-M1</version>
-		        </plugin>				
-				<!-- 
-					[6] - DEPLOY:: https://maven.apache.org/plugins/maven-deploy-plugin/usage.html 
+		        </plugin>
+				<!--
+					[6] - DEPLOY:: https://maven.apache.org/plugins/maven-deploy-plugin/usage.html
 				-->
 				<plugin>
 					<artifactId>maven-deploy-plugin</artifactId>
@@ -271,7 +271,7 @@
 						</execution>
 					</executions>
 				</plugin>
-				
+
 
 
 				<!-- Add the [resources] dir to the compile & package phase -->
@@ -296,7 +296,7 @@
 						</execution>
 					</executions>
 				</plugin>
-				
+
 				<!-- Version plugin -->
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -306,7 +306,7 @@
 
 			</plugins>
 		</pluginManagement>
-		<!-- 
+		<!--
 		The Resources Plugin handles the copying of project resources to the output directory
 		-->
 		<resources>
