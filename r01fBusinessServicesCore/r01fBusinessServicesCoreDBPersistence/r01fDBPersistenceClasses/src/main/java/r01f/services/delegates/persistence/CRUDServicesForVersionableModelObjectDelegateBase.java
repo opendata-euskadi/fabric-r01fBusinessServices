@@ -7,8 +7,8 @@ import com.google.common.eventbus.EventBus;
 
 import lombok.extern.slf4j.Slf4j;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanExposed;
-import r01f.events.COREServiceMethodCallEvents.COREServiceMethodCallErrorEvent;
-import r01f.events.COREServiceMethodCallEvents.COREServiceMethodCallOKEvent;
+import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecErrorEvent;
+import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecOKEvent;
 import r01f.guids.OIDForVersionableModelObject;
 import r01f.guids.PersistableObjectOID;
 import r01f.guids.VersionIndependentOID;
@@ -271,7 +271,7 @@ public abstract class CRUDServicesForVersionableModelObjectDelegateBase<O extend
 		Collection<CRUDError<M>> opsNOK = opResults.getOperationsNOK();
 		if (CollectionUtils.hasData(opsNOK)) {
 			for (CRUDError<M> opNOK : opsNOK) {
-				COREServiceMethodCallErrorEvent errorEvent = new COREServiceMethodCallErrorEvent(securityContext,
+				COREServiceMethodExecErrorEvent errorEvent = new COREServiceMethodExecErrorEvent(securityContext,
 													 					         	 		   opNOK,
 													 					         	 		   callbackSpec);
 				this.getEventBus().post(errorEvent);
@@ -282,7 +282,7 @@ public abstract class CRUDServicesForVersionableModelObjectDelegateBase<O extend
 		// Post OK results
 		if (CollectionUtils.hasData(opsOK)) {
 			for (PersistenceOperationExecOK<?> opOk : opsOK) {
-				COREServiceMethodCallOKEvent okEvent = new COREServiceMethodCallOKEvent(securityContext,
+				COREServiceMethodExecOKEvent okEvent = new COREServiceMethodExecOKEvent(securityContext,
 													 					      	  	  opOk,
 													 					      	  	  callbackSpec);
 				this.getEventBus().post(okEvent);

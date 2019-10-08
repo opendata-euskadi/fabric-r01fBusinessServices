@@ -8,9 +8,9 @@ import com.google.common.eventbus.Subscribe;
 
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import r01f.events.COREServiceMethodCallEventListeners.COREServiceMethodCallOKEventListener;
-import r01f.events.COREServiceMethodCallEvents.COREServiceMethodCallEvent;
-import r01f.events.COREServiceMethodCallEvents.COREServiceMethodCallOKEvent;
+import r01f.events.COREServiceMethodExecEventListeners.COREServiceMethodExecOKEventListener;
+import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecEvent;
+import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecOKEvent;
 import r01f.model.ModelObject;
 import r01f.model.persistence.CRUDOK;
 import r01f.model.persistence.CRUDResult;
@@ -22,13 +22,13 @@ import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 import r01f.util.types.Strings;
 
 /**
- * Listener to {@link COREServiceMethodCallOKEvent}s thrown by the persistence layer through the {@link EventBus}
+ * Listener to {@link COREServiceMethodExecOKEvent}s thrown by the persistence layer through the {@link EventBus}
  * @param <M>
  */
 @Slf4j
 @Accessors(prefix="_")
 public abstract class CRUDOKEventListenerBase 
-           implements COREServiceMethodCallOKEventListener {
+           implements COREServiceMethodExecOKEventListener {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ public abstract class CRUDOKEventListenerBase
 		_type = type;
 		_crudOperationOKEventFilter = new CRUDOKEventFilter() {
 												@Override @SuppressWarnings("unchecked")
-												public boolean hasTobeHandled(final COREServiceMethodCallOKEvent opEvent) {
+												public boolean hasTobeHandled(final COREServiceMethodExecOKEvent opEvent) {
 													CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
 																				    					  .as(CRUDResult.class);
 													// the event refers to the same model object type THIS event handler handles;
@@ -88,7 +88,7 @@ public abstract class CRUDOKEventListenerBase
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	protected boolean _isEventForSuccessfulCreateUpdateOrDelete(final COREServiceMethodCallOKEvent opEvent) {
+	protected boolean _isEventForSuccessfulCreateUpdateOrDelete(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
 		
@@ -110,7 +110,7 @@ public abstract class CRUDOKEventListenerBase
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	protected boolean _isEventForSuccessfulCreateOrUpdate(final COREServiceMethodCallOKEvent opEvent) {
+	protected boolean _isEventForSuccessfulCreateOrUpdate(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
 		
@@ -130,7 +130,7 @@ public abstract class CRUDOKEventListenerBase
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	protected boolean _isEventForSuccessfulCreate(final COREServiceMethodCallOKEvent opEvent) {
+	protected boolean _isEventForSuccessfulCreate(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
 		
@@ -147,7 +147,7 @@ public abstract class CRUDOKEventListenerBase
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	protected boolean _isEventForSuccessfulUpdate(final COREServiceMethodCallOKEvent opEvent) {
+	protected boolean _isEventForSuccessfulUpdate(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
 		
@@ -164,7 +164,7 @@ public abstract class CRUDOKEventListenerBase
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	protected boolean _isEventForSuccessfulDelete(final COREServiceMethodCallOKEvent opEvent) {
+	protected boolean _isEventForSuccessfulDelete(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
 		
@@ -182,7 +182,7 @@ public abstract class CRUDOKEventListenerBase
 	 * @param event
 	 */
 	public void sendCallbackFor(final SecurityContext securityContext,
-								final COREServiceMethodCallEvent event) {
+								final COREServiceMethodExecEvent event) {
 		if (event.getCallbackSpec() != null) {			
 			COREMethodCallback callback = _createCallbackInstance(event.getCallbackSpec());
 			if (event.isForCOREMethodCallOK()) {
@@ -215,7 +215,7 @@ public abstract class CRUDOKEventListenerBase
 //  DEBUG
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected void _debugEvent(final Logger log,
-						  	   final COREServiceMethodCallOKEvent opOKEvent,final boolean hasToBeHandled) {
+						  	   final COREServiceMethodExecOKEvent opOKEvent,final boolean hasToBeHandled) {
 		if (log.isTraceEnabled()) {
 			log.trace(_debugEvent(opOKEvent,
 						  		  hasToBeHandled));
@@ -224,7 +224,7 @@ public abstract class CRUDOKEventListenerBase
 						  		  hasToBeHandled));
 		}
 	}
-	protected String _debugEvent(final COREServiceMethodCallOKEvent opOKEvent,
+	protected String _debugEvent(final COREServiceMethodExecOKEvent opOKEvent,
 							   	 final boolean hasToBeHandled) {
 		return Strings.customized("EventListener registered for events of [{}] entities\n" + 
 						  		  "{}\n" + 

@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanExposed;
-import r01f.events.COREServiceMethodCallEvents.COREServiceMethodCallErrorEvent;
-import r01f.events.COREServiceMethodCallEvents.COREServiceMethodCallOKEvent;
+import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecErrorEvent;
+import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecOKEvent;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDError;
@@ -83,14 +83,14 @@ public abstract class PersistenceServicesForModelObjectDelegateBase<O extends Pe
 			
 			if (opResult.hasFailed()) {
 				CRUDError<M> opNOK = opResult.asCRUDError();		// as(CRUDError.class)
-				COREServiceMethodCallErrorEvent nokEvent = new COREServiceMethodCallErrorEvent(securityContext,
+				COREServiceMethodExecErrorEvent nokEvent = new COREServiceMethodExecErrorEvent(securityContext,
 													 					         	 		 opNOK,
 													 					         	 		 callbackSpec);
 				this.getEventBus().post(nokEvent);
 				
 			} else if (opResult.hasSucceeded()) {
 				CRUDOK<M> opOK = opResult.asCRUDOK();				// as(CRUDOK.class);
-				COREServiceMethodCallOKEvent okEvent = new COREServiceMethodCallOKEvent(securityContext,
+				COREServiceMethodExecOKEvent okEvent = new COREServiceMethodExecOKEvent(securityContext,
 													 					      	  	  opOK,
 													 					      	  	  callbackSpec);
 				this.getEventBus().post(okEvent);

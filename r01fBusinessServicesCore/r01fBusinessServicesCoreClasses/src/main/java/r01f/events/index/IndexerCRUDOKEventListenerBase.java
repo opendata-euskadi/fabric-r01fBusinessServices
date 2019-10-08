@@ -4,7 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import lombok.extern.slf4j.Slf4j;
-import r01f.events.COREServiceMethodCallEvents.COREServiceMethodCallOKEvent;
+import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecOKEvent;
 import r01f.events.crud.CRUDOKEventListenerBase;
 import r01f.facets.HasOID;
 import r01f.guids.OID;
@@ -15,7 +15,7 @@ import r01f.services.interfaces.IndexServicesForModelObject;
 import r01f.types.jobs.EnqueuedJob;
 
 /**
- * Listener to {@link COREServiceMethodCallOKEvent}s thrown by the persistence layer through the {@link EventBus}
+ * Listener to {@link COREServiceMethodExecOKEvent}s thrown by the persistence layer through the {@link EventBus}
  * @param <M>
  */
 @Slf4j
@@ -43,7 +43,7 @@ abstract class IndexerCRUDOKEventListenerBase<O extends OID,M extends IndexableM
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Subscribe	// subscribes this event listener at the EventBus
 	@Override @SuppressWarnings("unchecked")
-	public void onPersistenceOperationOK(final COREServiceMethodCallOKEvent opOKEvent) {
+	public void onPersistenceOperationOK(final COREServiceMethodExecOKEvent opOKEvent) {
 		// [1] - Check if the event has to be handled
 		// 				a) the event refers to the same model object type THIS event handler handles
 		//				b) the operation is an update, create or delete operation

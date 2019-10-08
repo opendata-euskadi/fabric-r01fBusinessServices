@@ -19,11 +19,11 @@ import r01f.services.callback.spec.HasCOREServiceMethodCallbackSpec;
  * CORE method call events
  */
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
-public abstract class COREServiceMethodCallEvents {
+public abstract class COREServiceMethodExecEvents {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  Base type
 /////////////////////////////////////////////////////////////////////////////////////////
-	public interface COREServiceMethodCallEvent 
+	public interface COREServiceMethodExecEvent 
 			 extends HasSecurityContext,
 			   	     HasCOREServiceMethodExecResult,
 			   	     HasCOREServiceMethodCallbackSpec,
@@ -36,8 +36,8 @@ public abstract class COREServiceMethodCallEvents {
 /////////////////////////////////////////////////////////////////////////////////////////	
 	@Accessors(prefix="_")
 	@RequiredArgsConstructor
-	static abstract class COREServiceMethodCallEventBase
-			   implements COREServiceMethodCallEvent {
+	static abstract class COREServiceMethodExecEventBase
+			   implements COREServiceMethodExecEvent {
 		/**
 		 * The user context
 		 */
@@ -69,9 +69,9 @@ public abstract class COREServiceMethodCallEvents {
 //  Operation OK
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Accessors(prefix="_")
-	public static class COREServiceMethodCallOKEvent 
-		        extends COREServiceMethodCallEventBase {
-		public COREServiceMethodCallOKEvent(final SecurityContext securityContext,
+	public static class COREServiceMethodExecOKEvent 
+		        extends COREServiceMethodExecEventBase {
+		public COREServiceMethodExecOKEvent(final SecurityContext securityContext,
 									 		final COREServiceMethodExecOK<?> opOK,
 									 		final COREServiceMethodCallbackSpec callbackSpec) {
 			super(securityContext,
@@ -94,9 +94,9 @@ public abstract class COREServiceMethodCallEvents {
 //  Operation NOK
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Accessors(prefix="_")
-	public static class COREServiceMethodCallErrorEvent 
-		 		extends COREServiceMethodCallEventBase {
-		public COREServiceMethodCallErrorEvent(final SecurityContext securityContext,
+	public static class COREServiceMethodExecErrorEvent 
+		 		extends COREServiceMethodExecEventBase {
+		public COREServiceMethodExecErrorEvent(final SecurityContext securityContext,
 									    	   final COREServiceMethodExecError<?> opNOK,
 									    	   final COREServiceMethodCallbackSpec callbackSpec) {
 			super(securityContext,
