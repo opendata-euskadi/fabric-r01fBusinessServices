@@ -11,7 +11,6 @@ import com.google.common.base.Stopwatch;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import r01f.guids.OID;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.ModelObjectRef;
 import r01f.model.PersistableModelObject;
@@ -149,7 +148,7 @@ public class TestPersistableModelObjectCRUD<O extends PersistableObjectOID,M ext
 		log.warn("\tDELETE THE ENTITY OF TYPE {} WITH oid={}",
 				 _modelObjFactory.getModelObjType(),modelObjectToDelete.getOid());
 		_modelObjFactory.tearDownCreatedMockObjs();
-
+		
 		// try to load the deleted object... it must NOT exist
 		M shouldNotExists = _crudAPI.loadOrNull(modelObjectToDelete.getOid());
 		Assert.assertNull(shouldNotExists);

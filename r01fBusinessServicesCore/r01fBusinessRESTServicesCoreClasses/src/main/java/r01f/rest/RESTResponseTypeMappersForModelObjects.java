@@ -19,7 +19,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import r01f.guids.OID;
 import r01f.model.ModelObject;
-import r01f.model.persistence.PersistenceOperationResult;
+import r01f.model.persistence.PersistenceOperationExecOK;
 import r01f.model.search.SearchModelObject;
 import r01f.objectstreamer.Marshaller;
 import r01f.persistence.index.IndexManagementCommand;
@@ -135,12 +135,12 @@ public class RESTResponseTypeMappersForModelObjects {
 //  RecordPersistenceOperationResult
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * MessageBodyWriter for all {@link PersistenceOperationResult}
+	 * MessageBodyWriter for all {@link PersistenceOperationOK}
 	 */
 	public static abstract class PersistenceOperationResultTypeMapperBase 
-		                 extends XMLMarshalledObjectResultTypeMapperBase<PersistenceOperationResult> {		
+		                 extends XMLMarshalledObjectResultTypeMapperBase<PersistenceOperationExecOK<?>> {		
 		public PersistenceOperationResultTypeMapperBase(final Marshaller modelObjectsMarshaller) {
-			super(PersistenceOperationResult.class,
+			super(PersistenceOperationExecOK.class,
 				  modelObjectsMarshaller);
 		}
 	}

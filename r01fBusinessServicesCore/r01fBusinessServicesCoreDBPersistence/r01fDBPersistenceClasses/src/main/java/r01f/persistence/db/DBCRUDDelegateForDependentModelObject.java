@@ -16,11 +16,12 @@ import r01f.model.persistence.CRUDOnMultipleResult;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.CRUDResultBuilder;
 import r01f.model.persistence.FindResult;
-import r01f.model.persistence.PersistenceErrorType;
-import r01f.model.persistence.PersistenceOperationExecResult;
 import r01f.model.persistence.PersistenceOperationExecResultBuilder;
+import r01f.model.persistence.PersistenceOperationResult;
 import r01f.model.persistence.PersistencePerformedOperation;
 import r01f.model.persistence.PersistenceRequestedOperation;
+import r01f.model.persistence.PersistenceServiceErrorTypes;
+import r01f.model.services.COREServiceMethod;
 import r01f.persistence.db.entities.DBEntityForModelObject;
 import r01f.persistence.db.entities.primarykeys.DBPrimaryKeyForModelObject;
 import r01f.securitycontext.SecurityContext;
@@ -114,27 +115,27 @@ public abstract class DBCRUDDelegateForDependentModelObject<O extends Persistabl
 									   PersistenceRequestedOperation.UPDATE,PersistencePerformedOperation.UPDATED);
 	}
 	@Override @SuppressWarnings("unchecked")
-	public <PR extends ModelObjectRef<P>> PersistenceOperationExecResult<PR> parentReferenceOf(final SecurityContext securityContext,
-							   			   													   final O oid) {
+	public <PR extends ModelObjectRef<P>> PersistenceOperationResult<PR> parentReferenceOf(final SecurityContext securityContext,
+							   			   												   final O oid) {
 		// load the entity
 		CRUDResult<M> modelObjLoadResult = _dbCRUD.load(securityContext,
 								  			  			oid);
 		if (modelObjLoadResult.hasFailed()) return PersistenceOperationExecResultBuilder.using(securityContext)
-																				.notExecuted("parentReferenceOf")
+																				.notExecuted(COREServiceMethod.named("parentReferenceOf"))
 																				.because(modelObjLoadResult.asCRUDError());
 		M modelObj = modelObjLoadResult.asCRUDOK()
-									   .getOperationExecResult();
+									   .getMethodExecResult();
 		if (modelObj instanceof HasParentModelObjectRef) {
 			HasParentModelObjectRef<PR> hasParentObjRef = (HasParentModelObjectRef<PR>)modelObj;
 			return PersistenceOperationExecResultBuilder.using(securityContext)
-									.executed("parentReferenceOf")
+									.executed(COREServiceMethod.named("parentReferenceOf"))
 									.returning(hasParentObjRef.getParentRef());
 		}
 		return PersistenceOperationExecResultBuilder.using(securityContext)
-														.notExecuted("parentReferenceOf")
+														.notExecuted(COREServiceMethod.named("parentReferenceOf"))
 														.because(Strings.customized("The {} type is a DEPENDENT object BUT does NOT implements {}; the parent obj reference cannot be known",
 																 					modelObj.getClass(),HasParentModelObjectRef.class),
-																 PersistenceErrorType.SERVER_ERROR);
+																 PersistenceServiceErrorTypes.SERVER_ERROR);
 	}
 	@Override
 	public <PO extends OID> CRUDOnMultipleResult<M> deleteChildsOf(final SecurityContext securityContext,

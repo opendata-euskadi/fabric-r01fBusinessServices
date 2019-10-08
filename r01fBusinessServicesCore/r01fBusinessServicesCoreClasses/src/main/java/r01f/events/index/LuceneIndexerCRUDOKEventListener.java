@@ -1,12 +1,12 @@
 package r01f.events.index;
 
-import r01f.events.PersistenceOperationEventListeners.PersistenceOperationOKEventListener;
+import r01f.events.COREServiceMethodCallEventListeners.COREServiceMethodCallOKEventListener;
 import r01f.guids.OID;
 import r01f.model.IndexableModelObject;
 import r01f.services.interfaces.IndexServicesForModelObject;
 
 /**
- * A {@link PersistenceOperationOKEventListener} that indexes at lucene (extends {@link IndexerCRUDOKEventListener}) 
+ * A {@link COREServiceMethodCallOKEventListener} that indexes at lucene (extends {@link IndexerCRUDOKEventListener}) 
  * @param <M>
  */
 public abstract class LuceneIndexerCRUDOKEventListener<O extends OID,M extends IndexableModelObject> 

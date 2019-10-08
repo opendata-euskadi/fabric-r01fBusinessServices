@@ -15,6 +15,7 @@ import r01f.model.persistence.CRUDResultForSingleEntityBuilder.CRUDResultBuilder
 import r01f.model.persistence.CRUDResultForSingleEntityBuilder.CRUDResultBuilderForErrorStep;
 import r01f.model.persistence.CRUDResultForSingleEntityBuilder.CRUDResultBuilderForOKStep;
 import r01f.model.persistence.CRUDResultForSingleEntityBuilder.CRUDResultBuilderForUpdateError;
+import r01f.model.services.COREServiceErrorTypes;
 import r01f.patterns.IsBuilder;
 import r01f.securitycontext.SecurityContext;
 import r01f.util.types.Strings;
@@ -117,11 +118,12 @@ public class CRUDResultBuilder
 		protected final Class<T> _entityType;
 		
 		//  --------- ERROR
-		public CRUDResultBuilderForErrorAboutStep<T> badClientRequestData(final PersistenceRequestedOperation reqOp,
-																		  final String msg,final Object... vars) {
-			CRUDError<T> err = new CRUDError<T>(reqOp,
-												_entityType,
-												Strings.customized(msg,vars),PersistenceErrorType.BAD_REQUEST_DATA);
+		public CRUDResultBuilderForErrorAboutStep<T> badClientRequest(final PersistenceRequestedOperation reqOp,
+																	  final String msg,final Object... vars) {
+			CRUDError<T> err = new CRUDError<T>(_entityType,
+												reqOp,
+												COREServiceErrorTypes.BAD_CLIENT_REQUEST,
+												Strings.customized(msg,vars));
 			return new CRUDResultBuilderForErrorAboutStep<T>(_securityContext,
 														     err);
 		}

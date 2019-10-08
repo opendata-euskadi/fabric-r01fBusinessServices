@@ -24,7 +24,7 @@ import r01f.model.persistence.FindSummariesOK;
 import r01f.model.persistence.FindSummariesResult;
 import r01f.model.persistence.PersistenceException;
 import r01f.model.persistence.PersistenceOperationExecOK;
-import r01f.model.persistence.PersistenceOperationExecResult;
+import r01f.model.persistence.PersistenceOperationResult;
 import r01f.model.search.SearchResults;
 import r01f.patterns.IsBuilder;
 import r01f.types.jobs.EnqueuedJob;
@@ -105,23 +105,23 @@ public abstract class RESTOperationsResponseBuilder
 		private final URI _resourceURI;
 		/**
 		 * Returns a REST {@link Response} for a CRUD operation
-		 * @param persistenceOpResult 
+		 * @param crudResult 
 		 * @return the response
 		 * @throws PersistenceException
 		 */
-		public Response build(final CRUDResult<M> persistenceOpResult) throws PersistenceException {
+		public Response build(final CRUDResult<M> crudResult) throws PersistenceException {
 			Response outResponse = null;
 			
 			// Failed operation
-			if (persistenceOpResult.hasFailed()) {
+			if (crudResult.hasFailed()) {
 				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
-				persistenceOpResult.asCRUDError()		// as(PersistenceOperationError.class)
-								   .throwAsPersistenceException();	// throw an exception
+				crudResult.asCRUDError()		
+						  .throwAsPersistenceException();	
 				
 			}
 			// Successful operation
-			else if (persistenceOpResult.hasSucceeded()) {
-				CRUDOK<M> persistCRUDOK = persistenceOpResult.asCRUDOK();		//as(CRUDOK.class);
+			else if (crudResult.hasSucceeded()) {
+				CRUDOK<M> persistCRUDOK = crudResult.asCRUDOK();		//as(CRUDOK.class);
 				
 				if (persistCRUDOK.hasBeenLoaded()) {
 					outResponse = Response.ok()
@@ -164,26 +164,27 @@ public abstract class RESTOperationsResponseBuilder
 		}
 		/**
 		 * Returns a REST {@link Response} for a CRUD operation
-		 * @param persistenceOpResult 
+		 * @param multipleCRUDResult 
 		 * @return the response
 		 * @throws PersistenceException
 		 */
-		public Response build(final CRUDOnMultipleResult<M> persistenceOpResult) throws PersistenceException {
+		public Response build(final CRUDOnMultipleResult<M> multipleCRUDResult) throws PersistenceException {
 			Response outResponse = null;
 			
 			// Failed operation
-			if (persistenceOpResult.haveAllFailed() || persistenceOpResult.haveSomeFailed()) {
-				Collection<CRUDError<M>> opsNOK = persistenceOpResult.getOperationsNOK();
+			if (multipleCRUDResult.haveAllFailed() 
+			 || multipleCRUDResult.haveSomeFailed()) {
+				Collection<CRUDError<M>> opsNOK = multipleCRUDResult.getOperationsNOK();
 				// Throw the exception for the first error... it'll be mapped by the RESTExceptionMappers REST type mapper
 				CRUDError<M> anError = CollectionUtils.pickOneElement(opsNOK);
 				anError.throwAsPersistenceException();
 			}
 			// Successful operation
-			else if (persistenceOpResult.haveAllSucceeded()) {
+			else if (multipleCRUDResult.haveAllSucceeded()) {
 				outResponse = Response.ok()
 									  .contentLocation(_resourceURI)
 									  .header("x-r01-modelObjType",_modelObjectType.getName())
-									  .entity(persistenceOpResult)
+									  .entity(multipleCRUDResult)
 									  .type(MediaType.APPLICATION_XML_TYPE)
 									  .build();
 			}
@@ -199,23 +200,23 @@ public abstract class RESTOperationsResponseBuilder
 		private final URI _resourceURI;
 		/**
 		 * Returns a REST {@link Response} for a FIND operation
-		 * @param persistenceOpResult 
+		 * @param findOIDsResult 
 		 * @return the response
 		 * @throws PersistenceException
 		 */
-		public Response build(final FindOIDsResult<O> persistenceOpResult) throws PersistenceException {
+		public Response build(final FindOIDsResult<O> findOIDsResult) throws PersistenceException {
 			Response outResponse = null;
 			
 			// Failed operation
-			if (persistenceOpResult.hasFailed()) {
+			if (findOIDsResult.hasFailed()) {
 				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
-				persistenceOpResult.asCRUDError()		// as(PersistenceOperationError.class)
-								   .throwAsPersistenceException();	// throw an exception
+				findOIDsResult.asFindOIDsError()		
+							  .throwAsPersistenceException();	
 				
 			}
 			// Successful operation
 			else {
-				FindOIDsOK<O> findOK = persistenceOpResult.asCRUDOK();		//as(FindOIDsOK.class);
+				FindOIDsOK<O> findOK = findOIDsResult.asFindOIDsOK();		//as(FindOIDsOK.class);
 				outResponse = Response.ok()
 									  .contentLocation(_resourceURI)
 									  .header("x-r01-modelObjType",_modelObjectType.getName())
@@ -247,19 +248,19 @@ public abstract class RESTOperationsResponseBuilder
 			}
 			return outResponse;
 		}
-		public Response build(final FindSummariesResult<M> persistenceOpResult) throws PersistenceException {
+		public Response build(final FindSummariesResult<M> findSummResult) throws PersistenceException {
 			Response outResponse = null;
 			
 			// Failed operation
-			if (persistenceOpResult.hasFailed()) {
+			if (findSummResult.hasFailed()) {
 				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
-				persistenceOpResult.asCRUDError()		// as(PersistenceOperationError.class)
-								   .throwAsPersistenceException();	// throw an exception
+				findSummResult.asFindSummariesError()
+							  .throwAsPersistenceException();
 				
 			}
 			// Successful operation
 			else {
-				FindSummariesOK<M> findOK = persistenceOpResult.asCRUDOK();	// as(FindSummariesOK.class);
+				FindSummariesOK<M> findOK = findSummResult.asFindSummariesOK();
 				outResponse = Response.ok()
 									  .contentLocation(_resourceURI)
 									  .header("x-r01-modelObjType",_modelObjectType.getName())
@@ -282,19 +283,19 @@ public abstract class RESTOperationsResponseBuilder
 		 * @return the response
 		 * @throws PersistenceException
 		 */
-		public Response build(final PersistenceOperationExecResult<?> persistenceOpResult) throws PersistenceException {
+		public Response build(final PersistenceOperationResult<?> persistenceOpResult) throws PersistenceException {
 			Response outResponse = null;
 			
 			// Failed operation
 			if (persistenceOpResult.hasFailed()) {
 				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
-				persistenceOpResult.asOperationExecError()
+				persistenceOpResult.asPersistenceOperationError()
 								   .throwAsPersistenceException();	// throw an exception
 				
 			}
 			// Successful operation
 			else if (persistenceOpResult.hasSucceeded()) {
-				PersistenceOperationExecOK<?> execOK = persistenceOpResult.asOperationExecOK();
+				PersistenceOperationExecOK<?> execOK = persistenceOpResult.asPersistenceOperationOK();
 				outResponse = Response.ok()
 									  .contentLocation(_resourceURI)
 									  .entity(execOK)

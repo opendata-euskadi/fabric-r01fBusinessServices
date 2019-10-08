@@ -17,6 +17,7 @@ import r01f.model.PersistableModelObject;
 import r01f.model.metadata.HasMetaDataForHasOIDModelObject;
 import r01f.model.metadata.HasTypesMetaData;
 import r01f.model.metadata.TypeMetaDataInspector;
+import r01f.model.services.COREServiceErrorTypes;
 import r01f.patterns.IsBuilder;
 import r01f.persistence.db.DBEntity;
 import r01f.securitycontext.SecurityContext;
@@ -91,7 +92,7 @@ public class FindOIDsResultBuilder
 			outFoundOids.setModelObjectType(_modelObjType);
 			outFoundOids.setRequestedOperation(PersistenceRequestedOperation.FIND);
 			outFoundOids.setPerformedOperation(PersistencePerformedOperation.FOUND);
-			outFoundOids.setOperationExecResult(FluentIterable.from(dbEntities)
+			outFoundOids.setMethodExecResult(FluentIterable.from(dbEntities)
 															  .transform(transformFunction)
 															  .toList());	
 			return outFoundOids;
@@ -104,7 +105,7 @@ public class FindOIDsResultBuilder
 			FindOIDsOK<O> outFoundOids = new FindOIDsOK<O>(modelObjType,oidType);
 			outFoundOids.setRequestedOperation(PersistenceRequestedOperation.FIND);
 			outFoundOids.setPerformedOperation(PersistencePerformedOperation.FOUND);
-			outFoundOids.setOperationExecResult(oids);	
+			outFoundOids.setMethodExecResult(oids);	
 			return outFoundOids;
 		}
 		@SuppressWarnings("unchecked")
@@ -115,7 +116,7 @@ public class FindOIDsResultBuilder
 			FindOIDsOK<O> outFoundOids = new FindOIDsOK<O>(modelObjType,oidType);
 			outFoundOids.setRequestedOperation(PersistenceRequestedOperation.FIND);
 			outFoundOids.setPerformedOperation(PersistencePerformedOperation.FOUND);
-			outFoundOids.setOperationExecResult(Lists.<O>newArrayList());	// no data found
+			outFoundOids.setMethodExecResult(Lists.<O>newArrayList());	// no data found
 			return outFoundOids;
 		}
 	}	
@@ -141,8 +142,8 @@ public class FindOIDsResultBuilder
 			Class<O> oidType = _guessOidType(_modelObjType);
 			
 			return new FindOIDsError<O>(modelObjType,oidType,
-										cause,
-										PersistenceErrorType.SERVER_ERROR);
+										COREServiceErrorTypes.SERVER_ERROR,
+										cause);
 		}
 		@SuppressWarnings("unchecked")
 		public <O extends PersistableObjectOID> FindOIDsError<O> causedByClientBadRequest(final String msg,final Object... vars) {
@@ -150,8 +151,9 @@ public class FindOIDsResultBuilder
 			Class<O> oidType = _guessOidType(_modelObjType);
 			
 			FindOIDsError<O> outError = new FindOIDsError<O>(modelObjType,oidType,
-											     	 		 Strings.customized(msg,vars),			// the error message
-											     	 		 PersistenceErrorType.BAD_REQUEST_DATA);	// is a client error?
+															 COREServiceErrorTypes.BAD_CLIENT_REQUEST,	
+											     	 		 Strings.customized(msg,vars));			// the error message
+											     	 		 
 			return outError;
 		}
 	}

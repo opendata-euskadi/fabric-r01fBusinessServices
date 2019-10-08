@@ -18,8 +18,8 @@ import r01f.model.facets.Versionable.HasVersionableFacet;
 import r01f.model.persistence.CRUDOnMultipleResult;
 import r01f.model.persistence.CRUDResult;
 import r01f.objectstreamer.Marshaller;
-import r01f.persistence.callback.spec.PersistenceOperationCallbackSpec;
 import r01f.securitycontext.SecurityContext;
+import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 import r01f.services.delegates.persistence.CRUDServicesForVersionableModelObjectDelegateBase;
 import r01f.services.interfaces.CRUDServicesForVersionableModelObject;
 
@@ -88,7 +88,7 @@ public abstract class CoreCRUDServicesForVersionableModelObjectBase<O extends OI
 	@Override 
 	public CRUDResult<M> activate(final SecurityContext securityContext,
 								  final M entityToBeActivated,
-								  final PersistenceOperationCallbackSpec callbackSpec) {
+								  final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.forSecurityContext(securityContext)
 						.createDelegateAs(CRUDServicesForVersionableModelObject.class)
 							.activate(securityContext, 
@@ -108,7 +108,7 @@ public abstract class CoreCRUDServicesForVersionableModelObjectBase<O extends OI
 	@Override 
 	public CRUDOnMultipleResult<M> deleteAllVersions(final SecurityContext securityContext, 
 													 final VersionIndependentOID oid,
-													 final PersistenceOperationCallbackSpec callbackSpec) {
+													 final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.forSecurityContext(securityContext)
 						.createDelegateAs(CRUDServicesForVersionableModelObject.class)
 							.deleteAllVersions(securityContext,

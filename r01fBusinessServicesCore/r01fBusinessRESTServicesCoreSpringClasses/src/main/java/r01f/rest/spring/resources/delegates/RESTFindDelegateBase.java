@@ -12,8 +12,6 @@ import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable;
 import r01f.model.persistence.FindOIDsResult;
-import r01f.model.persistence.PersistenceOperationResult;
-
 import r01f.securitycontext.SecurityContext;
 import r01f.services.interfaces.FindServicesForModelObject;
 import r01f.types.Range;
@@ -55,7 +53,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the
 	 * currently active versions
 	 * @param securityContext the user auth data & context info
-	 * @return a {@link PersistenceOperationResult} that encapsulates the oids
+	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
 	public ResponseEntity<FindOIDsResult<O>> findAll(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType) {
 		FindOIDsResult<O> findResult = _findServices.findAll(securityContext);
@@ -71,7 +69,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * currently active versions
 	 * @param securityContext the user auth data & context info
 	 * @param createDate
-	 * @return a {@link PersistenceOperationResult} that encapsulates the oids
+	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
 	public ResponseEntity<FindOIDsResult<O>> findByCreateDate(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType,
 									 						   final Range<Date> createDate) {
@@ -89,7 +87,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * currently active versions
 	 * @param securityContext the user auth data & context info
 	 * @param lastUpdateDate
-	 * @return a {@link PersistenceOperationResult} that encapsulates the oids
+	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
 	public ResponseEntity<FindOIDsResult<O>> findByLastUpdateDate(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType,
 																  final Range<Date> lastUpdateDate) {
@@ -107,7 +105,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * currently active versions
 	 * @param securityContext the user auth data & context info
 	 * @param creatorUserCode
-	 * @return a {@link PersistenceOperationResult} that encapsulates the oids
+	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
 	public ResponseEntity<FindOIDsResult<O>> findByCreator(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType,
 														   final UserCode creatorUserCode) {
@@ -125,7 +123,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * currently active versions
 	 * @param securityContext the user auth data & context info
 	 * @param lastUpdtorUserCode
-	 * @return a {@link PersistenceOperationResult} that encapsulates the oids
+	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
 	public ResponseEntity<FindOIDsResult<O>>  findByLastUpdator(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType,
 																final UserCode lastUpdtorUserCode) {

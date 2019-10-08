@@ -89,7 +89,7 @@ public class FindMultiEntityResultBuilder
 			outFoundEntities.setFoundObjectType(_entityType);
 			outFoundEntities.setRequestedOperation(PersistenceRequestedOperation.FIND);
 			outFoundEntities.setPerformedOperation(PersistencePerformedOperation.FOUND);
-			outFoundEntities.setOperationExecResult(Lists.<T>newArrayList());	// no data found
+			outFoundEntities.setMethodExecResult(Lists.<T>newArrayList());	// no data found
 			return outFoundEntities;
 		}
 	}	

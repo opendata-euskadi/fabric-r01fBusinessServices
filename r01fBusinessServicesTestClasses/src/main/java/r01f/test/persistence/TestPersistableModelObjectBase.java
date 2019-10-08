@@ -1,5 +1,6 @@
 package r01f.test.persistence;
 
+import lombok.extern.slf4j.Slf4j;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.patterns.CommandOn;
@@ -10,6 +11,7 @@ import r01f.services.client.api.delegates.ClientAPIDelegateForModelObjectFindSer
  * JVM arguments:
  * -javaagent:D:/develop/local_libs/aspectj/lib/aspectjweaver.jar -Daj.weaving.verbose=true
  */
+@Slf4j
 public abstract class TestPersistableModelObjectBase<O extends PersistableObjectOID,M extends PersistableModelObject<O>> {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIELDS
@@ -37,17 +39,15 @@ public abstract class TestPersistableModelObjectBase<O extends PersistableObject
 //
 /////////////////////////////////////////////////////////////////////////////////////////
 	public void doTest() {
-		System.out.println("===========================================================");
-		System.out.println("TEST: " + _managesTestMockObjects.getModelObjType().getSimpleName());
-		System.out.println("===========================================================");
+		log.warn("===========================================================");
+		log.warn("TEST: {}",_managesTestMockObjects.getModelObjType().getSimpleName());
+		log.warn("===========================================================");
 
 		// [1]: Test Persistence (create, update, load and delete)
 		this.doCRUDTest();
-		System.out.println("--------------------------------------------------------------------\n\n\n\n");
 
 		// [2]: Test Find
 		this.doFindTest();
-		System.out.println("--------------------------------------------------------------------\n\n\n\n");
 
 		// [3]: Test other methods
 		this.testOtherMethods();

@@ -12,8 +12,8 @@ import r01f.model.persistence.CRUDOnMultipleResult;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.PersistenceRequestedOperation;
 import r01f.objectstreamer.Marshaller;
-import r01f.persistence.callback.spec.PersistenceOperationCallbackSpec;
 import r01f.securitycontext.SecurityContext;
+import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 import r01f.services.client.servicesproxy.rest.RESTServiceResourceUrlPathBuilders.RESTServiceResourceUrlPathBuilderForVersionableModelObjectPersistenceBase;
 import r01f.services.interfaces.CRUDServicesForVersionableModelObject;
 import r01f.types.url.Url;
@@ -98,7 +98,7 @@ public abstract class RESTServicesForVersionableCRUDServicesProxyBase<O extends 
 	@Override
 	public CRUDOnMultipleResult<M> deleteAllVersions(final SecurityContext securityContext,
 													 final VersionIndependentOID oid,
-													 final PersistenceOperationCallbackSpec callbackSpec) {
+													 final COREServiceMethodCallbackSpec callbackSpec) {
 		// do the http call
 		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForVersionableModelObjectPersistenceBase.class)
 															   .pathOfAllVersions(oid));
@@ -126,7 +126,7 @@ public abstract class RESTServicesForVersionableCRUDServicesProxyBase<O extends 
 	@Override 
 	public CRUDResult<M> activate(final SecurityContext securityContext,
 								  final M entityToBeActivated,
-								  final PersistenceOperationCallbackSpec callbackSpec) {
+								  final COREServiceMethodCallbackSpec callbackSpec) {
 		// do the http call: a CREATION (POST) of the entiy at the /versions/activeVersion resource path
 		Url restResourceVersionUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForVersionableModelObjectPersistenceBase.class)
 																				.pathOfActiveVersion(entityToBeActivated.getOid().getOid()));	// Version independent oid

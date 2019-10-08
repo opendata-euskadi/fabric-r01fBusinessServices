@@ -6,15 +6,15 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanExposed;
-import r01f.events.PersistenceOperationEvents.PersistenceOperationErrorEvent;
-import r01f.events.PersistenceOperationEvents.PersistenceOperationOKEvent;
+import r01f.events.COREServiceMethodCallEvents.COREServiceMethodCallErrorEvent;
+import r01f.events.COREServiceMethodCallEvents.COREServiceMethodCallOKEvent;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDError;
 import r01f.model.persistence.CRUDOK;
 import r01f.model.persistence.CRUDResult;
-import r01f.persistence.callback.spec.PersistenceOperationCallbackSpec;
 import r01f.securitycontext.SecurityContext;
+import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 import r01f.services.interfaces.ServiceInterfaceForModelObject;
 
 @Slf4j
@@ -70,7 +70,7 @@ public abstract class PersistenceServicesForModelObjectDelegateBase<O extends Pe
 	 */
 	protected void _fireEvent(final SecurityContext securityContext,
 							  final CRUDResult<M> opResult,
-							  final PersistenceOperationCallbackSpec callbackSpec) {
+							  final COREServiceMethodCallbackSpec callbackSpec) {
 //		try {
 			if (this.getEventBus() == null) {
 				log.debug("NO event bus available; CRUD events will NOT be handled");
@@ -78,19 +78,19 @@ public abstract class PersistenceServicesForModelObjectDelegateBase<O extends Pe
 			}
 			log.debug("Publishing an event of type: {}: ({}) success={}",
 					  opResult.getClass(),
-					  opResult.getRequestedOperationName(),
+					  opResult.getCalledMethod(),
 					  opResult.hasSucceeded());
 			
 			if (opResult.hasFailed()) {
 				CRUDError<M> opNOK = opResult.asCRUDError();		// as(CRUDError.class)
-				PersistenceOperationErrorEvent nokEvent = new PersistenceOperationErrorEvent(securityContext,
+				COREServiceMethodCallErrorEvent nokEvent = new COREServiceMethodCallErrorEvent(securityContext,
 													 					         	 		 opNOK,
 													 					         	 		 callbackSpec);
 				this.getEventBus().post(nokEvent);
 				
 			} else if (opResult.hasSucceeded()) {
 				CRUDOK<M> opOK = opResult.asCRUDOK();				// as(CRUDOK.class);
-				PersistenceOperationOKEvent okEvent = new PersistenceOperationOKEvent(securityContext,
+				COREServiceMethodCallOKEvent okEvent = new COREServiceMethodCallOKEvent(securityContext,
 													 					      	  	  opOK,
 													 					      	  	  callbackSpec);
 				this.getEventBus().post(okEvent);

@@ -13,7 +13,7 @@ import r01f.model.search.SearchResults;
 import r01f.model.search.query.SearchResultsOrdering;
 import r01f.objectstreamer.Marshaller;
 import r01f.securitycontext.SecurityContext;
-import r01f.services.ServiceProxyException;
+import r01f.services.COREServiceProxyException;
 import r01f.types.url.Url;
 import r01f.types.url.UrlQueryString;
 import r01f.types.url.UrlQueryStringParam;
@@ -54,7 +54,7 @@ public class DelegateForRawRESTSearch<F extends SearchFilter,I extends SearchRes
 									 		.directNoAuthConnected();
 		} catch(IOException ioEx) {
 			log.error("Error connecting to {}",restResourceUrl,ioEx);
-			throw new ServiceProxyException(ioEx);
+			throw new COREServiceProxyException(ioEx);
 		}		
 		
 		// [2] - De-serialize response

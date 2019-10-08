@@ -22,9 +22,9 @@ import r01f.bootstrap.services.core.BeanImplementedServicesCoreBootstrapGuiceMod
 import r01f.bootstrap.services.core.DBPersistenceGuiceModule;
 import r01f.bootstrap.services.core.SearchEnginePersistenceGuiceModule;
 import r01f.events.COREEventBusEventListener;
-import r01f.events.PersistenceOperationEventListeners.PersistenceOperationErrorEventListener;
-import r01f.events.PersistenceOperationEventListeners.PersistenceOperationOKEventListener;
-import r01f.events.crud.CRUDOperationErrorEventListener;
+import r01f.events.COREServiceMethodCallEventListeners.COREServiceMethodCallErrorEventListener;
+import r01f.events.COREServiceMethodCallEventListeners.COREServiceMethodCallOKEventListener;
+import r01f.events.crud.CRUDErrorEventListener;
 import r01f.guids.CommonOIDs.AppComponent;
 import r01f.inject.Matchers;
 import r01f.services.ids.ServiceIDs.CoreModule;
@@ -131,8 +131,8 @@ public abstract class BeanImplementedPersistenceServicesCoreBootstrapGuiceModule
 			// Bind every listener
 			// 		These fires the creation of event listeners and thus them being registered at the event bus
 			// 		by means of the EventBusSubscriberTypeListener bindListener (see below)
-			theBinder.bind(CRUDOperationErrorEventListener.class)
-				  	 .toInstance(new CRUDOperationErrorEventListener());		// CRUDOperationNOKEvent for EVERY model object
+			theBinder.bind(CRUDErrorEventListener.class)
+				  	 .toInstance(new CRUDErrorEventListener());		// CRUDOperationNOKEvent for EVERY model object
 			if (this instanceof CoreServicesBootstrapGuiceModuleBindsEventListeners) {
 				((CoreServicesBootstrapGuiceModuleBindsEventListeners)this).bindEventListeners(theBinder);
 			}
@@ -145,7 +145,7 @@ public abstract class BeanImplementedPersistenceServicesCoreBootstrapGuiceModule
 	 * Guice {@link TypeListener} that gets called when a {@link COREEventBusEventListener} subtype
 	 * is injected (or created) (this is called ONCE per type)
 	 *
-	 * ... so a {@link COREEventBusEventListener} subtype (ie  {@link PersistenceOperationOKEventListener} or {@link PersistenceOperationErrorEventListener})
+	 * ... so a {@link COREEventBusEventListener} subtype (ie  {@link COREServiceMethodCallOKEventListener} or {@link COREServiceMethodCallErrorEventListener})
 	 * is AUTOMATICALLY registered as listener at the {@link EventBus}
 	 */
 	@RequiredArgsConstructor

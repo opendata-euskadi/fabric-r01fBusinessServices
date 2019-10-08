@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import r01f.model.ModelObject;
+import r01f.model.services.COREServiceErrorTypes;
 import r01f.patterns.IsBuilder;
 import r01f.persistence.db.DBEntity;
 import r01f.persistence.db.DBEntityToModelObjectTransformerBuilder;
@@ -93,7 +94,7 @@ public class FindResultBuilder
 			outFoundEntities.setFoundObjectType(_entityType);
 			outFoundEntities.setRequestedOperation(PersistenceRequestedOperation.FIND);
 			outFoundEntities.setPerformedOperation(PersistencePerformedOperation.FOUND);
-			outFoundEntities.setOperationExecResult(Lists.<T>newArrayList());	// no data found
+			outFoundEntities.setMethodExecResult(Lists.<T>newArrayList());	// no data found
 			return outFoundEntities;
 		}
 	}	
@@ -132,7 +133,7 @@ public class FindResultBuilder
 		outFoundEntities.setFoundObjectType(entityType);
 		outFoundEntities.setRequestedOperation(PersistenceRequestedOperation.FIND);
 		outFoundEntities.setPerformedOperation(PersistencePerformedOperation.FOUND);
-		outFoundEntities.setOperationExecResult(entities);
+		outFoundEntities.setMethodExecResult(entities);
 		return outFoundEntities;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -153,16 +154,16 @@ public class FindResultBuilder
 		}
 		public FindError<T> causedBy(final String cause) {
 			return new FindError<T>(_entityType,
-									cause,
-									PersistenceErrorType.SERVER_ERROR);
+									COREServiceErrorTypes.SERVER_ERROR,
+									cause);
 		}
 		public FindError<T> causedBy(final String cause,final Object... vars) {
 			return this.causedBy(Strings.customized(cause,vars));
 		}
 		public FindError<T> causedByClientBadRequest(final String msg,final Object... vars) {
 			FindError<T> outError = new FindError<T>(_entityType,
-											     	 Strings.customized(msg,vars),			// the error message
-											     	 PersistenceErrorType.BAD_REQUEST_DATA);	// is a client error?
+													 COREServiceErrorTypes.BAD_CLIENT_REQUEST,
+											     	 Strings.customized(msg,vars));			// the error message
 			return outError;
 		}
 	}

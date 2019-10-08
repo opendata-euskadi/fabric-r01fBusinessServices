@@ -4,6 +4,8 @@ import com.google.common.annotations.GwtIncompatible;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import r01f.model.services.COREServiceErrorType;
+import r01f.model.services.COREServiceErrorTypes;
 import r01f.securitycontext.SecurityContext;
 import r01f.types.url.Url;
 import r01f.util.types.Strings;
@@ -17,11 +19,9 @@ public abstract class CountResultForEntityBuilder {
 	public static class CountResultBuilderForErrorStep<T> {
 		protected final SecurityContext _securityContext;
 		protected final Class<T> _entityType;
-		protected final String _requestedOp;
 		
 		public CountResultBuilderForErrorExtErrorCodeStep<T> because(final Throwable th) {
 			CountError<T> err = new CountError<T>(_entityType,
-							    				  _requestedOp,
 							    				  th);
 			return new CountResultBuilderForErrorExtErrorCodeStep<T>(_securityContext,
 												 			         err);
@@ -34,37 +34,38 @@ public abstract class CountResultForEntityBuilder {
 		}
 		public CountResultBuilderForErrorExtErrorCodeStep<T> becauseClientCannotConnectToServer(final Url serverUrl) {
 			CountError<T> err = new CountError<T>(_entityType,
-							    				  _requestedOp,
-							    				  Strings.customized("Cannot connect to server at {}",serverUrl),PersistenceErrorType.CLIENT_CANNOT_CONNECT_SERVER);
+												  PersistenceServiceErrorTypes.CLIENT_CANNOT_CONNECT_SERVER,	
+							    				  Strings.customized("Cannot connect to server at {}",serverUrl));
 			return new CountResultBuilderForErrorExtErrorCodeStep<T>(_securityContext,
 															  		 err);
 		}
 		public CountResultBuilderForErrorExtErrorCodeStep<T> becauseServerError(final String errData,final Object... vars) {
 			CountError<T> err = new CountError<T>(_entityType,
-												  _requestedOp,
-												  Strings.customized(errData,vars),PersistenceErrorType.SERVER_ERROR);
+												  COREServiceErrorTypes.SERVER_ERROR,
+												  Strings.customized(errData,vars));
 			return new CountResultBuilderForErrorExtErrorCodeStep<T>(_securityContext,
 															  		 err);
 		}
-		public CountResultBuilderForErrorExtErrorCodeStep<T> becauseClientError(final PersistenceErrorType errorType,
-																		 final String msg,final Object... vars) {
+		public CountResultBuilderForErrorExtErrorCodeStep<T> becauseClientError(final COREServiceErrorType errorType,
+																		 	    final String msg,final Object... vars) {
+			if (!errorType.isClientError()) throw new IllegalArgumentException(errorType + " is NOT a client error!");
 			CountError<T> err = new CountError<T>(_entityType,
-												  _requestedOp,
-												  Strings.customized(msg,vars),errorType);
+												  errorType,
+												  Strings.customized(msg,vars));
 			return new CountResultBuilderForErrorExtErrorCodeStep<T>(_securityContext,
 															 		 err);
 		}
 		public CountResultBuilderForErrorExtErrorCodeStep<T> becauseClientBadRequest(final String msg,final Object... vars) {
 			CountError<T> err = new CountError<T>(_entityType,
-												  _requestedOp,
-												  Strings.customized(msg,vars),PersistenceErrorType.BAD_REQUEST_DATA);
+												  COREServiceErrorTypes.BAD_CLIENT_REQUEST,
+												  Strings.customized(msg,vars));
 			return new CountResultBuilderForErrorExtErrorCodeStep<T>(_securityContext,
 															  		 err);
 		}
 		public CountResultBuilderForErrorExtErrorCodeStep<T> becauseRequiredRelatedEntityWasNOTFound(final String msg,final Object... vars) {
 			CountError<T> err = new CountError<T>(_entityType,
-												  _requestedOp,
-												  Strings.customized(msg,vars),PersistenceErrorType.RELATED_REQUIRED_ENTITY_NOT_FOUND);
+												  PersistenceServiceErrorTypes.RELATED_REQUIRED_ENTITY_NOT_FOUND,
+												  Strings.customized(msg,vars));
 			return new CountResultBuilderForErrorExtErrorCodeStep<T>(_securityContext,
 															 		 err);		
 		}
@@ -75,7 +76,7 @@ public abstract class CountResultForEntityBuilder {
 		protected final CountError<T> _err;
 		
 		public CountError<T> buildWithExtendedErrorCode(final int extErrCode) {
-			_err.setExtendedErrorCode(extErrCode);
+			_err.setErrorCode(extErrCode);
 			return _err;
 		}
 		public CountError<T> build() {
@@ -93,8 +94,7 @@ public abstract class CountResultForEntityBuilder {
 		protected final String _requestedOpName;
 		
 		public CountOK<T> resulting(final long num) {
-			CountOK<T> countOk = new CountOK<T>(_requestedOpName,
-												_entityType,
+			CountOK<T> countOk = new CountOK<T>(_entityType,
 											 	num);
 			return countOk;			
 		}

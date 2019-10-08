@@ -17,7 +17,7 @@ import r01f.model.persistence.CRUDResultBuilder;
 import r01f.model.persistence.PersistenceRequestedOperation;
 import r01f.objectstreamer.Marshaller;
 import r01f.securitycontext.SecurityContext;
-import r01f.services.ServiceProxyException;
+import r01f.services.COREServiceProxyException;
 import r01f.types.url.Url;
 import r01f.util.types.Strings;
 
@@ -118,7 +118,7 @@ public class RESTResponseToCRUDResultMapperForVersionableModelObject<O extends O
 		
 		// [0] - Load the http response text
 		String responseStr = httpResponse.loadAsString();		// DO not move!!
-		if (Strings.isNullOrEmpty(responseStr)) throw new ServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
+		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
 															   									   restResourceUrl));
 		// [1] - Map the response
 		outOperationsResults = _marshaller.forReading().fromXml(responseStr,	// Get the REST Service's returned entity: transform from the result string representation (ie xml) to it's object representation
@@ -135,15 +135,15 @@ public class RESTResponseToCRUDResultMapperForVersionableModelObject<O extends O
 		
 		// [0] - Load the http response text
 		String responseStr = httpResponse.loadAsString();		// DO not move!!
-		if (Strings.isNullOrEmpty(responseStr)) throw new ServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
+		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
 															   									   restResourceUrl));
 		
 		
 		// [1] - Cannot connect to server
 		if (httpResponse.isNotFound()) {
 			log.error("REST: cannot connect to REST end-point {}",restResourceUrl);
-			outOpError = new CRUDOnMultipleResult<M>(requestedOp,
-													 _modelObjectType);
+			outOpError = new CRUDOnMultipleResult<M>(_modelObjectType,
+													 requestedOp);
 			outOpError.addOperationNOK(CRUDResultBuilder.using(securityContext)
 											    .on(_modelObjectType)
 											    .not(requestedOp)
@@ -154,8 +154,8 @@ public class RESTResponseToCRUDResultMapperForVersionableModelObject<O extends O
 		// [2] - Server error (the request could NOT be processed)
 		else if (httpResponse.isServerError()) {
 			log.error("REST: server error for {}",restResourceUrl);
-			outOpError = new CRUDOnMultipleResult<M>(requestedOp,
-													 _modelObjectType);
+			outOpError = new CRUDOnMultipleResult<M>(_modelObjectType,
+													 requestedOp);
 			outOpError.addOperationNOK(CRUDResultBuilder.using(securityContext)
 											    .on(_modelObjectType)
 											    .not(requestedOp)

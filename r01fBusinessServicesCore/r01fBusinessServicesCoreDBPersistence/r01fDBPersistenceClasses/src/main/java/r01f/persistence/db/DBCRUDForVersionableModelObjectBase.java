@@ -19,13 +19,13 @@ import r01f.model.persistence.CRUDOnMultipleResult;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.CRUDResultBuilder;
 import r01f.objectstreamer.Marshaller;
-import r01f.persistence.callback.spec.PersistenceOperationCallbackSpec;
 import r01f.persistence.db.config.DBModuleConfig;
 import r01f.persistence.db.entities.DBEntityForVersionableModelObject;
 import r01f.persistence.db.entities.primarykeys.DBPrimaryKeyForVersionableModelObject;
 import r01f.persistence.db.entities.primarykeys.DBPrimaryKeyForVersionableModelObjectImpl;
 import r01f.reflection.ReflectionUtils;
 import r01f.securitycontext.SecurityContext;
+import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 import r01f.services.delegates.persistence.CRUDServicesForVersionableModelObjectDelegateBase;
 import r01f.util.types.Dates;
 import r01f.util.types.collections.CollectionUtils;
@@ -109,7 +109,7 @@ public abstract class DBCRUDForVersionableModelObjectBase<O extends OIDForVersio
 	@Override
 	public CRUDResult<M> activate(final SecurityContext securityContext,
 								  final M entityToBeActivated,
-								  final PersistenceOperationCallbackSpec callbackSpec) {
+								  final COREServiceMethodCallbackSpec callbackSpec) {
 		throw new IllegalStateException(Throwables.message("Implemented at service level (see {}",
 														   CRUDServicesForVersionableModelObjectDelegateBase.class));
 	}
@@ -225,7 +225,7 @@ public abstract class DBCRUDForVersionableModelObjectBase<O extends OIDForVersio
 	@Override
 	public CRUDOnMultipleResult<M> deleteAllVersions(final SecurityContext securityContext,
 													 final VersionIndependentOID oid,
-													 final PersistenceOperationCallbackSpec callbackSpec) {
+													 final COREServiceMethodCallbackSpec callbackSpec) {
 		throw new IllegalStateException(Throwables.message("Implemented at service level (see {}",
 														   CRUDServicesForVersionableModelObjectDelegateBase.class));
 	}

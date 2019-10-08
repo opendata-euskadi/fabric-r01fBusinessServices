@@ -13,11 +13,10 @@ import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.CRUDResultBuilder;
-import r01f.model.persistence.PersistenceOperationError;
 import r01f.model.persistence.PersistenceRequestedOperation;
-import r01f.persistence.callback.spec.PersistenceOperationCallbackSpec;
 import r01f.reflection.ReflectionUtils;
 import r01f.securitycontext.SecurityContext;
+import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 import r01f.services.interfaces.CRUDServicesForModelObject;
 import r01f.validation.ObjectValidationResult;
 import r01f.validation.SelfValidates;
@@ -111,7 +110,7 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 	@Override
 	public CRUDResult<M> create(final SecurityContext securityContext,
 								final M modelObj,
-								final PersistenceOperationCallbackSpec callbackSpec) {
+								final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.doUpdateOrCreate(securityContext,
 						  		 	 modelObj,
 						  		 	 PersistenceRequestedOperation.CREATE,
@@ -127,7 +126,7 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 	@Override
 	public CRUDResult<M> update(final SecurityContext securityContext,
 								final M modelObj,
-								final PersistenceOperationCallbackSpec callbackSpec) {
+								final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.doUpdateOrCreate(securityContext,
 						  		 	 modelObj,
 						  		 	 PersistenceRequestedOperation.UPDATE,
@@ -145,13 +144,13 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 	protected CRUDResult<M> doUpdateOrCreate(final SecurityContext securityContext,
 											 final M modelObj,
 											 final PersistenceRequestedOperation requestedOperation,
-											 final PersistenceOperationCallbackSpec callbackSpec) {
+											 final COREServiceMethodCallbackSpec callbackSpec) {
 		// [0] - check the entity
 		if (modelObj == null) {
 			return CRUDResultBuilder.using(securityContext)
 							        .on(_modelObjectType)
-							        .badClientRequestData(PersistenceRequestedOperation.CREATE,
-							    		 			      "The {} entity cannot be null in order to be {}ed",_modelObjectType,requestedOperation.name().toLowerCase())
+							        .badClientRequest(PersistenceRequestedOperation.CREATE,
+							    		 			  "The {} entity cannot be null in order to be {}ed",_modelObjectType,requestedOperation.name().toLowerCase())
 							        .build();
 		}
 		// [1] check that it's NOT in read only status
@@ -174,8 +173,8 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 				&& modelObj.getOid() == null) {
 			return (CRUDResult<M>)CRUDResultBuilder.using(securityContext)
 												   .on(modelObj.getClass())		// _modelObjectType
-												   .badClientRequestData(PersistenceRequestedOperation.UPDATE,
-												    		 			 "The {} entity to be updated does NOT have an OID, is it maybe a create operation",_modelObjectType)
+												   .badClientRequest(PersistenceRequestedOperation.UPDATE,
+												    		 		 "The {} entity to be updated does NOT have an OID, is it maybe a create operation",_modelObjectType)
 												   .build();
 		}
 
@@ -229,7 +228,7 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 	@Override
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 								final O oid,
-								final PersistenceOperationCallbackSpec callbackSpec) {
+								final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.doDelete(securityContext,
 							 oid,
 							 callbackSpec);		
@@ -237,13 +236,13 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 	@SuppressWarnings({ "unchecked" })
 	protected CRUDResult<M> doDelete(final SecurityContext securityContext,
 								 	 final O oid,
-								 	 final PersistenceOperationCallbackSpec callbackSpec) {
+								 	 final COREServiceMethodCallbackSpec callbackSpec) {
 		// [0] - check the entity
 		if (oid == null) {
 			return CRUDResultBuilder.using(securityContext)
 									   .on(_modelObjectType)
-									   .badClientRequestData(PersistenceRequestedOperation.DELETE,
-									    		 			 "The {} entity's oid cannot be null in order to be deleted",_modelObjectType)
+									   .badClientRequest(PersistenceRequestedOperation.DELETE,
+									    		 		 "The {} entity's oid cannot be null in order to be deleted",_modelObjectType)
 									    		.build();
 		}
 		// [1] check that it's NOT in read only status

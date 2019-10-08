@@ -9,7 +9,7 @@ import r01f.httpclient.HttpRequestPayload;
 import r01f.httpclient.HttpResponse;
 import r01f.mime.MimeTypes;
 import r01f.objectstreamer.Marshaller;
-import r01f.services.ServiceProxyException;
+import r01f.services.COREServiceProxyException;
 import r01f.types.url.Url;
 import r01f.util.types.Strings;
 
@@ -55,7 +55,7 @@ public abstract class DelegateForRawREST {
 									  		.directNoAuthConnected();
 		} catch(IOException ioEx) {
 			log.error("Error while GETing {}: {}",restResourceUrl,ioEx.getMessage());
-			throw new ServiceProxyException(ioEx);
+			throw new COREServiceProxyException(ioEx);
 		}
 		return outHttpResponse;
 	}
@@ -86,7 +86,7 @@ public abstract class DelegateForRawREST {
 			}
 		} catch(IOException ioEx) {
 			log.error("Error while POSTing to {}: {}",restResourceUrl,ioEx.getMessage());
-			throw new ServiceProxyException(ioEx);
+			throw new COREServiceProxyException(ioEx);
 		}				
 		return outHttpResponse;
 	}
@@ -118,7 +118,7 @@ public abstract class DelegateForRawREST {
 			}
 		} catch(IOException ioEx) {
 			log.error("Error while PUTing to {}: {}",restResourceUrl,ioEx.getMessage());
-			throw new ServiceProxyException(ioEx);
+			throw new COREServiceProxyException(ioEx);
 		}		
 		return outHttpResponse;
 	}
@@ -134,7 +134,7 @@ public abstract class DelegateForRawREST {
 											.directNoAuthConnected();
 		} catch(IOException ioEx) {
 			log.error("Error while DELETEing {}: {}",restResourceUrl,ioEx.getMessage());
-			throw new ServiceProxyException(ioEx);
+			throw new COREServiceProxyException(ioEx);
 		}
 		return outHttpResponse;	
 	}

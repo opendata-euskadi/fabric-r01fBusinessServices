@@ -33,12 +33,12 @@ import r01f.model.persistence.CRUDResultBuilder;
 import r01f.model.persistence.PersistencePerformedOperation;
 import r01f.model.persistence.PersistenceRequestedOperation;
 import r01f.objectstreamer.Marshaller;
-import r01f.persistence.callback.spec.PersistenceOperationCallbackSpec;
 import r01f.persistence.db.config.DBModuleConfig;
 import r01f.persistence.db.entities.DBEntityForModelObject;
 import r01f.persistence.db.entities.primarykeys.DBPrimaryKeyForModelObject;
 import r01f.reflection.ReflectionUtils;
 import r01f.securitycontext.SecurityContext;
+import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 import r01f.services.delegates.persistence.CRUDServicesForModelObjectDelegateBase;
 import r01f.types.summary.LangDependentSummary;
 import r01f.types.summary.LangIndependentSummary;
@@ -234,7 +234,7 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 	@Override
 	public CRUDResult<M> create(final SecurityContext securityContext,
 								final M modelObj,
-								final PersistenceOperationCallbackSpec callbackSpec) {
+								final COREServiceMethodCallbackSpec callbackSpec) {
 		throw new IllegalStateException(Throwables.message("Implemented at service level (see {})",
 														   CRUDServicesForModelObjectDelegateBase.class));
 	}
@@ -252,7 +252,7 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 	@Override
 	public CRUDResult<M> update(final SecurityContext securityContext,
 								final M entity,
-								final PersistenceOperationCallbackSpec callbackSpec) {
+								final COREServiceMethodCallbackSpec callbackSpec) {
 		throw new IllegalStateException(Throwables.message("Implemented at service level (see {})",
 														   CRUDServicesForModelObjectDelegateBase.class));
 	}
@@ -265,7 +265,7 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 	@Override
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 								final O oid,
-								final PersistenceOperationCallbackSpec callbackSpec) {
+								final COREServiceMethodCallbackSpec callbackSpec) {
 		throw new IllegalStateException(Throwables.message("Implemented at service level (see {}",
 														   CRUDServicesForModelObjectDelegateBase.class));
 	}

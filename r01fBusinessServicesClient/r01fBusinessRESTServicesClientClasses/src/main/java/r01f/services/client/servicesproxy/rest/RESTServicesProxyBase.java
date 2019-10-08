@@ -6,10 +6,11 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import r01f.httpclient.HttpResponse;
 import r01f.httpclient.HttpResponseCode;
+import r01f.model.services.COREServiceErrorTypes;
+import r01f.model.services.COREServiceException;
+import r01f.model.services.COREServiceMethod;
 import r01f.objectstreamer.Marshaller;
 import r01f.securitycontext.SecurityContext;
-import r01f.services.ServiceException;
-import r01f.services.ServiceExceptionType;
 import r01f.services.client.servicesproxy.rest.RESTServiceResourceUrlPathBuilders.RESTServiceResourceUrlPathBuilder;
 import r01f.services.interfaces.ProxyForRESTImplementedService;
 import r01f.types.Path;
@@ -59,32 +60,38 @@ public abstract class RESTServicesProxyBase
 	 */
 	protected static void _throwServiceExceptionFor(final SecurityContext securityContext,
 												    final Url restResourceUrl,
-												    final HttpResponse httpResponse) throws ServiceException {
+												    final HttpResponse httpResponse) throws COREServiceException {
 		HttpResponseCode responseCode = httpResponse.getCode();
-		String errorCode = httpResponse.getSingleValuedHeaderAsString("x-r01-errorCode");
-		String extErrorCode = httpResponse.getSingleValuedHeaderAsString("x-r01-extErrorCode");
+		String errorCodeStr = httpResponse.getSingleValuedHeaderAsString("x-r01-errorCode");
+		String extErrorCodeStr = httpResponse.getSingleValuedHeaderAsString("x-r01-extErrorCode");
 		String errorMsg = httpResponse.getSingleValuedHeaderAsString("x-r01-errorMessage");
+		String coreMethodStr = httpResponse.getSingleValuedHeaderAsString("x-r01-requestedOperation");
 		String errorDetail = httpResponse.loadAsString();
-		
+
+		COREServiceMethod coreMethod = Strings.isNOTNullOrEmpty(coreMethodStr) ? COREServiceMethod.named(coreMethodStr)
+																			   : COREServiceMethod.UNKNOWN;
+		int extErrCode = Strings.isNOTNullOrEmpty(extErrorCodeStr) ? Integer.parseInt(extErrorCodeStr)
+																   : -1;
 		if (errorMsg == null) { 
 			errorMsg = Strings.customized("The REST service at {} returned an unknown error",
 										  restResourceUrl);
 		} else {
 			errorMsg = Strings.customized("The REST service at {} returned a {}/{} error: {}",
-										  restResourceUrl,errorCode,extErrorCode,errorMsg);	
+										  restResourceUrl,errorCodeStr,extErrorCodeStr,errorMsg);	
 		}
-		
 		log.error(errorDetail);
 		
 		// Throw a client or server error
 		if (responseCode == HttpResponseCode.BAD_REQUEST
 		 || responseCode == HttpResponseCode.METHOD_NOT_ALLOWED 
 		 || responseCode == HttpResponseCode.NOT_FOUND) {
-			throw new ServiceException(errorMsg,
-									   ServiceExceptionType.CLIENT);
+			throw new COREServiceException(coreMethod,
+										   COREServiceErrorTypes.BAD_CLIENT_REQUEST,extErrCode,
+										   errorMsg);
 		} 
-		throw new ServiceException(errorMsg,
-								   ServiceExceptionType.SERVER);
+		throw new COREServiceException(coreMethod,
+									   COREServiceErrorTypes.SERVER_ERROR,extErrCode,
+									   errorMsg);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  

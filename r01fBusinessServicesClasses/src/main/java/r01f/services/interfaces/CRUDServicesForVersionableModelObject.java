@@ -10,8 +10,8 @@ import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable.HasVersionableFacet;
 import r01f.model.persistence.CRUDOnMultipleResult;
 import r01f.model.persistence.CRUDResult;
-import r01f.persistence.callback.spec.PersistenceOperationCallbackSpec;
 import r01f.securitycontext.SecurityContext;
+import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 
 /**
  * CRUD (create, read, update, delete) interface for versionable model object
@@ -57,7 +57,7 @@ public interface CRUDServicesForVersionableModelObject<O extends OIDForVersionab
 	/**
 	 * Deletes all versions of a record
 	 * This method returns a {@link Set} of {@link RecordPersistenceOperationResult} for every version to delete
-	 * This method receives a {@link PersistenceOperationCallbackSpec} that describes how the caller can be
+	 * This method receives a {@link COREServiceMethodCallbackSpec} that describes how the caller can be
 	 * notified about background (async) work executed after the delete operation 
 	 * @param securityContext the user auth data & context info
 	 * @param oid the identifier of the record whose versions are to be deleted
@@ -66,7 +66,7 @@ public interface CRUDServicesForVersionableModelObject<O extends OIDForVersionab
 	 */
 	public CRUDOnMultipleResult<M> deleteAllVersions(final SecurityContext securityContext,
 									 				 final VersionIndependentOID oid,
-									 				 final PersistenceOperationCallbackSpec callbackSpec);
+									 				 final COREServiceMethodCallbackSpec callbackSpec);
 /////////////////////////////////////////////////////////////////////////////////////////
 //  ACTIVATION
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +90,7 @@ public interface CRUDServicesForVersionableModelObject<O extends OIDForVersionab
 	 * 		<li>Sets the entity activation start date to this moment (and null activation end date</li>
 	 * </li>
 	 * If the entity is active (has a not null activation start date), an {@link IllegalStateException} is raised
-	 * This method receives a {@link PersistenceOperationCallbackSpec} that describes how the caller can be
+	 * This method receives a {@link COREServiceMethodCallbackSpec} that describes how the caller can be
 	 * notified about background (async) work executed after the activation operation
 	 * @param securityContext
 	 * @param entityToBeActivated
@@ -99,6 +99,6 @@ public interface CRUDServicesForVersionableModelObject<O extends OIDForVersionab
 	 */
 	public CRUDResult<M> activate(final SecurityContext securityContext,
 								  final M entityToBeActivated,
-								  final PersistenceOperationCallbackSpec callbackSpec);
+								  final COREServiceMethodCallbackSpec callbackSpec);
 
 }

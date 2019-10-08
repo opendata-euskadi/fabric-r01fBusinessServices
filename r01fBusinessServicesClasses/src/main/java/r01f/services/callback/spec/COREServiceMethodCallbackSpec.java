@@ -1,11 +1,11 @@
-package r01f.persistence.callback.spec;
+package r01f.services.callback.spec;
 
 import java.io.Serializable;
 
 /**
  * Data about the callback 
  */
-public interface PersistenceOperationCallbackSpec 
+public interface COREServiceMethodCallbackSpec 
 		 extends Serializable {
 	// just a marker interface
 }

@@ -1,15 +1,15 @@
-package r01f.persistence.callback;
+package r01f.services.callback;
 
-import r01f.model.persistence.HasPersistenceOperationResult;
-import r01f.model.persistence.PersistenceOperationError;
-import r01f.model.persistence.PersistenceOperationOK;
+import r01f.model.services.COREServiceMethodExecError;
+import r01f.model.services.COREServiceMethodExecOK;
+import r01f.model.services.HasCOREServiceMethodExecResult;
 import r01f.securitycontext.SecurityContext;
 
 /**
- * Persistence operation callback interface
+ * CORE method callback interface
  * How callbacks works
  * ===================
- * The callback mechanishm works as depicted in the following picture:
+ * The callback mechanism works as depicted in the following picture:
  * <pre>
  *     +--------+   +------+       +----+ +-----------+ +--------+ +------------+
  *     |Callback|   |Client|       |CORE| |Persistence| |EventBus| |EventHandler|
@@ -45,14 +45,16 @@ import r01f.securitycontext.SecurityContext;
  * 
  * [client] code:
  * <pre class='brush:java'>
- *		public static class MyPersistenceOperationBeanCallback
- *			 extends PersistenceOperationCallbackBase {
+ *		public static class MyCOREMethodCallback
+ *			        extends COREMethodCallbackBase {
  *			@Override
- *			public void onPersistenceOperationOK(final PersistenceOperationOK opOK) {
+ *			public void onCOREMethodCallOK(final SecurityContext securityContext,
+ *										   final COREServiceMethodExecOK<?> opOK) {
  *				System.out.println("CALLBACK OK!!");
  *			}
  *			@Override
- *			public void onPersistenceOperationError(final PersistenceOperationError opError) {
+ *			public void onCOREMethodCallError(final SecurityContext securityContext,
+ *											  final COREServiceMethodExecError<?> opError) {
  *				System.out.println("CALLBACK ERROR!!!");
  *			}
  *		}
@@ -89,8 +91,8 @@ import r01f.securitycontext.SecurityContext;
  * </pre>
  * 
  */
-public interface PersistenceOperationCallback
-		 extends HasPersistenceOperationResult {
+public interface COREMethodCallback
+		 extends HasCOREServiceMethodExecResult {
 /////////////////////////////////////////////////////////////////////////////////////////
 // 	CALLBACK METHODS
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -99,13 +101,13 @@ public interface PersistenceOperationCallback
 	 * @param securityContext
 	 * @param opOK
 	 */
-	public void onPersistenceOperationOK(final SecurityContext securityContext,
-										 final PersistenceOperationOK opOK);	
+	public void onCOREMethodCallOK(final SecurityContext securityContext,
+								   final COREServiceMethodExecOK<?> opOK);	
 	/**
 	 * Callback method called when the persistence operation fails
 	 * @param securityContext
 	 * @param opNOK
 	 */
-	public void onPersistenceOperationError(final SecurityContext securityContext,
-											final PersistenceOperationError opError);
+	public void onCOREMethodCallError(final SecurityContext securityContext,
+									  final COREServiceMethodExecError<?> opError);
 }

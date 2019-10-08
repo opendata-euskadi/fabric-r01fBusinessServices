@@ -8,23 +8,23 @@ import lombok.experimental.Accessors;
  * because the server response is not valid
  */
 @Accessors(prefix="_")
-public class ServiceProxyException 
+public class COREServiceProxyException 
      extends RuntimeException {
 
 	private static final long serialVersionUID = -4968119097697717368L;
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
-	public ServiceProxyException() {
+	public COREServiceProxyException() {
 		super();
 	}
-	public ServiceProxyException(final String msg) {
+	public COREServiceProxyException(final String msg) {
 		super(msg);
 	}
-	public ServiceProxyException(final Throwable otherEx) {
+	public COREServiceProxyException(final Throwable otherEx) {
 		super(otherEx);
 	}
-	public ServiceProxyException(final String msg,
+	public COREServiceProxyException(final String msg,
 								 final Throwable otherEx) {
 		super(msg,
 			  otherEx);

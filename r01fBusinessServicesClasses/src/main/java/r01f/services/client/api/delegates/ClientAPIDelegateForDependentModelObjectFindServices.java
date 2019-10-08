@@ -83,7 +83,7 @@ public class ClientAPIDelegateForDependentModelObjectFindServices<O extends Pers
 		FindSummariesResult<M> findResult = this.getServiceProxyAs(FindServicesForDependentModelObject.class)
 													.findSummariesOfDependentsOf(this.getSecurityContext(),
 																				 parentOid);
-		Collection<S> outSummaries = findResult.getOrThrow();
+		Collection<S> outSummaries = (Collection<S>)findResult.getOrThrow();
 		return outSummaries;
 	}
 }
