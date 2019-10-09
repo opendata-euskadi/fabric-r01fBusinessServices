@@ -139,6 +139,7 @@ public abstract class SpringRootConfigBootstrapGuiceBase
 
 		return GUICE_INJECTOR;
 	}
+	
 	public class GuiceExposedServicesToBeanProcessor
    	  implements BeanDefinitionRegistryPostProcessor {
 
