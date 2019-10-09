@@ -8,29 +8,27 @@ import com.google.common.eventbus.Subscribe;
 
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import r01f.events.PersistenceOperationEventListeners.PersistenceOperationOKEventListener;
-import r01f.events.PersistenceOperationEvents.PersistenceOperationEvent;
-import r01f.events.PersistenceOperationEvents.PersistenceOperationOKEvent;
+import r01f.events.COREServiceMethodExecEventListeners.COREServiceMethodExecOKEventListener;
+import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecEvent;
+import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecOKEvent;
 import r01f.model.ModelObject;
 import r01f.model.persistence.CRUDOK;
 import r01f.model.persistence.CRUDResult;
-import r01f.model.persistence.PersistenceOperationError;
-import r01f.model.persistence.PersistenceOperationOK;
-import r01f.persistence.callback.PersistenceOperationCallback;
-import r01f.persistence.callback.spec.PersistenceOperationBeanCallbackSpec;
-import r01f.persistence.callback.spec.PersistenceOperationCallbackSpec;
 import r01f.reflection.ReflectionUtils;
 import r01f.securitycontext.SecurityContext;
+import r01f.services.callback.COREMethodCallback;
+import r01f.services.callback.spec.COREServiceMethodBeanCallbackSpec;
+import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 import r01f.util.types.Strings;
 
 /**
- * Listener to {@link PersistenceOperationOKEvent}s thrown by the persistence layer through the {@link EventBus}
+ * Listener to {@link COREServiceMethodExecOKEvent}s thrown by the persistence layer through the {@link EventBus}
  * @param <M>
  */
 @Slf4j
 @Accessors(prefix="_")
-public abstract class CRUDOperationOKEventListenerBase 
-           implements PersistenceOperationOKEventListener {
+public abstract class CRUDOKEventListenerBase 
+           implements COREServiceMethodExecOKEventListener {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -49,25 +47,25 @@ public abstract class CRUDOperationOKEventListenerBase
 	/**
 	 * Filters the events using the afected model object
 	 */
-	protected final transient CRUDOperationOKEventFilter _crudOperationOKEventFilter;
+	protected final transient CRUDOKEventFilter _crudOperationOKEventFilter;
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
-	public CRUDOperationOKEventListenerBase(final Class<? extends ModelObject> type) {
+	public CRUDOKEventListenerBase(final Class<? extends ModelObject> type) {
 		_type = type;
-		_crudOperationOKEventFilter = new CRUDOperationOKEventFilter() {
+		_crudOperationOKEventFilter = new CRUDOKEventFilter() {
 												@Override @SuppressWarnings("unchecked")
-												public boolean hasTobeHandled(final PersistenceOperationOKEvent opEvent) {
-													CRUDResult<? extends ModelObject> opResult = opEvent.getPersistenceOperationResult()
-																				    					.as(CRUDResult.class);
+												public boolean hasTobeHandled(final COREServiceMethodExecOKEvent opEvent) {
+													CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
+																				    					  .as(CRUDResult.class);
 													// the event refers to the same model object type THIS event handler handles;
-													return ReflectionUtils.isSubClassOf(opResult.as(CRUDOK.class).getObjectType(),
+													return ReflectionUtils.isSubClassOf(crudResult.as(CRUDOK.class).getObjectType(),
 																						_type);
 												}
 									  };
 	}
-	public CRUDOperationOKEventListenerBase(final Class<? extends ModelObject> type,
-											final CRUDOperationOKEventFilter crudOperationOKEventFilter) {
+	public CRUDOKEventListenerBase(final Class<? extends ModelObject> type,
+								   final CRUDOKEventFilter crudOperationOKEventFilter) {
 		_type = type;
 		_crudOperationOKEventFilter = crudOperationOKEventFilter;
 	}
@@ -89,13 +87,20 @@ public abstract class CRUDOperationOKEventListenerBase
 	 * @param opEvent
 	 * @return
 	 */
-	protected boolean _isEventForSuccessfulCreateUpdateOrDelete(final PersistenceOperationOKEvent opEvent) {	
-		PersistenceOperationOK opResult = opEvent.getResultAsOperationOK();
+	@SuppressWarnings("unchecked")
+	protected boolean _isEventForSuccessfulCreateUpdateOrDelete(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
 		
-		return ((opResult.isCRUDOK()) 
-			 && (opResult.as(CRUDOK.class).hasBeenCreated() || opResult.as(CRUDOK.class).hasBeenUpdated() || opResult.as(CRUDOK.class).hasBeenDeleted()));	// it's a create, update or delete event
+		CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
+									    					  .as(CRUDResult.class);
+		return (crudResult.hasSucceeded() 
+				// it's a create, update or delete event
+			 && (crudResult.asCRUDOK().hasBeenCreated() 
+				 || 
+				 crudResult.asCRUDOK().hasBeenUpdated() 
+				 ||
+				 crudResult.asCRUDOK().hasBeenDeleted()));	
 	}
 	/**
 	 * Returns true if:
@@ -104,13 +109,18 @@ public abstract class CRUDOperationOKEventListenerBase
 	 * @param opEvent
 	 * @return
 	 */
-	protected boolean _isEventForSuccessfulCreateOrUpdate(final PersistenceOperationOKEvent opEvent) {	
-		PersistenceOperationOK opResult = opEvent.getResultAsOperationOK();
+	@SuppressWarnings("unchecked")
+	protected boolean _isEventForSuccessfulCreateOrUpdate(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
 		
-		return ((opResult.isCRUDOK()) 
-			 && (opResult.as(CRUDOK.class).hasBeenCreated() || opResult.as(CRUDOK.class).hasBeenUpdated()));	// it's a create or update event
+		CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
+									    					  .as(CRUDResult.class);
+		return (crudResult.hasSucceeded() 
+				// it's a create or update event
+			 && (crudResult.asCRUDOK().hasBeenCreated() 
+				 || 
+				 crudResult.asCRUDOK().hasBeenUpdated()));	
 	}
 	/**
 	 * Returns true if:
@@ -119,13 +129,15 @@ public abstract class CRUDOperationOKEventListenerBase
 	 * @param opEvent
 	 * @return
 	 */
-	protected boolean _isEventForSuccessfulCreate(final PersistenceOperationOKEvent opEvent) {
-		PersistenceOperationOK opResult = opEvent.getResultAsOperationOK();
+	@SuppressWarnings("unchecked")
+	protected boolean _isEventForSuccessfulCreate(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
-	
-		return ((opResult.isCRUDOK()) 
-			 && (opResult.as(CRUDOK.class).hasBeenCreated()));												// it's a create event
+		
+		CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
+									    					  .as(CRUDResult.class);
+		return (crudResult.hasSucceeded() 
+			 && (crudResult.asCRUDOK().hasBeenCreated()));												// it's a create event
 	}
 	/**
 	 * Returns true if:
@@ -134,13 +146,15 @@ public abstract class CRUDOperationOKEventListenerBase
 	 * @param opEvent
 	 * @return
 	 */
-	protected boolean _isEventForSuccessfulUpdate(final PersistenceOperationOKEvent opEvent) {
-		PersistenceOperationOK opResult = opEvent.getResultAsOperationOK();
+	@SuppressWarnings("unchecked")
+	protected boolean _isEventForSuccessfulUpdate(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
 		
-		return ((opResult.isCRUDOK()) 
-			 && (opResult.as(CRUDOK.class).hasBeenUpdated()));								// it's an update event
+		CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
+									    					  .as(CRUDResult.class);		
+		return (crudResult.hasSucceeded()
+			 && (crudResult.asCRUDOK().hasBeenUpdated()));								// it's an update event
 	}
 	/**
 	 * Returns true if:
@@ -149,13 +163,15 @@ public abstract class CRUDOperationOKEventListenerBase
 	 * @param opEvent
 	 * @return
 	 */
-	protected boolean _isEventForSuccessfulDelete(final PersistenceOperationOKEvent opEvent) {
-		PersistenceOperationOK opResult = opEvent.getResultAsOperationOK();
+	@SuppressWarnings("unchecked")
+	protected boolean _isEventForSuccessfulDelete(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
 		
-		return ((opResult.isCRUDOK()) 
-			 && (opResult.as(CRUDOK.class).hasBeenDeleted()));								// it's a delete event
+		CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
+									    					  .as(CRUDResult.class);
+		return (crudResult.hasSucceeded()
+			 && (crudResult.asCRUDOK().hasBeenDeleted()));								// it's a delete event
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 // 	CALLBACK SEND
@@ -166,28 +182,28 @@ public abstract class CRUDOperationOKEventListenerBase
 	 * @param event
 	 */
 	public void sendCallbackFor(final SecurityContext securityContext,
-								final PersistenceOperationEvent event) {
+								final COREServiceMethodExecEvent event) {
 		if (event.getCallbackSpec() != null) {			
-			PersistenceOperationCallback callback = _createCallbackInstance(event.getCallbackSpec());
-			if (event.isForPersistenceOperationOK()) {
-				callback.onPersistenceOperationOK(securityContext,
-												  event.getPersistenceOperationResult()
-													   .as(PersistenceOperationOK.class));
+			COREMethodCallback callback = _createCallbackInstance(event.getCallbackSpec());
+			if (event.isForCOREMethodCallOK()) {
+				callback.onCOREMethodCallOK(securityContext,
+										    event.getCOREServiceMethodExecResult()
+											     .asCOREServiceMethodExecOK());
 			} 
-			else if (event.isForPersistenceOperationError()) {
-				callback.onPersistenceOperationError(securityContext,
-													 event.getPersistenceOperationResult()
-														  .as(PersistenceOperationError.class));
+			else if (event.isForCOREMethodCallError()) {
+				callback.onCOREMethodCallError(securityContext,
+											   event.getCOREServiceMethodExecResult()
+												    .asCOREServiceMethodExecError());
 			}
 		} else {
 			System.out.println("NO CALLBACK!!!!!!");
 		}
 	}
-	private PersistenceOperationCallback _createCallbackInstance(final PersistenceOperationCallbackSpec callbackSpec) {
-		PersistenceOperationCallback callback = null;
-		if (callbackSpec instanceof PersistenceOperationBeanCallbackSpec) {
-			PersistenceOperationBeanCallbackSpec beanCallbackSpec = (PersistenceOperationBeanCallbackSpec)callbackSpec;
-			Class<? extends PersistenceOperationCallback> callbackType = beanCallbackSpec.getImplType();
+	private COREMethodCallback _createCallbackInstance(final COREServiceMethodCallbackSpec callbackSpec) {
+		COREMethodCallback callback = null;
+		if (callbackSpec instanceof COREServiceMethodBeanCallbackSpec) {
+			COREServiceMethodBeanCallbackSpec beanCallbackSpec = (COREServiceMethodBeanCallbackSpec)callbackSpec;
+			Class<? extends COREMethodCallback> callbackType = beanCallbackSpec.getImplType();
 			callback = ReflectionUtils.createInstanceOf(callbackType);
 		} 
 		else {
@@ -199,7 +215,7 @@ public abstract class CRUDOperationOKEventListenerBase
 //  DEBUG
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected void _debugEvent(final Logger log,
-						  	   final PersistenceOperationOKEvent opOKEvent,final boolean hasToBeHandled) {
+						  	   final COREServiceMethodExecOKEvent opOKEvent,final boolean hasToBeHandled) {
 		if (log.isTraceEnabled()) {
 			log.trace(_debugEvent(opOKEvent,
 						  		  hasToBeHandled));
@@ -208,7 +224,7 @@ public abstract class CRUDOperationOKEventListenerBase
 						  		  hasToBeHandled));
 		}
 	}
-	protected String _debugEvent(final PersistenceOperationOKEvent opOKEvent,
+	protected String _debugEvent(final COREServiceMethodExecOKEvent opOKEvent,
 							   	 final boolean hasToBeHandled) {
 		return Strings.customized("EventListener registered for events of [{}] entities\n" + 
 						  		  "{}\n" + 

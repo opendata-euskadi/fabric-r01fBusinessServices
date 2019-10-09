@@ -11,7 +11,6 @@ import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable;
 import r01f.model.persistence.FindOIDsResult;
-import r01f.model.persistence.PersistenceOperationResult;
 import r01f.objectstreamer.Marshaller;
 import r01f.securitycontext.SecurityContext;
 import r01f.services.interfaces.FindServicesForModelObject;
@@ -43,7 +42,7 @@ public abstract class ClientAPIDelegateForModelObjectFindServices<O extends Pers
 	 * Finds all persisted model object 
 	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the 
 	 * currently active versions
-	 * @return a {@link PersistenceOperationResult} that encapsulates the entities
+	 * @return a {@link PersistenceOperationOK} that encapsulates the entities
 	 */
 	public Collection<O> findAll() {
 		FindOIDsResult<O> findResult = this.getServiceProxy()
@@ -59,7 +58,7 @@ public abstract class ClientAPIDelegateForModelObjectFindServices<O extends Pers
 	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the 
 	 * currently active versions
 	 * @param createDate
-	 * @return a {@link PersistenceOperationResult} that encapsulates the entities
+	 * @return a {@link PersistenceOperationOK} that encapsulates the entities
 	 */
 	public Collection<O> findByCreateDate(final Range<Date> createDate) {
 		FindOIDsResult<O> findResult = this.getServiceProxy()
@@ -76,7 +75,7 @@ public abstract class ClientAPIDelegateForModelObjectFindServices<O extends Pers
 	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the 
 	 * currently active versions
 	 * @param lastUpdateDate
-	 * @return a {@link PersistenceOperationResult} that encapsulates the entities
+	 * @return a {@link PersistenceOperationOK} that encapsulates the entities
 	 */
 	public Collection<O> findByLastUpdateDate(final Range<Date> lastUpdateDate) {
 		FindOIDsResult<O> findResult = this.getServiceProxy()
@@ -93,7 +92,7 @@ public abstract class ClientAPIDelegateForModelObjectFindServices<O extends Pers
 	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the 
 	 * currently active versions
 	 * @param creatorUserCode
-	 * @return a {@link PersistenceOperationResult} that encapsulates the entities
+	 * @return a {@link PersistenceOperationOK} that encapsulates the entities
 	 */
 	public Collection<O> findByCreator(final UserCode creatorUserCode) {
 		FindOIDsResult<O> findResult = this.getServiceProxy()
@@ -110,7 +109,7 @@ public abstract class ClientAPIDelegateForModelObjectFindServices<O extends Pers
 	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the 
 	 * currently active versions
 	 * @param lastUpdatorUserCode
-	 * @return a {@link PersistenceOperationResult} that encapsulates the entities
+	 * @return a {@link PersistenceOperationOK} that encapsulates the entities
 	 */
 	public Collection<O> findByLastUpdator(final UserCode lastUpdatorUserCode) {
 		FindOIDsResult<O> findResult = this.getServiceProxy()

@@ -7,9 +7,12 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 import lombok.RequiredArgsConstructor;
 import r01f.exceptions.Throwables;
-import r01f.model.persistence.PersistenceErrorType;
 import r01f.model.persistence.PersistenceException;
 import r01f.model.persistence.PersistenceRequestedOperation;
+import r01f.model.persistence.PersistenceServiceErrorTypes;
+import r01f.model.services.COREServiceErrorType;
+import r01f.model.services.COREServiceErrorTypes;
+import r01f.model.services.COREServiceException;
 
 /**
  * {@link ExceptionMapper}(s) used to map {@link Exception}s to {@link Response}s
@@ -57,60 +60,60 @@ public class RESTExceptionMappers {
 		// serialize 
 		Response outResponse = null;
 		// Persistence exceptions
-		if (th instanceof PersistenceException) {
-			PersistenceException persistEx = (PersistenceException)th;
+		if (th instanceof COREServiceException) {
+			COREServiceException coreEx = (COREServiceException)th;
 			// server errors
-			if (persistEx.getPersistenceErrorType()
-						 .isServerError()) {			// Server Error
+			if (coreEx.isServerError()) {			// Server Error
 				// force exception stack trace print
 				outResponse = Response.status(Status.INTERNAL_SERVER_ERROR)
-									  .header("x-r01-errorCode",PersistenceErrorType.SERVER_ERROR)
-									  .header("x-r01-extErrorCode",persistEx.getExtendedCode())
-									  .header("x-r01-errorMessage",persistEx.getMessage())
-									  .header("x-r01-requestedOperation",persistEx.getRequestedOperation())
-									  .header("x-r01-errorType",persistEx.getClass().getName())
+									  .header("x-r01-errorCode",COREServiceErrorTypes.SERVER_ERROR.encodeAsString())
+									  .header("x-r01-extErrorCode",coreEx.getExtendedCode())
+									  .header("x-r01-errorMessage",coreEx.getMessage())
+									  .header("x-r01-requestedOperation",coreEx.getCalledMethod().asString())
+									  .header("x-r01-errorType",coreEx.getClass().getName())
 									  .entity(Throwables.getStackTraceAsString(th))
 									  .type(MediaType.TEXT_HTML)
 									  .build();
 			} 
 			// client errors
-			else if (persistEx.getPersistenceErrorType()
-						 	  .isClientError()) {	
+			else if (coreEx.isClientError()) {	
+				COREServiceErrorType coreErrorType = coreEx.getType();
+				
 				// record not found
-				if (persistEx.getPersistenceErrorType() == PersistenceErrorType.ENTITY_NOT_FOUND) {		
+				if (coreErrorType.is(PersistenceServiceErrorTypes.ENTITY_NOT_FOUND)) {		
 					outResponse = Response.status(Status.NOT_FOUND)						
-										  .header("x-r01-errorCode",persistEx.getPersistenceErrorType())
-										  .header("x-r01-extErrorCode",persistEx.getExtendedCode())
-										  .header("x-r01-errorMessage",persistEx.getMessage())
-										  .header("x-r01-requestedOperation",persistEx.getRequestedOperation())
-										  .header("x-r01-errorType",persistEx.getClass().getName())
+										  .header("x-r01-errorCode",coreErrorType.encodeAsString())
+										  .header("x-r01-extErrorCode",coreEx.getExtendedCode())
+										  .header("x-r01-errorMessage",coreEx.getMessage())
+										  .header("x-r01-requestedOperation",coreEx.getCalledMethod().asString())
+										  .header("x-r01-errorType",coreEx.getClass().getName())
 										  .entity(Throwables.getStackTraceAsString(th))
 										  .type(MediaType.TEXT_HTML)
 										  .build();		
 				} 
 				// update requested but record existed OR the server version is different (optimistic locking)
-				else if (persistEx.getRequestedOperation().isIn(PersistenceRequestedOperation.UPDATE,
-																PersistenceRequestedOperation.CREATE)
-				      && persistEx.getPersistenceErrorType().isIn(PersistenceErrorType.ENTITY_ALREADY_EXISTS,
-				    		  								      PersistenceErrorType.OPTIMISTIC_LOCKING_ERROR)) {	
+				else if (coreEx.getCalledMethod().isIn(PersistenceRequestedOperation.UPDATE.getCOREServiceMethod(),
+													   PersistenceRequestedOperation.CREATE.getCOREServiceMethod())
+				      && coreErrorType.isIn(PersistenceServiceErrorTypes.ENTITY_ALREADY_EXISTS,
+				    		  				PersistenceServiceErrorTypes.OPTIMISTIC_LOCKING_ERROR)) {
 					outResponse = Response.status(Status.CONFLICT)
-										  .header("x-r01-errorCode",persistEx.getPersistenceErrorType())
-										  .header("x-r01-extErrorCode",persistEx.getExtendedCode())
-										  .header("x-r01-errorMessage",persistEx.getMessage())
-										  .header("x-r01-requestedOperation",persistEx.getRequestedOperation())
-										  .header("x-r01-errorType",persistEx.getClass().getName())
+										  .header("x-r01-errorCode",coreErrorType.encodeAsString())
+										  .header("x-r01-extErrorCode",coreEx.getExtendedCode())
+										  .header("x-r01-errorMessage",coreEx.getMessage())
+										  .header("x-r01-requestedOperation",coreEx.getCalledMethod().asString())
+										  .header("x-r01-errorType",coreEx.getClass().getName())
 										  .entity(Throwables.getStackTraceAsString(th))
 										  .type(MediaType.TEXT_HTML)
 										  .build();						
 				}
 				// another bad client request
-				else {															
+				else {				
 					outResponse = Response.status(Status.BAD_REQUEST)
-										  .header("x-r01-errorCode",persistEx.getPersistenceErrorType())
-										  .header("x-r01-extErrorCode",persistEx.getExtendedCode())
-										  .header("x-r01-errorMessage",persistEx.getMessage())
-										  .header("x-r01-requestedOperation",persistEx.getRequestedOperation())
-										  .header("x-r01-errorType",persistEx.getClass().getName())
+										  .header("x-r01-errorCode",coreErrorType.encodeAsString())
+										  .header("x-r01-extErrorCode",coreEx.getExtendedCode())
+										  .header("x-r01-errorMessage",coreEx.getMessage())
+										  .header("x-r01-requestedOperation",coreEx.getCalledMethod().asString())
+										  .header("x-r01-errorType",coreEx.getClass().getName())
 										  .entity(Throwables.getStackTraceAsString(th))
 										  .type(MediaType.TEXT_HTML)
 										  .build();
@@ -121,7 +124,7 @@ public class RESTExceptionMappers {
 		else if (th instanceof IllegalArgumentException) {
 			IllegalArgumentException illArgEx = (IllegalArgumentException)th;
 			outResponse = Response.status(Status.BAD_REQUEST)
-								  .header("x-r01-errorCode",PersistenceErrorType.BAD_REQUEST_DATA)
+								  .header("x-r01-errorCode",COREServiceErrorTypes.BAD_CLIENT_REQUEST.encodeAsString())
 								  .header("x-r01-errorMessage",illArgEx.getMessage())
 								  .header("x-r01-errorType",illArgEx.getClass().getName())
 								  .entity(Throwables.getStackTraceAsString(illArgEx))
@@ -132,7 +135,7 @@ public class RESTExceptionMappers {
 		else {
 			//th.printStackTrace();
 			outResponse = Response.status(Status.INTERNAL_SERVER_ERROR)
-								  .header("x-r01-errorCode",PersistenceErrorType.SERVER_ERROR)
+								  .header("x-r01-errorCode",COREServiceErrorTypes.SERVER_ERROR.encodeAsString())
 								  .header("x-r01-errorMessage",th.getMessage())
 								  .header("x-r01-errorType",th.getClass().getName())
 								  .entity(Throwables.getStackTraceAsString(th))

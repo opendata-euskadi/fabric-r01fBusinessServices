@@ -3,14 +3,18 @@ package r01f.rest.spring;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 
 import lombok.experimental.Accessors;
 import r01f.model.ModelObject;
-import r01f.model.persistence.PersistenceOperationResult;
+import r01f.model.persistence.PersistenceOperationExecOK;
 import r01f.model.search.SearchModelObject;
 import r01f.objectstreamer.Marshaller;
 import r01f.persistence.index.IndexManagementCommand;
@@ -132,12 +136,12 @@ public class RESTModelObjectXmlConverters {
 //  RecordPersistenceOperationResult
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * GenericHttpMessageConverter for all {@link PersistenceOperationResult}
+	 * GenericHttpMessageConverter for all {@link PersistenceOperationOK}
 	 */
 	public static abstract class PersistenceOperationConverter
-		                 extends ObjectMessageXmlConverter<PersistenceOperationResult> {
+		                 extends ObjectMessageXmlConverter<PersistenceOperationExecOK<?>> {
 		public PersistenceOperationConverter(final Marshaller modelObjectsMarshaller) {
-			super(PersistenceOperationResult.class,
+			super(PersistenceOperationExecOK.class,
 				  modelObjectsMarshaller);
 		}
 	}

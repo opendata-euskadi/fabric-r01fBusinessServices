@@ -19,7 +19,7 @@ import r01f.securitycontext.SecurityContext;
 import r01f.util.types.collections.CollectionUtils;
 
 /**
- * Used from {@link CRUDResultBuilder} when composing the {@link PersistenceOperationResult} for a
+ * Used from {@link CRUDResultBuilder} when composing the {@link PersistenceOperationOK} for a
  * multiple entity operation (ie delete all versions)
  * @param <O>
  * @param <M>
@@ -38,16 +38,16 @@ public class CRUDResultForMultipleEntityBuilder<M extends PersistableModelObject
 
         public CRUDOnMultipleResult<T> allExecuted(final PersistenceRequestedOperation reqOp,
                                                    final Collection<CRUDOK<T>> execOKs) {
-            CRUDOnMultipleResult<T> outMultipleCRUDOKs = new CRUDOnMultipleResult<T>(reqOp,
-                                                                                     _entityType);
+            CRUDOnMultipleResult<T> outMultipleCRUDOKs = new CRUDOnMultipleResult<T>(_entityType,
+            																		 reqOp);
             for (CRUDOK<T> crudOK : execOKs) {
                 outMultipleCRUDOKs.addOperationOK(crudOK);
             }
             return outMultipleCRUDOKs;
         }
         public CRUDOnMultipleResult<T> allUpdated(final Collection<T> updateOKs) {
-            CRUDOnMultipleResult<T> outMultipleCRUDOKs = new CRUDOnMultipleResult<T>(PersistenceRequestedOperation.UPDATE,
-                                                                                    _entityType);
+            CRUDOnMultipleResult<T> outMultipleCRUDOKs = new CRUDOnMultipleResult<T>(_entityType,
+            																		 PersistenceRequestedOperation.UPDATE);
             outMultipleCRUDOKs.addOperationsOK(updateOKs,
                                                PersistenceRequestedOperation.UPDATE);
             return outMultipleCRUDOKs;
@@ -59,8 +59,8 @@ public class CRUDResultForMultipleEntityBuilder<M extends PersistableModelObject
                                                                          PersistenceRequestedOperation.UPDATE);
         }
         public CRUDOnMultipleResult<T> allDeleted(final Collection<T> delOKs) {
-            CRUDOnMultipleResult<T> outMultipleCRUDOKs = new CRUDOnMultipleResult<T>(PersistenceRequestedOperation.DELETE,
-                                                                                     _entityType);
+            CRUDOnMultipleResult<T> outMultipleCRUDOKs = new CRUDOnMultipleResult<T>(_entityType,
+            																		 PersistenceRequestedOperation.DELETE);
             outMultipleCRUDOKs.addOperationsOK(delOKs,
                                                PersistenceRequestedOperation.DELETE);
             return outMultipleCRUDOKs;
@@ -77,8 +77,8 @@ public class CRUDResultForMultipleEntityBuilder<M extends PersistableModelObject
         }
         public CRUDOnMultipleResult<T> noneExcecuted(final PersistenceRequestedOperation reqOp,
                                                       final Collection<CRUDError<T>> execErrs) {
-            CRUDOnMultipleResult<T> outMultipleCRUDOKs = new CRUDOnMultipleResult<T>(reqOp,
-                                                                                     _entityType);
+            CRUDOnMultipleResult<T> outMultipleCRUDOKs = new CRUDOnMultipleResult<T>(_entityType,
+            																		 reqOp);
             if (CollectionUtils.hasData(execErrs)) {
                 for (CRUDError<T> crudErr : execErrs) {
                     outMultipleCRUDOKs.addOperationNOK(crudErr);
@@ -88,8 +88,8 @@ public class CRUDResultForMultipleEntityBuilder<M extends PersistableModelObject
         }
         public CRUDOnMultipleResult<T> executed(final PersistenceRequestedOperation reqOp,
                                                 final Collection<CRUDResult<T>> execResults) {
-            CRUDOnMultipleResult<T> outMultipleCRUDResults = new CRUDOnMultipleResult<T>(reqOp,
-                                                                                         _entityType);
+            CRUDOnMultipleResult<T> outMultipleCRUDResults = new CRUDOnMultipleResult<T>(_entityType,
+            																			 reqOp);
             if (CollectionUtils.hasData(execResults)) {
                 for (CRUDResult<T> execResult : execResults) {
                     outMultipleCRUDResults.addOperationResult(execResult);
@@ -100,8 +100,8 @@ public class CRUDResultForMultipleEntityBuilder<M extends PersistableModelObject
         public CRUDOnMultipleResult<T> partilly(final PersistenceRequestedOperation reqOp,
                                                 final Collection<CRUDOK<T>> execOKs,
                                                 final Collection<CRUDError<T>> execNOKs) {
-            CRUDOnMultipleResult<T> outMultipleCRUDOKs = new CRUDOnMultipleResult<T>(reqOp,
-                                                                                     _entityType);
+            CRUDOnMultipleResult<T> outMultipleCRUDOKs = new CRUDOnMultipleResult<T>(_entityType,
+            																		 reqOp);
             if (CollectionUtils.hasData(execOKs)) {
                 for (CRUDOK<T> crudOk : execOKs) {
                     outMultipleCRUDOKs.addOperationOK(crudOk);
@@ -139,8 +139,8 @@ public class CRUDResultForMultipleEntityBuilder<M extends PersistableModelObject
                 okModelObjs.add(dbEntityToModelObjConverter.apply(dbEntity));
             }
             // [2] - Build the result
-            CRUDOnMultipleResult<M> outMultipleCRUDOKs = new CRUDOnMultipleResult<M>(_requestedOp,
-                                                                                     (Class<M>)_entityType);
+            CRUDOnMultipleResult<M> outMultipleCRUDOKs = new CRUDOnMultipleResult<M>((Class<M>)_entityType,
+            																		 _requestedOp);
             outMultipleCRUDOKs.addOperationsOK(okModelObjs,
                                                _requestedOp);
             return outMultipleCRUDOKs;

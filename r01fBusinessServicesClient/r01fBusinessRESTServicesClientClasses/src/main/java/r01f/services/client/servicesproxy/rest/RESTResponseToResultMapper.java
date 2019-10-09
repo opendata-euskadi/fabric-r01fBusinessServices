@@ -1,16 +1,13 @@
 package r01f.services.client.servicesproxy.rest;
 
-import com.google.common.reflect.TypeToken;
-
 import lombok.extern.slf4j.Slf4j;
 import r01f.exceptions.Throwables;
 import r01f.httpclient.HttpResponse;
 import r01f.model.persistence.PersistenceException;
-import r01f.model.persistence.PersistenceOperationExecResult;
 import r01f.objectstreamer.Marshaller;
 import r01f.reflection.ReflectionUtils;
 import r01f.securitycontext.SecurityContext;
-import r01f.services.ServiceProxyException;
+import r01f.services.COREServiceProxyException;
 import r01f.types.url.Url;
 import r01f.util.types.Strings;
 
@@ -62,7 +59,7 @@ public class RESTResponseToResultMapper {
 				outObj = _marshaller.forReading().fromXml(responseStr,
 														  expectedType);
 			} else {
-				throw new ServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake!",
+				throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake!",
 																   restResourceUrl));
 			}
 		}
@@ -73,8 +70,8 @@ public class RESTResponseToResultMapper {
 			
 			log.error("The REST resource {} returned an error code {} with message {}",
 					  restResourceUrl,errorCode,errorMsg);
-			throw new ServiceProxyException(errorMsg);
+			throw new COREServiceProxyException(errorMsg);
 		}
-		return (T)outObj;
+		return outObj;
 	}
 }

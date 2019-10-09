@@ -7,8 +7,8 @@ import com.google.common.eventbus.EventBus;
 
 import lombok.extern.slf4j.Slf4j;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanExposed;
-import r01f.events.PersistenceOperationEvents.PersistenceOperationErrorEvent;
-import r01f.events.PersistenceOperationEvents.PersistenceOperationOKEvent;
+import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecErrorEvent;
+import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecOKEvent;
 import r01f.guids.OIDForVersionableModelObject;
 import r01f.guids.PersistableObjectOID;
 import r01f.guids.VersionIndependentOID;
@@ -19,11 +19,11 @@ import r01f.model.persistence.CRUDOK;
 import r01f.model.persistence.CRUDOnMultipleResult;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.CRUDResultBuilder;
-import r01f.model.persistence.PersistenceOperationOK;
+import r01f.model.persistence.PersistenceOperationExecOK;
 import r01f.model.persistence.PersistenceRequestedOperation;
-import r01f.persistence.callback.spec.PersistenceOperationCallbackSpec;
 import r01f.persistence.db.DBCRUDForVersionableModelObject;
 import r01f.securitycontext.SecurityContext;
+import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 import r01f.services.interfaces.CRUDServicesForVersionableModelObject;
 import r01f.util.types.collections.CollectionUtils;
 
@@ -54,7 +54,7 @@ public abstract class CRUDServicesForVersionableModelObjectDelegateBase<O extend
 /////////////////////////////////////////////////////////////////////////////////////////
 //  LOAD
 /////////////////////////////////////////////////////////////////////////////////////////
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> loadActiveVersionAt(final SecurityContext securityContext,
 						   					 final VersionIndependentOID oid,final Date date) {
 		CRUDResult<M> outEntityLoadResult = null;
@@ -64,8 +64,8 @@ public abstract class CRUDServicesForVersionableModelObjectDelegateBase<O extend
 		if (oid == null || !oid.isValid()) {
 			outEntityLoadResult = CRUDResultBuilder.using(securityContext)
 															  .on(_modelObjectType)
-															  .badClientRequestData(PersistenceRequestedOperation.LOAD,
-																	  				"Cannot load {} entity since either the version independent oid is null",_modelObjectType)
+															  .badClientRequest(PersistenceRequestedOperation.LOAD,
+																	  			"Cannot load {} entity since either the version independent oid is null",_modelObjectType)
 																	  .about(oid,theDate).build();
 		}
 		// [1] - Do load
@@ -74,7 +74,7 @@ public abstract class CRUDServicesForVersionableModelObjectDelegateBase<O extend
 															 oid,theDate);
 		return outEntityLoadResult;
 	}
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> loadWorkVersion(final SecurityContext securityContext,
 							 			 final VersionIndependentOID oid) {
 		CRUDResult<M> outEntityLoadResult = null;
@@ -83,8 +83,8 @@ public abstract class CRUDServicesForVersionableModelObjectDelegateBase<O extend
 		if (oid == null) {
 			outEntityLoadResult = CRUDResultBuilder.using(securityContext)
 															  .on(_modelObjectType)
-															  .badClientRequestData(PersistenceRequestedOperation.LOAD,
-																	  				"Cannot load {} work version entity since the version independent oid is null",_modelObjectType)
+															  .badClientRequest(PersistenceRequestedOperation.LOAD,
+																	  			"Cannot load {} work version entity since the version independent oid is null",_modelObjectType)
 																	  .aboutWorkVersion(oid).build();
 		}
 		// [1] - Do load
@@ -103,16 +103,16 @@ public abstract class CRUDServicesForVersionableModelObjectDelegateBase<O extend
 									  oid,
 									  null);	// no async callback
 	}
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public CRUDOnMultipleResult<M> deleteAllVersions(final SecurityContext securityContext,
 													 final VersionIndependentOID oid,
-													 final PersistenceOperationCallbackSpec callbackSpec) {
+													 final COREServiceMethodCallbackSpec callbackSpec) {
 		// [0] - Check the version info
 		if (oid == null) {
 			CRUDResultBuilder.using(securityContext)
 									    .on(_modelObjectType)
-									    .badClientRequestData(PersistenceRequestedOperation.DELETE,
-											  				  "Cannot delete all {} entity versions since the provided entity oid is null",_modelObjectType);
+									    .badClientRequest(PersistenceRequestedOperation.DELETE,
+											  			  "Cannot delete all {} entity versions since the provided entity oid is null",_modelObjectType);
 		}
 		// [1] - Delete
 		CRUDOnMultipleResult<M> outResults = this.getServiceImplAs(CRUDServicesForVersionableModelObject.class)
@@ -136,16 +136,16 @@ public abstract class CRUDServicesForVersionableModelObjectDelegateBase<O extend
 					  		 entityToBeActivated,
 					  		 null);	// no async callback
 	}
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> activate(final SecurityContext securityContext,
 								  final M entityToBeActivated,
-								  final PersistenceOperationCallbackSpec callbackSpec) {
+								  final COREServiceMethodCallbackSpec callbackSpec) {
 		// [0] - Check params
 		if (entityToBeActivated == null) {
 			return CRUDResultBuilder.using(securityContext)
 									   .on(_modelObjectType)
-									   .badClientRequestData(PersistenceRequestedOperation.CREATE,
-											  				 "The {} entity cannot be null in order to activate that version",_modelObjectType)
+									   .badClientRequest(PersistenceRequestedOperation.CREATE,
+											  			 "The {} entity cannot be null in order to activate that version",_modelObjectType)
 									   .about(entityToBeActivated)
 									   .build();
 		}
@@ -262,7 +262,7 @@ public abstract class CRUDServicesForVersionableModelObjectDelegateBase<O extend
 	 */
 	protected void _fireEvents(final SecurityContext securityContext,
 							   final CRUDOnMultipleResult<M> opResults,
-							   final PersistenceOperationCallbackSpec callbackSpec) {
+							   final COREServiceMethodCallbackSpec callbackSpec) {
 		if (this.getEventBus() == null) return;		// do nothing
 
 		log.debug("Publishing events for: {}",opResults.getClass());
@@ -271,7 +271,7 @@ public abstract class CRUDServicesForVersionableModelObjectDelegateBase<O extend
 		Collection<CRUDError<M>> opsNOK = opResults.getOperationsNOK();
 		if (CollectionUtils.hasData(opsNOK)) {
 			for (CRUDError<M> opNOK : opsNOK) {
-				PersistenceOperationErrorEvent errorEvent = new PersistenceOperationErrorEvent(securityContext,
+				COREServiceMethodExecErrorEvent errorEvent = new COREServiceMethodExecErrorEvent(securityContext,
 													 					         	 		   opNOK,
 													 					         	 		   callbackSpec);
 				this.getEventBus().post(errorEvent);
@@ -281,8 +281,8 @@ public abstract class CRUDServicesForVersionableModelObjectDelegateBase<O extend
 		Collection<CRUDOK<M>> opsOK = opResults.getOperationsOK();
 		// Post OK results
 		if (CollectionUtils.hasData(opsOK)) {
-			for (PersistenceOperationOK opOk : opsOK) {
-				PersistenceOperationOKEvent okEvent = new PersistenceOperationOKEvent(securityContext,
+			for (PersistenceOperationExecOK<?> opOk : opsOK) {
+				COREServiceMethodExecOKEvent okEvent = new COREServiceMethodExecOKEvent(securityContext,
 													 					      	  	  opOk,
 													 					      	  	  callbackSpec);
 				this.getEventBus().post(okEvent);

@@ -4,8 +4,8 @@ import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable;
 import r01f.model.persistence.CRUDResult;
-import r01f.persistence.callback.spec.PersistenceOperationCallbackSpec;
 import r01f.securitycontext.SecurityContext;
+import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 
 /**
  * CRUD (create, read, update, delete) interface for not {@link Versionable} model object
@@ -48,7 +48,7 @@ public interface CRUDServicesForModelObject<O extends PersistableObjectOID,M ext
 	 * Creates a entity
 	 * If the entity is a {@link Versionable} {@link PersistableModelObject}, and no other version exists 
 	 * this creates a fresh new active version. Otherwise, if another version existed, it throws an exception
-	 * This method receives a {@link PersistenceOperationCallbackSpec} that describes how the caller can be
+	 * This method receives a {@link COREServiceMethodCallbackSpec} that describes how the caller can be
 	 * notified about background (async) work executed after the create operation
 	 * @param securityContext the user auth data & context info
 	 * @param modelObj the entity to be created
@@ -57,7 +57,7 @@ public interface CRUDServicesForModelObject<O extends PersistableObjectOID,M ext
 	 */
 	public CRUDResult<M> create(final SecurityContext securityContext,
 				  				final M modelObj,
-				  				final PersistenceOperationCallbackSpec callbackSpec);
+				  				final COREServiceMethodCallbackSpec callbackSpec);
 	/**
 	 * Updates a entity 
 	 * If a entity is a {@link Versionable} {@link PersistableModelObject}, it updates the currently
@@ -72,7 +72,7 @@ public interface CRUDServicesForModelObject<O extends PersistableObjectOID,M ext
 	 * Updates a entity 
 	 * If a entity is a {@link Versionable} {@link PersistableModelObject}, it updates the currently
 	 * active version
-	 * This method receives a {@link PersistenceOperationCallbackSpec} that describes how the caller can be
+	 * This method receives a {@link COREServiceMethodCallbackSpec} that describes how the caller can be
 	 * notified about background (async) work executed after the update operation
 	 * @param securityContext the user auth data & context info
 	 * @param modelObj the entity to be updated
@@ -81,7 +81,7 @@ public interface CRUDServicesForModelObject<O extends PersistableObjectOID,M ext
 	 */
 	public CRUDResult<M> update(final SecurityContext securityContext,
 				  				final M modelObj,
-				  				final PersistenceOperationCallbackSpec callbackSpec);
+				  				final COREServiceMethodCallbackSpec callbackSpec);
 	/**
 	 * Deletes a entity
 	 * If a entity is a {@link Versionable} {@link PersistableModelObject}, it deletes the currently 
@@ -96,7 +96,7 @@ public interface CRUDServicesForModelObject<O extends PersistableObjectOID,M ext
 	 * Deletes a entity
 	 * If a entity is a {@link Versionable} {@link PersistableModelObject}, it deletes the currently 
 	 * active version
-	 * This method receives a {@link PersistenceOperationCallbackSpec} that describes how the caller can be
+	 * This method receives a {@link COREServiceMethodCallbackSpec} that describes how the caller can be
 	 * notified about background (async) work executed after the delete operation
 	 * @param securityContext the user auth data & context info
 	 * @param oid the identifier of the entity to be deleted
@@ -105,5 +105,5 @@ public interface CRUDServicesForModelObject<O extends PersistableObjectOID,M ext
 	 */
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 								final O oid,
-								final PersistenceOperationCallbackSpec callbackSpec);
+								final COREServiceMethodCallbackSpec callbackSpec);
 }

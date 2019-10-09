@@ -114,15 +114,15 @@ public class DelegateForRawRESTFind<O extends PersistableObjectOID,M extends Per
 		if (opResult.hasSucceeded()) {
 			log.info("Successful REST find oids operation at resoure with path={} > ({} results)",restResourceUrl,opResult.getOrThrow().size());
 		}
-		else if (opResult.asCRUDError().wasBecauseClientCouldNotConnectToServer()) {			// as(FindOIDsError.class)
+		else if (opResult.asFindOIDsError().wasBecauseClientCouldNotConnectToServer()) {			// as(FindOIDsError.class)
 			log.error("Client cannot connect to REST endpoint with path={}",restResourceUrl);
-		} else if (!opResult.asCRUDError().wasBecauseAClientError()) {							// as(FindOIDsError.class)
+		} else if (!opResult.asFindOIDsError().wasBecauseAClientError()) {							// as(FindOIDsError.class)
 			log.error("REST: On requesting the find oids operation, the REST resource with path={} returned an error code={}",
-					  restResourceUrl,opResult.asCRUDError().getErrorType().getCode());			// as(FindOIDsError.class)					
+					  restResourceUrl,opResult.asFindOIDsError().getErrorType().getCode());			// as(FindOIDsError.class)					
 			log.debug("[ERROR]: {}",opResult.getDetailedMessage());
 		} else {
 			log.debug("Client error on requesting the {} operation, the REST resource with path={} returned: {}",
-					  opResult.getRequestedOperationName(),restResourceUrl,opResult.getDetailedMessage());
+					  opResult.getRequestedOperation(),restResourceUrl,opResult.getDetailedMessage());
 		}
 	}
 	protected void _logEntitiesResponse(final Url restResourceUrl,
@@ -138,7 +138,7 @@ public class DelegateForRawRESTFind<O extends PersistableObjectOID,M extends Per
 			log.debug("[ERROR]: {}",opResult.getDetailedMessage());
 		} else {
 			log.debug("Client error on requesting the {} operation, the REST resource with path={} returned: {}",
-					  opResult.getRequestedOperationName(),restResourceUrl,opResult.getDetailedMessage());
+					  opResult.getRequestedOperation(),restResourceUrl,opResult.getDetailedMessage());
 		}
 	}
 	protected void _logSummariesResponse(final Url restResourceUrl,
@@ -146,15 +146,15 @@ public class DelegateForRawRESTFind<O extends PersistableObjectOID,M extends Per
 		if (opResult.hasSucceeded()) {
 			log.info("Successful REST find summaries operation at resoure with path={} > ({} results)",restResourceUrl,opResult.getOrThrow().size());
 		}
-		else if (opResult.asCRUDError().wasBecauseClientCouldNotConnectToServer()) {		// as(FindSummariesError.class)
+		else if (opResult.asFindSummariesError().wasBecauseClientCouldNotConnectToServer()) {		// as(FindSummariesError.class)
 			log.error("Client cannot connect to REST endpoint with path={}",restResourceUrl);
-		} else if (!opResult.asCRUDError().wasBecauseAClientError()) {						// as(FindSummariesError.class)
+		} else if (!opResult.asFindSummariesError().wasBecauseAClientError()) {						// as(FindSummariesError.class)
 			log.error("REST: On requesting the find oids operation, the REST resource with path={} returned an error code={}",
-					  restResourceUrl,opResult.asCRUDError().getErrorType().getCode());		// as(FindSummariesError.class)				
+					  restResourceUrl,opResult.asFindSummariesError().getErrorType().getCode());		// as(FindSummariesError.class)				
 			log.debug("[ERROR]: {}",opResult.getDetailedMessage());
 		} else {
 			log.debug("Client error on requesting the {} operation, the REST resource with path={} returned: {}",
-					  opResult.getRequestedOperationName(),restResourceUrl,opResult.getDetailedMessage());
+					  opResult.getRequestedOperation(),restResourceUrl,opResult.getDetailedMessage());
 		}
 	}
 }

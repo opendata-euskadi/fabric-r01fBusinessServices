@@ -16,13 +16,13 @@ import r01f.model.persistence.CRUDError;
 import r01f.model.persistence.CRUDOK;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.CRUDResultBuilder;
-import r01f.model.persistence.PersistenceErrorType;
 import r01f.model.persistence.PersistenceException;
 import r01f.model.persistence.PersistenceRequestedOperation;
+import r01f.model.services.COREServiceErrorType;
 import r01f.objectstreamer.Marshaller;
 import r01f.reflection.ReflectionUtils;
 import r01f.securitycontext.SecurityContext;
-import r01f.services.ServiceProxyException;
+import r01f.services.COREServiceProxyException;
 import r01f.types.url.Url;
 import r01f.util.types.Numbers;
 import r01f.util.types.Strings;
@@ -129,7 +129,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 		
 		// [0] - Load the response		
 		String responseStr = httpResponse.loadAsString();		// DO not move!!
-		if (Strings.isNullOrEmpty(responseStr)) throw new ServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
+		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
 															   									   restResourceUrl));
 		// [1] - Map the response
 		outOperationResult = _marshaller.forReading().fromXml(responseStr,
@@ -159,7 +159,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 		
 		// [0] - Load the http response text
 		String responseStr = httpResponse.loadAsString();
-		if (Strings.isNullOrEmpty(responseStr)) throw new ServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
+		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
 															   									   restResourceUrl));
 		
 		// [1] - Server error (the request could NOT be processed)
@@ -191,7 +191,9 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 				if (Strings.isNOTNullOrEmpty(errorJavaTypeHeader)) errorJavaType = ReflectionUtils.typeFromClassName(errorJavaTypeHeader);
 				
 				if (errorJavaType != null && ReflectionUtils.isSubClassOf(errorJavaType,PersistenceException.class)) {
-					PersistenceErrorType persistErrorType = Strings.isNOTNullOrEmpty(errorCodeHeader) ? PersistenceErrorType.fromName(errorCodeHeader) : null;
+					COREServiceErrorType persistErrorType = Strings.isNOTNullOrEmpty(errorCodeHeader) 
+																		? COREServiceErrorType.fromEncodedString(errorCodeHeader) 
+																		: null;
 					int extErrorCode = Strings.isNOTNullOrEmpty(extErrorCodeHeader) ? Numbers.toInt(extErrorCodeHeader) : -1;
 					
 					if (persistErrorType != null) {
@@ -232,7 +234,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 
 		// [0] - Load the http response text
 		String responseStr = httpResponse.loadAsString();
-		if (Strings.isNullOrEmpty(responseStr)) throw new ServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
+		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
 															   									   restResourceUrl));
 				
 		// [1] - Server error (the request could NOT be processed)

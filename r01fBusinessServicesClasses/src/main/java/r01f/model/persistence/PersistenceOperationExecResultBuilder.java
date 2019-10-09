@@ -5,6 +5,9 @@ import com.google.common.annotations.GwtIncompatible;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import r01f.model.services.COREServiceErrorType;
+import r01f.model.services.COREServiceErrorTypes;
+import r01f.model.services.COREServiceMethod;
 import r01f.patterns.IsBuilder;
 import r01f.securitycontext.SecurityContext;
 import r01f.util.types.Strings;
@@ -46,13 +49,21 @@ public class PersistenceOperationExecResultBuilder
 	public final class PersistenceOperationExecResultBuilderResultStep {
 		private final SecurityContext _securityContext;
 		
-		public PersistenceOperationExecResultBuilderReturnedObjStep executed(final String requestedOpName) {
+		public PersistenceOperationExecResultBuilderReturnedObjStep executed(final COREServiceMethod requestedMethod) {
 			return new PersistenceOperationExecResultBuilderReturnedObjStep(_securityContext,
-																			requestedOpName);
+																			requestedMethod);
 		}
-		public PersistenceOperationExecResultBuilderErrorStep notExecuted(final String requestedOpName) {
+		public PersistenceOperationExecResultBuilderErrorStep notExecuted(final COREServiceMethod requestedMethod) {
 			return new PersistenceOperationExecResultBuilderErrorStep(_securityContext,
-																	  requestedOpName);
+																	  requestedMethod);
+		}
+		public PersistenceOperationExecResultBuilderReturnedObjStep executed(final PersistenceRequestedOperation requestedMethod) {
+			return new PersistenceOperationExecResultBuilderReturnedObjStep(_securityContext,
+																			requestedMethod.getCOREServiceMethod());
+		}
+		public PersistenceOperationExecResultBuilderErrorStep notExecuted(final PersistenceRequestedOperation requestedMethod) {
+			return new PersistenceOperationExecResultBuilderErrorStep(_securityContext,
+																	  requestedMethod.getCOREServiceMethod());
 		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -61,12 +72,11 @@ public class PersistenceOperationExecResultBuilder
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class PersistenceOperationExecResultBuilderReturnedObjStep {
 		protected final SecurityContext _securityContext;
-		protected final String _requestedOpName;
+		protected final COREServiceMethod _requestedMethod;
 		
 		public <T> PersistenceOperationExecOK<T> returning(final T instance) {
 			PersistenceOperationExecOK<T> outOpOK = new PersistenceOperationExecOK<T>();
-			outOpOK.setRequestedOperationName(_requestedOpName);
-			outOpOK.setOperationExecResult(instance);
+			outOpOK.setMethodExecResult(instance);
 			return outOpOK;
 		}
 		
@@ -77,37 +87,33 @@ public class PersistenceOperationExecResultBuilder
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class PersistenceOperationExecResultBuilderErrorStep {
 		protected final SecurityContext _securityContext;
-		protected final String _requestedOpName;
+		protected final COREServiceMethod _requestedMethod;
 		
 		public <T> PersistenceOperationExecError<T> because(final PersistenceOperationExecError<?> other) {
 			return this.because(other.getError());
 		}
 		public <T> PersistenceOperationExecError<T> because(final Throwable th) {
-			PersistenceOperationExecError<T> outError = new PersistenceOperationExecError<T>(PersistenceRequestedOperation.OTHER,
+			PersistenceOperationExecError<T> outError = new PersistenceOperationExecError<T>(_requestedMethod,
 																							 th);
-			outError.setRequestedOperationName(_requestedOpName);
 			return outError;
 		}
 		public <T> PersistenceOperationExecError<T> because(final String error,
-															final PersistenceErrorType errType) {
-			PersistenceOperationExecError<T> outError = new PersistenceOperationExecError<T>(PersistenceRequestedOperation.OTHER,
-																							 error,
-																							 errType);
-			outError.setRequestedOperationName(_requestedOpName);
+															final COREServiceErrorType errType) {
+			PersistenceOperationExecError<T> outError = new PersistenceOperationExecError<T>(_requestedMethod,
+																							 errType,
+																							 error);
 			return outError;
 		}
 		public <T> PersistenceOperationExecError<T> becauseClientBadRequest(final String msg,final Object... vars) {
-			PersistenceOperationExecError<T> outError = new PersistenceOperationExecError<T>(PersistenceRequestedOperation.OTHER,
-																							 Strings.customized(msg,vars),			// the error message
-											     		 					   		   	     PersistenceErrorType.BAD_REQUEST_DATA);// is a client error
-			outError.setRequestedOperationName(_requestedOpName);
+			PersistenceOperationExecError<T> outError = new PersistenceOperationExecError<T>(_requestedMethod,
+																							 COREServiceErrorTypes.BAD_CLIENT_REQUEST,
+																							 Strings.customized(msg,vars));		// the error message
 			return outError;
 		}
-		public <T,M> PersistenceOperationExecResult<T> because(final CRUDError<M> crudError) {
-			PersistenceOperationExecError<T> outError = new PersistenceOperationExecError<T>(PersistenceRequestedOperation.OTHER,
-																							 crudError.getErrorMessage(),
-																							 crudError.getErrorType());
-			outError.setRequestedOperationName(_requestedOpName);
+		public <T,M> PersistenceOperationResult<T> because(final CRUDError<M> crudError) {
+			PersistenceOperationExecError<T> outError = new PersistenceOperationExecError<T>(_requestedMethod,
+																							 crudError.getErrorType(),	
+																							 crudError.getErrorMessage());
 			return outError;
 		}
 	}

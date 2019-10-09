@@ -14,8 +14,8 @@ import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDResult;
 import r01f.objectstreamer.Marshaller;
-import r01f.persistence.callback.spec.PersistenceOperationCallbackSpec;
 import r01f.securitycontext.SecurityContext;
+import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 import r01f.services.interfaces.CRUDServicesForModelObject;
 
 
@@ -99,7 +99,7 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> create(final SecurityContext securityContext, 
 								final M record,
-								final PersistenceOperationCallbackSpec callbackSpec) {
+								final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.forSecurityContext(securityContext)
 						.createDelegateAs(CRUDServicesForModelObject.class)
 							.create(securityContext,
@@ -118,7 +118,7 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> update(final SecurityContext securityContext, 
 								final M record,
-								final PersistenceOperationCallbackSpec callbackSpec) {
+								final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.forSecurityContext(securityContext)
 						.createDelegateAs(CRUDServicesForModelObject.class)
 							.update(securityContext,
@@ -137,7 +137,7 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 							    final O oid,
-							    final PersistenceOperationCallbackSpec callbackSpec) {
+							    final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.forSecurityContext(securityContext)
 						.createDelegateAs(CRUDServicesForModelObject.class)
 							.delete(securityContext,

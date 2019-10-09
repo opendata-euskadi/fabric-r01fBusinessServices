@@ -11,8 +11,8 @@ import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.PersistenceException;
 import r01f.objectstreamer.Marshaller;
-import r01f.persistence.callback.spec.PersistenceOperationCallbackSpec;
 import r01f.securitycontext.SecurityContext;
+import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 import r01f.services.interfaces.CRUDServicesForModelObject;
 import r01f.types.dirtytrack.DirtyTrackAdapter;
 
@@ -44,7 +44,7 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 * @return
 	 * @throws PersistenceException 
 	 */
-	public M load(final O oid) throws PersistenceException {
+	public M load(final O oid) {
 		CRUDResult<M> loadOpResult = this.getServiceProxy()
 												.load(this.getSecurityContext(),
 	 	  		 								      oid);
@@ -65,11 +65,11 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 * @return
 	 * @throws PersistenceException
 	 */
-	public M loadOrNull(final O oid) throws PersistenceException {
+	public M loadOrNull(final O oid) {
 		M outRecord = null;
 		try {
 			outRecord = this.load(oid);
-		} catch(PersistenceException persistEx) {
+		} catch (PersistenceException persistEx) {
 			if (!persistEx.isEntityNotFound()) throw persistEx;  
 		}
 		return outRecord;
@@ -80,7 +80,7 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 * @return
 	 * @throws PersistenceException
 	 */
-	public boolean exists(final O oid) throws PersistenceException {
+	public boolean exists(final O oid) {
 		return this.loadOrNull(oid) != null;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -92,7 +92,7 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 * @return
 	 * @throws PersistenceException
 	 */
-	public M update(final M record) throws PersistenceException {
+	public M update(final M record) {
 		// [0] - If the record is a DirtyStateTrackable instance check that the instance is NEW
 		if (record instanceof DirtyStateTrackable) {
 			// TODO trckReceivedRecord.getTrackingStatus().isThisNew() always returns NEW!!
@@ -124,7 +124,7 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 * @return
 	 * @throws PersistenceException
 	 */
-	public M create(final M record) throws PersistenceException {
+	public M create(final M record) {
 		// [0] - If the record is a DirtyStateTrackable instance check that the instance is NEW
 		if (record instanceof DirtyStateTrackable) {
 			// TODO trckReceivedRecord.getTrackingStatus().isThisNew() always returns NEW!!
@@ -159,7 +159,7 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 * @return
 	 * @throws PersistenceException 
 	 */
-	public M save(final M record) throws PersistenceException {
+	public M save(final M record) {
 		// [0] - The record to save MUST be a trackable object
 		//		 (otherwise we won't know if it's a creat operation or an update one)
 		if (!(record instanceof DirtyStateTrackable)) throw new IllegalStateException(Throwables.message("{} is NOT a {} instance... " +
@@ -214,7 +214,7 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 * @throws PersistenceException 
 	 */
 	public M save(final M record,
-				  final PersistenceOperationCallbackSpec callbackSpec) {
+				  final COREServiceMethodCallbackSpec callbackSpec) {
 		// [0] - The record to save MUST be a trackable object
 		//		 (otherwise we won't know if it's a creat operation or an update one)
 		if (!(record instanceof DirtyStateTrackable)) throw new IllegalStateException(Throwables.message("{} is NOT a {} instance... " +
@@ -290,7 +290,7 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 * @return the deleted record if the operation was successful, null otherwise
 	 * @throws PersistenceException 
 	 */
-	public M delete(final M record) throws PersistenceException {
+	public M delete(final M record) {
 		return this.delete(record.getOid());
 	}
 	/**
@@ -299,7 +299,7 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 * @return the deleted record if the operation was successful, null otherwise
 	 * @throws PersistenceException 
 	 */
-	public M delete(final O recordOid) throws PersistenceException {
+	public M delete(final O recordOid) {
 		// [1] - Delete the record
 		CRUDResult<M> deleteOpResult = this.getServiceProxy()
 												.delete(this.getSecurityContext(),

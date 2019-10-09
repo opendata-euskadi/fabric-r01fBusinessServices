@@ -15,7 +15,7 @@ import r01f.model.persistence.FindSummariesResult;
 import r01f.model.persistence.FindSummariesResultBuilder;
 import r01f.objectstreamer.Marshaller;
 import r01f.securitycontext.SecurityContext;
-import r01f.services.ServiceProxyException;
+import r01f.services.COREServiceProxyException;
 import r01f.types.url.Url;
 import r01f.util.types.Strings;
 
@@ -48,19 +48,19 @@ public class RESTResponseToFindSummariesResultMapper<O extends PersistableObject
 		}
 		return outOperationResult;
 	}
-	@SuppressWarnings({ "rawtypes","unused" })
+	@SuppressWarnings({ "rawtypes","serial" })
 	protected FindSummariesOK<M> _mapHttpResponseForSuccessFindingSummaries(final SecurityContext securityContext,
 												   	   			   			final Url restResourceUrl,final HttpResponse httpResponse) {
 		FindSummariesOK<M> outOperationResult = null;
 		
 		// [0] - Load the response		
 		String responseStr = httpResponse.loadAsString();		// DO not move!!
-		if (Strings.isNullOrEmpty(responseStr)) throw new ServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
+		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
 															   									   restResourceUrl));
 		// [1] - Map the response
 		outOperationResult = _marshaller.forReading().fromXml(responseStr,
 															  new TypeToken<FindSummariesOK<M>>() { /* nothing */ });
-		if ( ((FindSummariesResult)outOperationResult).getOrThrow() == null) outOperationResult.setOperationExecResult(new ArrayList<SummarizedModelObject<M>>());	// ensure an empty array list for no results
+		if ( ((FindSummariesResult)outOperationResult).getOrThrow() == null) outOperationResult.setMethodExecResult(new ArrayList<SummarizedModelObject<M>>());	// ensure an empty array list for no results
 		
 		// [2] - Return
 		return outOperationResult;
@@ -71,7 +71,7 @@ public class RESTResponseToFindSummariesResultMapper<O extends PersistableObject
 		
 		// [0] - Load the http response text
 		String responseStr = httpResponse.loadAsString();
-		if (Strings.isNullOrEmpty(responseStr)) throw new ServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
+		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
 															   									   restResourceUrl));
 		
 		// [1] - Server error (the request could NOT be processed)

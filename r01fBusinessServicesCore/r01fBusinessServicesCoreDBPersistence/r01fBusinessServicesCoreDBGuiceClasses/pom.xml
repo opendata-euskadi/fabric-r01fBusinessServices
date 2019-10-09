@@ -16,8 +16,8 @@
 <!-- ====================================================================== -->
 <!-- ARTIFACT                                                               -->
 <!-- ====================================================================== -->
-	<name>r01fBusinessServicesCoreDBPersistenceGuiceClasses</name>
-	<artifactId>r01fBusinessServicesCoreDBPersistenceGuiceClasses</artifactId>
+	<name>r01fBusinessServicesCoreDBGuiceClasses</name>
+	<artifactId>r01fBusinessServicesCoreDBGuiceClasses</artifactId>
 	
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->

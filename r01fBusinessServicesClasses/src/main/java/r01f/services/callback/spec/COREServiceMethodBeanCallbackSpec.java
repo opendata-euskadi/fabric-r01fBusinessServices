@@ -1,30 +1,30 @@
-package r01f.persistence.callback.spec;
+package r01f.services.callback.spec;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import r01f.objectstreamer.annotations.MarshallField;
 import r01f.objectstreamer.annotations.MarshallType;
-import r01f.persistence.callback.PersistenceOperationCallback;
+import r01f.services.callback.COREMethodCallback;
 
 @MarshallType(as="beanCallbackSpec")
 @Accessors(prefix="_")
-public class PersistenceOperationBeanCallbackSpec
-     extends PersistenceOperationCallbackSpecBase {
+public class COREServiceMethodBeanCallbackSpec
+     extends COREServiceMethodCallbackSpecBase {
 
 	private static final long serialVersionUID = -169301594778012524L;
 /////////////////////////////////////////////////////////////////////////////////////////
 // 	FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////
 	@MarshallField(as="implType")
-	@Getter @Setter private Class<? extends PersistenceOperationCallback> _implType;
+	@Getter @Setter private Class<? extends COREMethodCallback> _implType;
 /////////////////////////////////////////////////////////////////////////////////////////
 // 	
 /////////////////////////////////////////////////////////////////////////////////////////
-	public PersistenceOperationBeanCallbackSpec() {
+	public COREServiceMethodBeanCallbackSpec() {
 		// default no-args constructor
 	}
-	public PersistenceOperationBeanCallbackSpec(final Class<? extends PersistenceOperationCallback> callbackType) {
+	public COREServiceMethodBeanCallbackSpec(final Class<? extends COREMethodCallback> callbackType) {
 		_implType = callbackType;
 	}
 }

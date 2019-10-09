@@ -1,4 +1,4 @@
-package r01f.persistence.callback.spec;
+package r01f.services.callback.spec;
 
 import java.util.Map;
 
@@ -16,8 +16,8 @@ import r01f.types.url.Url;
 @MarshallType(as="restCallbackSpecs")
 @Accessors(prefix="_")
 @NoArgsConstructor
-public class PersistenceOperationRESTCallbackSpec
-     extends PersistenceOperationCallbackSpecBase {
+public class COREServiceMethodRESTCallbackSpec
+     extends COREServiceMethodCallbackSpecBase {
 	
 	private static final long serialVersionUID = -989576814692507039L;
 /////////////////////////////////////////////////////////////////////////////////////////

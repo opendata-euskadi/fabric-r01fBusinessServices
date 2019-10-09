@@ -7,7 +7,7 @@ import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable;
 import r01f.model.persistence.CRUDOnMultipleResult;
 import r01f.model.persistence.CRUDResult;
-import r01f.model.persistence.PersistenceOperationExecResult;
+import r01f.model.persistence.PersistenceOperationResult;
 import r01f.securitycontext.SecurityContext;
 
 /**
@@ -46,8 +46,8 @@ public interface CRUDServicesForDependentModelObject<O extends PersistableObject
 	 * @param oid
 	 * @return
 	 */
-	public <PR extends ModelObjectRef<P>> PersistenceOperationExecResult<PR> parentReferenceOf(final SecurityContext securityContext,
-							   			   								  					   final O oid);
+	public <PR extends ModelObjectRef<P>> PersistenceOperationResult<PR> parentReferenceOf(final SecurityContext securityContext,
+							   			   								  				   final O oid);
 	/**
 	 * Deletes all child objects of the given parent object
 	 * @param securityContext

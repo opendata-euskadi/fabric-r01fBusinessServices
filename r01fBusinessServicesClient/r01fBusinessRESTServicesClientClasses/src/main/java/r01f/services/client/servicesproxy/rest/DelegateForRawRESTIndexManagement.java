@@ -11,7 +11,7 @@ import r01f.mime.MimeTypes;
 import r01f.objectstreamer.Marshaller;
 import r01f.persistence.index.IndexManagementCommand;
 import r01f.securitycontext.SecurityContext;
-import r01f.services.ServiceProxyException;
+import r01f.services.COREServiceProxyException;
 import r01f.types.jobs.EnqueuedJob;
 import r01f.types.url.Url;
 import r01f.util.types.Strings;
@@ -63,7 +63,7 @@ public class DelegateForRawRESTIndexManagement
 				throw new IllegalArgumentException(Throwables.message("The index resource {} is NOT valid",restResourceUrl));
 			}
 		} catch(IOException ioEx) {
-			throw new ServiceProxyException(ioEx);
+			throw new COREServiceProxyException(ioEx);
 		}
 		
 		// [3] - De-serialize response

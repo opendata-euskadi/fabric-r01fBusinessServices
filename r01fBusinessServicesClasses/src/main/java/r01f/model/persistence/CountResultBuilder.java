@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import r01f.model.persistence.CountResultForEntityBuilder.CountResultBuilderForErrorExtErrorCodeStep;
 import r01f.model.persistence.CountResultForEntityBuilder.CountResultBuilderForErrorStep;
 import r01f.model.persistence.CountResultForEntityBuilder.CountResultBuilderForOKStep;
+import r01f.model.services.COREServiceErrorTypes;
 import r01f.patterns.IsBuilder;
 import r01f.securitycontext.SecurityContext;
 import r01f.util.types.Strings;
@@ -76,18 +77,16 @@ public class CountResultBuilder
 		protected final Class<T> _entityType;
 		
 		//  --------- ERROR
-		public CountResultBuilderForErrorExtErrorCodeStep<T> badClientRequestData(final String reqOp,
-																	  final String msg,final Object... vars) {
+		public CountResultBuilderForErrorExtErrorCodeStep<T> badClientRequest(final String msg,final Object... vars) {
 			CountError<T> err = new CountError<T>(_entityType,
-												   reqOp,
-												   Strings.customized(msg,vars),PersistenceErrorType.BAD_REQUEST_DATA);
+												   COREServiceErrorTypes.BAD_CLIENT_REQUEST,
+												   Strings.customized(msg,vars));
 			return new CountResultBuilderForErrorExtErrorCodeStep<T>(_securityContext,
 														 			 err);
 		}
 		public CountResultBuilderForErrorStep<T> not(final String reqOp) {
 			return new CountResultBuilderForErrorStep<T>(_securityContext,
-														 _entityType,
-														 reqOp);
+														 _entityType);
 		}
 		// --------- SUCCESS
 		public CountResultBuilderForOKStep<T> counted(final String reqOp) {

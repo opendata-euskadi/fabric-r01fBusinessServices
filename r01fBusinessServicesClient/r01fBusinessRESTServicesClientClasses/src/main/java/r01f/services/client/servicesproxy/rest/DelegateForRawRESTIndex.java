@@ -9,7 +9,7 @@ import r01f.httpclient.HttpResponse;
 import r01f.mime.MimeTypes;
 import r01f.objectstreamer.Marshaller;
 import r01f.securitycontext.SecurityContext;
-import r01f.services.ServiceProxyException;
+import r01f.services.COREServiceProxyException;
 import r01f.types.jobs.EnqueuedJob;
 import r01f.types.url.Url;
 
@@ -58,7 +58,7 @@ public class DelegateForRawRESTIndex
 										 	.directNoAuthConnected();
 			}
 		} catch(IOException ioEx) {
-			throw new ServiceProxyException(ioEx);
+			throw new COREServiceProxyException(ioEx);
 		}
 		
 		// [3] - De-serialize response
@@ -99,7 +99,7 @@ public class DelegateForRawRESTIndex
 										 	.directNoAuthConnected();
 			}
 		} catch(IOException ioEx) {
-			throw new ServiceProxyException(ioEx);
+			throw new COREServiceProxyException(ioEx);
 		}
 		
 		// [3] - De-serialize response
@@ -144,7 +144,7 @@ public class DelegateForRawRESTIndex
 										 	.directNoAuthConnected();
 			}
 		} catch(IOException ioEx) {
-			throw new ServiceProxyException(ioEx);
+			throw new COREServiceProxyException(ioEx);
 		}
 		
 		// [3] - De-serialize response

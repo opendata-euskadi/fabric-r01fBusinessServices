@@ -5,7 +5,6 @@ import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable.HasVersionableFacet;
 import r01f.model.persistence.FindResult;
-import r01f.model.persistence.PersistenceOperationResult;
 import r01f.securitycontext.SecurityContext;
 
 /**
@@ -21,7 +20,7 @@ public interface FindServicesForVersionableModelObject<O extends OIDForVersionab
 	/**
 	 * Finds all model object's versions
 	 * @param securityContext the user auth data & context info
-	 * @return a {@link PersistenceOperationResult} that encapsulates the oids
+	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
 	public FindResult<M> findAllVersions(final SecurityContext securityContext);
 }

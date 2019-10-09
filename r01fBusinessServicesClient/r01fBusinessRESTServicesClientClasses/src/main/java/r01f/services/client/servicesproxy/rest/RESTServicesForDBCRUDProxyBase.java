@@ -8,8 +8,8 @@ import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.PersistenceRequestedOperation;
 import r01f.objectstreamer.Marshaller;
-import r01f.persistence.callback.spec.PersistenceOperationCallbackSpec;
 import r01f.securitycontext.SecurityContext;
+import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 import r01f.services.client.servicesproxy.rest.RESTServiceResourceUrlPathBuilders.RESTServiceResourceUrlPathBuilderForModelObjectPersistence;
 import r01f.services.interfaces.CRUDServicesForModelObject;
 import r01f.types.url.Url;
@@ -89,7 +89,7 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 	@Override
 	public CRUDResult<M> create(final SecurityContext securityContext,
 								final M entity,
-								final PersistenceOperationCallbackSpec callbackSpec) {
+								final COREServiceMethodCallbackSpec callbackSpec) {
 		// do the http call
 		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
 															   			  .pathOfAllEntities());	//   .pathOfEntity(entity.getOid())); 	// _resourcePathForRecord(record,PersistenceRequestedOperation.CREATE);
@@ -123,7 +123,7 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 	@Override
 	public CRUDResult<M> update(final SecurityContext securityContext,
 								final M entity,
-								final PersistenceOperationCallbackSpec callbackSpec) {
+								final COREServiceMethodCallbackSpec callbackSpec) {
 		// do the http call
 		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
 													 		   			  .pathOfEntity(entity.getOid())); 	// _resourcePathForRecord(record,PersistenceRequestedOperation.UPDATE);
@@ -155,7 +155,7 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 	@Override 
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 							    final O oid,
-							    final PersistenceOperationCallbackSpec callbackSpec) {
+							    final COREServiceMethodCallbackSpec callbackSpec) {
 		// do the http call
 		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
 															   			  .pathOfEntity(oid));
@@ -192,17 +192,17 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 	protected void _logResponse(final Url restResourceUrl,
 						   	    final CRUDResult<M> opResult) {
 		if (opResult.hasSucceeded()) {
-			log.info("Successful REST {} operation at resource path={} on entity with oid={}",opResult.getRequestedOperationName(),restResourceUrl,opResult.getOrThrow().getOid());
+			log.info("Successful REST {} operation at resource path={} on entity with oid={}",opResult.getRequestedOperation(),restResourceUrl,opResult.getOrThrow().getOid());
 		}
 		else if (opResult.asCRUDError().wasBecauseClientCouldNotConnectToServer()) {			// as(CRUDError.class)
 			log.error("Client cannot connect to REST endpoint {}",restResourceUrl);
 		} else if (!opResult.asCRUDError().wasBecauseAClientError()) {							// as(CRUDError.class)
 			log.error("REST: On requesting the {} operation, the REST resource with path={} returned a persistence error code={}",
-					  opResult.getRequestedOperationName(),restResourceUrl,opResult.asCRUDError().getErrorType().getCode());					
+					  opResult.getRequestedOperation(),restResourceUrl,opResult.asCRUDError().getErrorType().getCode());					
 			log.debug("[ERROR]: {}",opResult.getDetailedMessage());
 		} else {
 			log.debug("Client error on requesting the {} operation, the REST resource with path={} returned: {}",
-					  opResult.getRequestedOperationName(),restResourceUrl,opResult.getDetailedMessage());
+					  opResult.getRequestedOperation(),restResourceUrl,opResult.getDetailedMessage());
 		}
 	}
 }

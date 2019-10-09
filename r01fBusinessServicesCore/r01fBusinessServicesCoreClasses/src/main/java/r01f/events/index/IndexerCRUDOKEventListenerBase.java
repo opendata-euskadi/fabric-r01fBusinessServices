@@ -4,8 +4,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import lombok.extern.slf4j.Slf4j;
-import r01f.events.PersistenceOperationEvents.PersistenceOperationOKEvent;
-import r01f.events.crud.CRUDOperationOKEventListenerBase;
+import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecOKEvent;
+import r01f.events.crud.CRUDOKEventListenerBase;
 import r01f.facets.HasOID;
 import r01f.guids.OID;
 import r01f.model.IndexableModelObject;
@@ -15,13 +15,13 @@ import r01f.services.interfaces.IndexServicesForModelObject;
 import r01f.types.jobs.EnqueuedJob;
 
 /**
- * Listener to {@link PersistenceOperationOKEvent}s thrown by the persistence layer through the {@link EventBus}
+ * Listener to {@link COREServiceMethodExecOKEvent}s thrown by the persistence layer through the {@link EventBus}
  * @param <M>
  */
 @Slf4j
 abstract class IndexerCRUDOKEventListenerBase<O extends OID,M extends IndexableModelObject,
 											  S extends IndexServicesForModelObject<O,M>> 
-       extends CRUDOperationOKEventListenerBase {
+       extends CRUDOKEventListenerBase {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIELDS
@@ -42,13 +42,14 @@ abstract class IndexerCRUDOKEventListenerBase<O extends OID,M extends IndexableM
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Subscribe	// subscribes this event listener at the EventBus
-	@Override
-	public void onPersistenceOperationOK(final PersistenceOperationOKEvent opOKEvent) {
+	@Override @SuppressWarnings("unchecked")
+	public void onPersistenceOperationOK(final COREServiceMethodExecOKEvent opOKEvent) {
 		// [1] - Check if the event has to be handled
 		// 				a) the event refers to the same model object type THIS event handler handles
 		//				b) the operation is an update, create or delete operation
-		CRUDOK<? extends M> opOK = opOKEvent.getResultAsCRUDOperationOK();
-		boolean hasToBeHandled = opOK.getObjectType() == _type												// a)										
+		CRUDOK<? extends M> opOK = opOKEvent.getAsCOREServiceMethodExecOK()
+											.as(CRUDOK.class);
+		boolean hasToBeHandled = opOK.getObjectType() == _type													// a)										
 						      && (opOK.hasBeenUpdated() || opOK.hasBeenCreated() || opOK.hasBeenDeleted());		// b)
 		
 		// [2] - Debug

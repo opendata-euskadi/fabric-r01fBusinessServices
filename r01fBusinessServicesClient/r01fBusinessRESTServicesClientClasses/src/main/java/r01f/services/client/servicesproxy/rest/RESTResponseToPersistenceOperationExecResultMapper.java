@@ -2,20 +2,19 @@ package r01f.services.client.servicesproxy.rest;
 
 import com.google.common.reflect.TypeToken;
 
-import lombok.extern.slf4j.Slf4j;
 import r01f.exceptions.Throwables;
 import r01f.httpclient.HttpResponse;
-import r01f.model.persistence.PersistenceErrorType;
 import r01f.model.persistence.PersistenceException;
-import r01f.model.persistence.PersistenceOperationExecResult;
 import r01f.model.persistence.PersistenceOperationExecResultBuilder;
+import r01f.model.persistence.PersistenceOperationResult;
+import r01f.model.services.COREServiceErrorTypes;
+import r01f.model.services.COREServiceMethod;
 import r01f.objectstreamer.Marshaller;
 import r01f.securitycontext.SecurityContext;
-import r01f.services.ServiceProxyException;
+import r01f.services.COREServiceProxyException;
 import r01f.types.url.Url;
 import r01f.util.types.Strings;
 
-@Slf4j
 public class RESTResponseToPersistenceOperationExecResultMapper {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIELDS
@@ -39,9 +38,9 @@ public class RESTResponseToPersistenceOperationExecResultMapper {
 	 * @return
 	 * @throws PersistenceException
 	 */
-	public <T> PersistenceOperationExecResult<T> mapHttpResponse(final SecurityContext securityContext,
+	public <T> PersistenceOperationResult<T> mapHttpResponse(final SecurityContext securityContext,
 															 	 final Url restResourceUrl,final HttpResponse httpResponse) {
-		PersistenceOperationExecResult<T> outResult = null;
+		PersistenceOperationResult<T> outResult = null;
 		if (httpResponse.isSuccess()) {
 			outResult = _mapHttpResponseForSuccess(securityContext,
 												   restResourceUrl,httpResponse);
@@ -51,46 +50,48 @@ public class RESTResponseToPersistenceOperationExecResultMapper {
 		}
 		return outResult;
 	}
-	@SuppressWarnings({ "unused" })
-	protected <T> PersistenceOperationExecResult<T> _mapHttpResponseForSuccess(final SecurityContext securityContext,
+	@SuppressWarnings({ "unused","serial" })
+	protected <T> PersistenceOperationResult<T> _mapHttpResponseForSuccess(final SecurityContext securityContext,
 												   	   			  		   	   final Url restResourceUrl,final HttpResponse httpResponse) {
-		PersistenceOperationExecResult<T> outOperationResult = null;
+		PersistenceOperationResult<T> outOperationResult = null;
 		
 		// [0] - Load the response		
 		String responseStr = httpResponse.loadAsString();		// DO not move!!
-		if (Strings.isNullOrEmpty(responseStr)) throw new ServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
+		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
 															   									   restResourceUrl));
 		// [1] - Map the response
-		outOperationResult = _marshaller.forReading().fromXml(responseStr,
-															  new TypeToken<PersistenceOperationExecResult<T>>() { /* nothing */ });
+		outOperationResult = _marshaller.forReading()
+										.fromXml(responseStr,
+												 new TypeToken<PersistenceOperationResult<T>>() { /* nothing */ });
 		
 		// [2] - Return
 		return outOperationResult;
 	}
-	protected static <T> PersistenceOperationExecResult<T> _mapHttpResponseForError(final SecurityContext securityContext,
-																			 		final Url restResourceUrl,final HttpResponse httpResponse) {
-		PersistenceOperationExecResult<T> outOpError = null;
+	protected static <T> PersistenceOperationResult<T> _mapHttpResponseForError(final SecurityContext securityContext,
+																			    final Url restResourceUrl,final HttpResponse httpResponse) {
+		PersistenceOperationResult<T> outOpError = null;
 		
 		// [0] - Load the http response text
 		String responseStr = httpResponse.loadAsString();
-		if (Strings.isNullOrEmpty(responseStr)) throw new ServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
+		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
 															   									   restResourceUrl));
-		String requestedOp = httpResponse.getSingleValuedHeaderAsString("x-r01-requestedOperation");
-		if (requestedOp == null) requestedOp = "unknown operation";
+		String requestedOpStr = httpResponse.getSingleValuedHeaderAsString("x-r01-requestedOperation");
+		COREServiceMethod reqIp = requestedOpStr != null ? COREServiceMethod.named(requestedOpStr)
+													     : COREServiceMethod.UNKNOWN;
 		
 		// [1] - Server error (the request could NOT be processed)
 		if (httpResponse.isServerError()) {
 			outOpError = PersistenceOperationExecResultBuilder.using(securityContext)
-															  .notExecuted(requestedOp)
+															  .notExecuted(reqIp)
 															  .because(responseStr,
-																	   PersistenceErrorType.SERVER_ERROR);
+																	   COREServiceErrorTypes.SERVER_ERROR);
 		}
 		// [2] - Error while request processing: the PersistenceOperationExecError comes INSIDE the response
 		else {
 			outOpError = PersistenceOperationExecResultBuilder.using(securityContext)
-															  .notExecuted(requestedOp)
+															  .notExecuted(reqIp)
 															  .because(responseStr,
-																	   PersistenceErrorType.BAD_REQUEST_DATA);
+																	   COREServiceErrorTypes.BAD_CLIENT_REQUEST);
 		}
 		// [4] - Return the CRUDOperationResult
 		return outOpError;

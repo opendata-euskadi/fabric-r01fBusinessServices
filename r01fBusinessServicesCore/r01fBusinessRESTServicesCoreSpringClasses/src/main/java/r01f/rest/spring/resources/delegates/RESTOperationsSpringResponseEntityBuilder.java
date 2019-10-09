@@ -3,6 +3,8 @@ package r01f.rest.spring.resources.delegates;
 import java.net.URI;
 import java.util.Collection;
 
+import javax.ws.rs.core.Response;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
@@ -20,7 +22,7 @@ import r01f.model.persistence.FindOIDsResult;
 import r01f.model.persistence.FindResult;
 import r01f.model.persistence.FindSummariesResult;
 import r01f.model.persistence.PersistenceException;
-import r01f.model.persistence.PersistenceOperationExecResult;
+import r01f.model.persistence.PersistenceOperationResult;
 import r01f.model.search.SearchResults;
 import r01f.patterns.IsBuilder;
 import r01f.types.jobs.EnqueuedJob;
@@ -126,24 +128,24 @@ public abstract class RESTOperationsSpringResponseEntityBuilder
 		private final MediaType _mediaType;
 		/**
 		 * Returns a REST {@link Response} for a CRUD operation
-		 * @param persistenceOpResult
+		 * @param crudResult
 		 * @return the response
 		 * @throws PersistenceException
 		 */
 		@SuppressWarnings("unchecked")
-		public ResponseEntity<M> build(final CRUDResult<M> persistenceOpResult) throws PersistenceException {
+		public ResponseEntity<M> build(final CRUDResult<M> crudResult) throws PersistenceException {
 			ResponseEntity<M>  outResponse = null;
 
 			// Failed operation
-			if (persistenceOpResult.hasFailed()) {
+			if (crudResult.hasFailed()) {
 				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
-				persistenceOpResult.asCRUDError()		// as(PersistenceOperationError.class)
-								   .throwAsPersistenceException();	// throw an exception
+				crudResult.asCRUDError()		
+						  .throwAsPersistenceException();
 
 			}
 			// Successful operation
-			else if (persistenceOpResult.hasSucceeded()) {
-				CRUDOK<M> persistCRUDOK = persistenceOpResult.asCRUDOK();		//as(CRUDOK.class);
+			else if (crudResult.hasSucceeded()) {
+				CRUDOK<M> persistCRUDOK = crudResult.asCRUDOK();		//as(CRUDOK.class);
 
 				if (persistCRUDOK.hasBeenLoaded()) {
 					outResponse = (ResponseEntity<M>) ResponseEntity.ok()
@@ -222,25 +224,25 @@ public abstract class RESTOperationsSpringResponseEntityBuilder
 		private final MediaType _mediaType;
 		/**
 		 * Returns a REST {@link Response} for a FIND operation
-		 * @param persistenceOpResult
+		 * @param findOIDsResult
 		 * @return the response
 		 * @throws PersistenceException
 		 */
 		@SuppressWarnings("cast")
-		public ResponseEntity<FindOIDsResult<O>> build(final FindOIDsResult<O> persistenceOpResult) throws PersistenceException {
+		public ResponseEntity<FindOIDsResult<O>> build(final FindOIDsResult<O> findOIDsResult) throws PersistenceException {
 			ResponseEntity<FindOIDsResult<O>> outResponse = null;
 
 			// Failed operation
-			if (persistenceOpResult.hasFailed()) {
+			if (findOIDsResult.hasFailed()) {
 				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
-				persistenceOpResult.asCRUDError()		// as(PersistenceOperationError.class)
-								   .throwAsPersistenceException();	// throw an exception
+				findOIDsResult.asFindOIDsError()
+							  .throwAsPersistenceException();
 
 			}
 			// Successful operation
 			else {
-				FindOIDsResult<O> findOK = persistenceOpResult.asCRUDOK();		//as(FindOIDsOK.class);
-				outResponse = (ResponseEntity<FindOIDsResult<O>>) ResponseEntity.ok()
+				FindOIDsResult<O> findOK = findOIDsResult.asFindOIDsOK();
+				outResponse = ResponseEntity.ok()
 																	.location(_resourceURI)
 																	.header("x-r01-modelObjType",_modelObjectType.getName())
 																	.contentType(_mediaType)
@@ -270,19 +272,19 @@ public abstract class RESTOperationsSpringResponseEntityBuilder
 			return outResponse;
 		}
 
-		public ResponseEntity<FindSummariesResult<M>> build(final FindSummariesResult<M> persistenceOpResult) throws PersistenceException {
+		public ResponseEntity<FindSummariesResult<M>> build(final FindSummariesResult<M> findSumResult) throws PersistenceException {
 			ResponseEntity<FindSummariesResult<M> > outResponse = null;
 
 			// Failed operation
-			if (persistenceOpResult.hasFailed()) {
+			if (findSumResult.hasFailed()) {
 				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
-				persistenceOpResult.asCRUDError()		// as(PersistenceOperationError.class)
-								   .throwAsPersistenceException();	// throw an exception
+				findSumResult.asFindSummariesError()
+							 .throwAsPersistenceException();	
 
 			}
 			// Successful operation
 			else {
-				FindSummariesResult<M>  findOK = persistenceOpResult.asCRUDOK();	// as(FindSummariesOK.class);
+				FindSummariesResult<M>  findOK = findSumResult.asFindSummariesOK();
 				outResponse = ResponseEntity.ok()
 											.location(_resourceURI)
 											.header("x-r01-modelObjType",_modelObjectType.getName())
@@ -305,25 +307,25 @@ public abstract class RESTOperationsSpringResponseEntityBuilder
 		 * @throws PersistenceException
 		 */
 		@SuppressWarnings("unchecked")
-		public ResponseEntity<PersistenceOperationExecResult<?>> build(final PersistenceOperationExecResult<?> persistenceOpResult) throws PersistenceException {
+		public ResponseEntity<PersistenceOperationResult<?>> build(final PersistenceOperationResult<?> persistenceOpResult) throws PersistenceException {
 			ResponseEntity<?> outResponse = null;
 
 			// Failed operation
 			if (persistenceOpResult.hasFailed()) {
 				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
-				persistenceOpResult.asOperationExecError()
+				persistenceOpResult.asPersistenceOperationError()
 								   .throwAsPersistenceException();	// throw an exception
 
 			}
 			// Successful operation
 			else if (persistenceOpResult.hasSucceeded()) {
-				PersistenceOperationExecResult<?> result = persistenceOpResult;
+				PersistenceOperationResult<?> result = persistenceOpResult;
 				outResponse =   ResponseEntity.ok()
 											  .location(_resourceURI)
 											  .contentType(MediaType.APPLICATION_XML)
 											   .body(persistenceOpResult);
 			}
-			return (ResponseEntity<PersistenceOperationExecResult<?>>) outResponse;
+			return (ResponseEntity<PersistenceOperationResult<?>>) outResponse;
 		}
 		/**
 		 * Returns a REST {@link Response} for a core-layer returned object
