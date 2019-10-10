@@ -11,6 +11,7 @@ import r01f.guids.CommonOIDs.UserCode;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable;
+import r01f.model.persistence.FindOIDsOK;
 import r01f.model.persistence.FindOIDsResult;
 import r01f.securitycontext.SecurityContext;
 import r01f.services.interfaces.FindServicesForModelObject;
@@ -49,21 +50,23 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 //  FIND
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
+	 * TODO Change FindOIDsOK for FindOIDsResult
 	 * Finds all persisted model object oids
 	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the
 	 * currently active versions
 	 * @param securityContext the user auth data & context info
 	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
-	public ResponseEntity<FindOIDsResult<O>> findAll(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType) {
+	public ResponseEntity<FindOIDsOK<O>> findAll(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType) {
 		FindOIDsResult<O> findResult = _findServices.findAll(securityContext);
-		ResponseEntity<FindOIDsResult<O>> outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
+		ResponseEntity<FindOIDsOK<O>> outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
 																				    	.at(URI.create(resourcePath))
 																				    	.withContentType(mediaType)
 																				    .build(findResult);
 		return outResponse;
 	}
 	/**
+	 * TODO Change FindOIDsOK for FindOIDsResult
 	 * Finds all persisted model object oids which create date is in the provided range
 	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the
 	 * currently active versions
@@ -71,17 +74,18 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * @param createDate
 	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
-	public ResponseEntity<FindOIDsResult<O>> findByCreateDate(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType,
+	public ResponseEntity<FindOIDsOK<O>> findByCreateDate(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType,
 									 						   final Range<Date> createDate) {
 		FindOIDsResult<O> findResult = _findServices.findByCreateDate(securityContext,
 																	  createDate);
-		ResponseEntity<FindOIDsResult<O>>  outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
+		ResponseEntity<FindOIDsOK<O>>  outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
 																						.at(URI.create(resourcePath))
 																						.withContentType(mediaType)
 																					.build(findResult);
 		return outResponse;
 	}
 	/**
+	 * TODO Change FindOIDsOK for FindOIDsResult
 	 * Finds all persisted model object oids which last update date is in the provided range
 	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the
 	 * currently active versions
@@ -89,17 +93,18 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * @param lastUpdateDate
 	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
-	public ResponseEntity<FindOIDsResult<O>> findByLastUpdateDate(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType,
+	public ResponseEntity<FindOIDsOK<O>> findByLastUpdateDate(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType,
 																  final Range<Date> lastUpdateDate) {
 		FindOIDsResult<O> findResult = _findServices.findByLastUpdateDate(securityContext,
 																		 lastUpdateDate);
-		ResponseEntity<FindOIDsResult<O>> outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
+		ResponseEntity<FindOIDsOK<O>> outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
 																.at(URI.create(resourcePath))
 																.withContentType(mediaType)
 															.build(findResult);
 		return outResponse;
 	}
 	/**
+	 * TODO Change FindOIDsOK for FindOIDsResult
 	 * Finds all persisted model object oids created by the provided user
 	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the
 	 * currently active versions
@@ -107,17 +112,18 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * @param creatorUserCode
 	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
-	public ResponseEntity<FindOIDsResult<O>> findByCreator(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType,
+	public ResponseEntity<FindOIDsOK<O>> findByCreator(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType,
 														   final UserCode creatorUserCode) {
 		FindOIDsResult<O> findResult = _findServices.findByCreator(securityContext,
 																   creatorUserCode);
-		ResponseEntity<FindOIDsResult<O>> outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
+		ResponseEntity<FindOIDsOK<O>> outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
 															                          .at(URI.create(resourcePath))
 															                          .withContentType(mediaType)
 															                         .build(findResult);
 		return outResponse;
 	}
 	/**
+	 * TODO Change FindOIDsOK for FindOIDsResult
 	 * Finds all persisted model object oids last updated by the provided user
 	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the
 	 * currently active versions
@@ -125,12 +131,12 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * @param lastUpdtorUserCode
 	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
-	public ResponseEntity<FindOIDsResult<O>>  findByLastUpdator(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType,
+	public ResponseEntity<FindOIDsOK<O>>  findByLastUpdator(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType,
 																final UserCode lastUpdtorUserCode) {
 		FindOIDsResult<O> findResult = _findServices.findByLastUpdator(securityContext,
 																	   lastUpdtorUserCode);
 
-		ResponseEntity<FindOIDsResult<O>> outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
+		ResponseEntity<FindOIDsOK<O>> outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
 																						  .at(URI.create(resourcePath))
 																						  .withContentType(mediaType)
 																					.build(findResult);
