@@ -11,11 +11,11 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import r01f.httpclient.HttpResponse;
-import r01f.model.persistence.PersistenceException;
 import r01f.model.persistence.PersistenceRequestedOperation;
 import r01f.model.persistence.PersistenceServiceErrorTypes;
 import r01f.model.services.COREServiceErrorType;
 import r01f.model.services.COREServiceErrorTypes;
+import r01f.model.services.COREServiceException;
 
 
 @ControllerAdvice
@@ -27,15 +27,15 @@ public class RESTResponseEntityExceptionHandlerBase
 	        return _handleThrowable(ex);
 	 }
 
-	 @ExceptionHandler(value= PersistenceException.class )
-	 protected ResponseEntity<PersistenceException> handleConflictPersistenceException(final PersistenceException ex, final WebRequest request) {
+	 @ExceptionHandler(value= COREServiceException.class )
+	 protected ResponseEntity<COREServiceException> handleConflictPersistenceException(final COREServiceException ex, final WebRequest request) {
 	        return _handleConflictPersistenceException(ex);
 	 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 // SHOW ERROR
 /////////////////////////////////////////////////////////////////////////////////////////////
-	private static ResponseEntity<PersistenceException> _handleConflictPersistenceException(final PersistenceException persistEx) {
-		ResponseEntity<PersistenceException> outResponse = null;
+	private static ResponseEntity<COREServiceException> _handleConflictPersistenceException(final COREServiceException persistEx) {
+		ResponseEntity<COREServiceException> outResponse = null;
 		if (persistEx.isServerError()) {			// Server Error
 				// force exception stack trace print
 				outResponse = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -82,11 +82,11 @@ public class RESTResponseEntityExceptionHandlerBase
 				// another bad client request
 				else {
 					outResponse = ResponseEntity.status(HttpStatus.BAD_REQUEST)
-										  .header("x-r01-errorCode",coreErrorType.encodeAsString())
-										  .header("x-r01-extErrorCode",Integer.toString(persistEx.getExtendedCode()))
-										  .header("x-r01-errorMessage",persistEx.getMessage())
-										  .header("x-r01-requestedOperation",persistEx.getCalledMethod().asString())
-										  .header("x-r01-errorType",persistEx.getClass().getName())
+													  .header("x-r01-errorCode",coreErrorType.encodeAsString())
+													  .header("x-r01-extErrorCode",Integer.toString(persistEx.getExtendedCode()))
+													  .header("x-r01-errorMessage",persistEx.getMessage())
+													  .header("x-r01-requestedOperation",persistEx.getCalledMethod().asString())
+													  .header("x-r01-errorType",persistEx.getClass().getName())
 										  .body(persistEx);
 			}
 		}
