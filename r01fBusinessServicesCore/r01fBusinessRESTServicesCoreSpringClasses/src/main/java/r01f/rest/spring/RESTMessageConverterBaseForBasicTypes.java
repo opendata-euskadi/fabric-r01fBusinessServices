@@ -31,19 +31,20 @@ public abstract class RESTMessageConverterBaseForBasicTypes<T>
 //////////////////////////////////////////////////////////////////////////////////////////////////
 	@Override
 	public boolean canRead( final Class<?> type, final MediaType mediaType){
-		System.out.println("Hereee can read 1");
+	
 		return type.equals(_mappedType);
 
 	}
 	@Override
 	public boolean canRead(final Type type, final Class<?> contextClass, final  MediaType mediaType) {
-		System.out.println("Hereee can read 2");
+		
 		return ReflectionUtils.classOfType(type).equals(_mappedType);
 
 	}
 	@Override
 	public boolean canWrite(final Type type, final Class<?> contextClass, final  MediaType mediaType){
 		boolean outWriteable = false;
+	
         if (  ReflectionUtils.classOfType(type).equals(_mappedType)) {
 		     outWriteable = true;
 		}

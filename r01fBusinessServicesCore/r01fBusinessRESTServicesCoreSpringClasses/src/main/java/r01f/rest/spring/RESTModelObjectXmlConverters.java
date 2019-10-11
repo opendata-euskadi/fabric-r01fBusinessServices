@@ -14,7 +14,7 @@ import org.springframework.http.converter.GenericHttpMessageConverter;
 
 import lombok.experimental.Accessors;
 import r01f.model.ModelObject;
-import r01f.model.persistence.PersistenceOperationExecOK;
+import r01f.model.persistence.PersistenceOperationResult;
 import r01f.model.search.SearchModelObject;
 import r01f.objectstreamer.Marshaller;
 import r01f.persistence.index.IndexManagementCommand;
@@ -139,9 +139,9 @@ public class RESTModelObjectXmlConverters {
 	 * GenericHttpMessageConverter for all {@link PersistenceOperationOK}
 	 */
 	public static abstract class PersistenceOperationConverter
-		                 extends ObjectMessageXmlConverter<PersistenceOperationExecOK<?>> {
+		                 extends ObjectMessageXmlConverter<PersistenceOperationResult<?>> {
 		public PersistenceOperationConverter(final Marshaller modelObjectsMarshaller) {
-			super(PersistenceOperationExecOK.class,
+			super(PersistenceOperationResult.class,
 				  modelObjectsMarshaller);
 		}
 	}
