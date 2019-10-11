@@ -18,8 +18,11 @@ import r01f.model.persistence.CRUDError;
 import r01f.model.persistence.CRUDOK;
 import r01f.model.persistence.CRUDOnMultipleResult;
 import r01f.model.persistence.CRUDResult;
+import r01f.model.persistence.FindOIDsOK;
 import r01f.model.persistence.FindOIDsResult;
+import r01f.model.persistence.FindOK;
 import r01f.model.persistence.FindResult;
+import r01f.model.persistence.FindSummariesOK;
 import r01f.model.persistence.FindSummariesResult;
 import r01f.model.persistence.PersistenceException;
 import r01f.model.persistence.PersistenceOperationResult;
@@ -223,14 +226,14 @@ public abstract class RESTOperationsSpringResponseEntityBuilder
 		private final URI _resourceURI;
 		private final MediaType _mediaType;
 		/**
+		 * TODO Change FindOIDsOK for FindOIDsResult
 		 * Returns a REST {@link Response} for a FIND operation
 		 * @param findOIDsResult
 		 * @return the response
 		 * @throws PersistenceException
 		 */
-		@SuppressWarnings("cast")
-		public ResponseEntity<FindOIDsResult<O>> build(final FindOIDsResult<O> findOIDsResult) throws PersistenceException {
-			ResponseEntity<FindOIDsResult<O>> outResponse = null;
+		public ResponseEntity<FindOIDsOK<O>> build(final FindOIDsResult<O> findOIDsResult) throws PersistenceException {
+			ResponseEntity<FindOIDsOK<O>> outResponse = null;
 
 			// Failed operation
 			if (findOIDsResult.hasFailed()) {
@@ -241,7 +244,7 @@ public abstract class RESTOperationsSpringResponseEntityBuilder
 			}
 			// Successful operation
 			else {
-				FindOIDsResult<O> findOK = findOIDsResult.asFindOIDsOK();
+				FindOIDsOK<O> findOK = findOIDsResult.asFindOIDsOK();
 				outResponse = ResponseEntity.ok()
 																	.location(_resourceURI)
 																	.header("x-r01-modelObjType",_modelObjectType.getName())
@@ -250,8 +253,10 @@ public abstract class RESTOperationsSpringResponseEntityBuilder
 			}
 			return outResponse;
 		}
-		public ResponseEntity<FindResult<M>> build(final FindResult<M> persistenceOpResult) throws PersistenceException {
-			ResponseEntity<FindResult<M>> outResponse = null;
+		
+		// TODO Change FindOK for FindResult
+		public ResponseEntity<FindOK<M>> build(final FindResult<M> persistenceOpResult) throws PersistenceException {
+			ResponseEntity<FindOK<M>> outResponse = null;
 
 			// Failed operation
 			if (persistenceOpResult.hasFailed()) {
@@ -262,7 +267,7 @@ public abstract class RESTOperationsSpringResponseEntityBuilder
 			}
 			// Successful operation
 			else {
-				FindResult<M> findOK = persistenceOpResult.asFindOK();			// as(FindOK.class);
+				FindOK<M> findOK = persistenceOpResult.asFindOK();			// as(FindOK.class);
 				outResponse =  ResponseEntity.ok()
 											   .location(_resourceURI)
 											   .header("x-r01-modelObjType",_modelObjectType.getName())
@@ -272,8 +277,9 @@ public abstract class RESTOperationsSpringResponseEntityBuilder
 			return outResponse;
 		}
 
-		public ResponseEntity<FindSummariesResult<M>> build(final FindSummariesResult<M> findSumResult) throws PersistenceException {
-			ResponseEntity<FindSummariesResult<M> > outResponse = null;
+		// TODO Change FindSummariesOK for FindSummariesResult
+		public ResponseEntity<FindSummariesOK<M>> build(final FindSummariesResult<M> findSumResult) throws PersistenceException {
+			ResponseEntity<FindSummariesOK<M> > outResponse = null;
 
 			// Failed operation
 			if (findSumResult.hasFailed()) {
@@ -284,7 +290,7 @@ public abstract class RESTOperationsSpringResponseEntityBuilder
 			}
 			// Successful operation
 			else {
-				FindSummariesResult<M>  findOK = findSumResult.asFindSummariesOK();
+				FindSummariesOK<M>  findOK = findSumResult.asFindSummariesOK();
 				outResponse = ResponseEntity.ok()
 											.location(_resourceURI)
 											.header("x-r01-modelObjType",_modelObjectType.getName())
