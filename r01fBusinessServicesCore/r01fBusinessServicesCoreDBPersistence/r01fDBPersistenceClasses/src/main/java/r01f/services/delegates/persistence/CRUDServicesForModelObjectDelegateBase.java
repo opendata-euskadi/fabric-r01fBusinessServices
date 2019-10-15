@@ -4,6 +4,7 @@ package r01f.services.delegates.persistence;
 import com.google.common.eventbus.EventBus;
 
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanExposed;
 import r01f.guids.OID;
@@ -26,6 +27,7 @@ import r01f.validation.Validates;
  * Service layer delegated type for CRUD (Create/Read/Update/Delete) operations
  */
 @Slf4j
+@Accessors(prefix="_")
 public abstract class CRUDServicesForModelObjectDelegateBase<O extends PersistableObjectOID,M extends PersistableModelObject<O>>
 		      extends PersistenceServicesForModelObjectDelegateBase<O,M>
 		   implements CRUDServicesForModelObject<O,M> {
@@ -221,22 +223,14 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 	@Override
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 								final O oid) {
-		return this.doDelete(securityContext,
-							 oid,
-							 null);		// no async callback
+		return this.delete(securityContext,
+						   oid,
+						   null);		// no async callback
 	}
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 								final O oid,
 								final COREServiceMethodCallbackSpec callbackSpec) {
-		return this.doDelete(securityContext,
-							 oid,
-							 callbackSpec);		
-	}
-	@SuppressWarnings({ "unchecked" })
-	protected CRUDResult<M> doDelete(final SecurityContext securityContext,
-								 	 final O oid,
-								 	 final COREServiceMethodCallbackSpec callbackSpec) {
 		// [0] - check the entity
 		if (oid == null) {
 			return CRUDResultBuilder.using(securityContext)
@@ -261,7 +255,7 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 				   callbackSpec);
 		
 		// [4] return
-		return outOpResult;
+		return outOpResult;		
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //

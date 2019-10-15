@@ -6,6 +6,7 @@ import com.google.common.eventbus.EventBus;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanExposed;
 import r01f.guids.OIDForVersionableModelObject;
 import r01f.guids.PersistableObjectOID;
+import r01f.guids.VersionIndependentOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable.HasVersionableFacet;
 import r01f.model.persistence.FindResult;
@@ -42,10 +43,14 @@ public abstract class FindServicesForVersionableModelObjectDelegateBase<O extend
 			  eventBus);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  VERSIONABLE FIND
+//	                                                                          
 /////////////////////////////////////////////////////////////////////////////////////////
-	@Override
-	public FindResult<M> findAllVersions(final SecurityContext securityContext) {
-		throw new UnsupportedOperationException("NOT jet implemented!");
+	@Override @SuppressWarnings("unchecked")
+	public FindResult<M> findAllVersionsOf(final SecurityContext securityContext,
+										   final VersionIndependentOID versionIndependentOid) {
+		return this.getServiceImplAs(FindServicesForVersionableModelObject.class)
+				   .findAllVersionsOf(securityContext,
+						   			 versionIndependentOid);
 	}
+	
 }

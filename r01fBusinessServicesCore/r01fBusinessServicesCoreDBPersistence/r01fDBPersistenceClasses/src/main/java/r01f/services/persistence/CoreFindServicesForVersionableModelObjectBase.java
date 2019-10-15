@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanExposed;
 import r01f.guids.OIDForVersionableModelObject;
 import r01f.guids.PersistableObjectOID;
+import r01f.guids.VersionIndependentOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable.HasVersionableFacet;
 import r01f.model.persistence.FindResult;
@@ -78,10 +79,12 @@ public abstract class CoreFindServicesForVersionableModelObjectBase<O extends OI
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIND
 /////////////////////////////////////////////////////////////////////////////////////////
-	@Override 
-	public FindResult<M> findAllVersions(final SecurityContext securityContext) {
+	@Override @SuppressWarnings("unchecked")
+	public FindResult<M> findAllVersionsOf(final SecurityContext securityContext,
+										   final VersionIndependentOID versionIndependentOid) {
 		return this.forSecurityContext(securityContext)
 						.createDelegateAs(FindServicesForVersionableModelObject.class)
-							.findAllVersions(securityContext);
+							.findAllVersionsOf(securityContext,
+											   versionIndependentOid);
 	}
 }

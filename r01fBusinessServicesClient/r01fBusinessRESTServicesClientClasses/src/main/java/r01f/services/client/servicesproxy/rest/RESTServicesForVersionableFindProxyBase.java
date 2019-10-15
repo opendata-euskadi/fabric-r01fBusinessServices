@@ -2,6 +2,7 @@ package r01f.services.client.servicesproxy.rest;
 
 import r01f.guids.OIDForVersionableModelObject;
 import r01f.guids.PersistableObjectOID;
+import r01f.guids.VersionIndependentOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable.HasVersionableFacet;
 import r01f.model.persistence.FindResult;
@@ -29,7 +30,8 @@ public abstract class RESTServicesForVersionableFindProxyBase<O extends OIDForVe
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	public FindResult<M> findAllVersions(final SecurityContext securityContext) {
-		return null;
+	public FindResult<M> findAllVersionsOf(final SecurityContext securityContext,
+										   final VersionIndependentOID versionIndependentOid) {
+		throw new UnsupportedOperationException("not yet implemented!");
 	}
 }
