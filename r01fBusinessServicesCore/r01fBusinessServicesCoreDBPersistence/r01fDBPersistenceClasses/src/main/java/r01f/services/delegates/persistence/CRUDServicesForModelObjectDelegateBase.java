@@ -253,9 +253,9 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 		_fireEvent(securityContext,
 				   outOpResult,
 				   callbackSpec);
-		
+
 		// [4] return
-		return outOpResult;		
+		return outOpResult;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //
