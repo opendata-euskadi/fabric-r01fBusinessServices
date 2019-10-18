@@ -18,6 +18,7 @@ import r01f.persistence.db.DBEntity;
 import r01f.persistence.db.DBEntityToModelObjectTransformerBuilder;
 import r01f.persistence.db.TransformsDBEntityIntoModelObject;
 import r01f.securitycontext.SecurityContext;
+import r01f.types.CanBeRepresentedAsString;
 import r01f.types.url.Url;
 import r01f.util.types.Dates;
 import r01f.util.types.Strings;
@@ -116,6 +117,11 @@ public class CRUDResultForSingleEntityBuilder {
 		}
 		public CRUDResultBuilderForErrorExtErrorCodeStep<T> about(final String meta,final String value) {
 			_err.addTargetEntityIdInfo(meta,value);
+			return new CRUDResultBuilderForErrorExtErrorCodeStep<T>(_securityContext,
+																    _err);
+		}
+		public CRUDResultBuilderForErrorExtErrorCodeStep<T> about(final String meta,final CanBeRepresentedAsString value) {
+			_err.addTargetEntityIdInfo(meta,value.asString());
 			return new CRUDResultBuilderForErrorExtErrorCodeStep<T>(_securityContext,
 																    _err);
 		}
