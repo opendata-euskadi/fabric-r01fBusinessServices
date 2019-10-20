@@ -589,7 +589,7 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 
 			  	SQLException sqlEx = (SQLException)persistEx.getCause().getCause();
 
-			  	if(1 == sqlEx.getErrorCode()) {
+			  	if (1 == sqlEx.getErrorCode()) {
 					log.warn(">> CRUD Error ORA-00001 because Entity {} already exists! ",modelObj.getOid().asString());
 					return CRUDResultBuilder.using(securityContext)
 							.on(_modelObjectType)
@@ -597,7 +597,7 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 							.becauseClientRequestedEntityAlreadyExists()
 							.about(modelObj)
 							.build();
-				} else if(1400 == sqlEx.getErrorCode()) {
+				} else if (1400 == sqlEx.getErrorCode()) {
 					log.warn(">> CRUD Error ORA-01400: CANNOT MAKE A NULL INSERT! ",modelObj.getOid().asString());
 					return CRUDResultBuilder.using(securityContext)
 							.on(_modelObjectType)
@@ -623,7 +623,7 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 
 				SQLIntegrityConstraintViolationException sqlEx = (SQLIntegrityConstraintViolationException)persistEx.getCause().getCause();
 
-				if(1 == sqlEx.getErrorCode()) {
+				if (1 == sqlEx.getErrorCode()) {
 					log.warn(">> CRUD Error ORA-00001 because Entity {} already exists! ",modelObj.getOid().asString());
 					return CRUDResultBuilder.using(securityContext)
 							.on(_modelObjectType)
@@ -631,7 +631,7 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 							.becauseClientRequestedEntityAlreadyExists()
 							.about(modelObj)
 							.build();
-				} else if(1400 == sqlEx.getErrorCode()) {
+				} else if (1400 == sqlEx.getErrorCode()) {
 					log.warn(">> CRUD Error ORA-01400: CANNOT MAKE A NULL INSERT! ",modelObj.getOid().asString());
 					return CRUDResultBuilder.using(securityContext)
 							.on(_modelObjectType)
