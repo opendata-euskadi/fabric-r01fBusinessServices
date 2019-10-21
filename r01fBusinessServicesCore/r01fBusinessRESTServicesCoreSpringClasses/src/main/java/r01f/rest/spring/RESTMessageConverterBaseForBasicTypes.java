@@ -30,7 +30,7 @@ public abstract class RESTMessageConverterBaseForBasicTypes<T>
 // METHODS TO IMPLEMENT
 //////////////////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	public boolean canRead( final Class<?> type, final MediaType mediaType){
+	public boolean canRead( final Class<?> type, final MediaType mediaType) {
 	
 		return type.equals(_mappedType);
 
@@ -42,7 +42,7 @@ public abstract class RESTMessageConverterBaseForBasicTypes<T>
 
 	}
 	@Override
-	public boolean canWrite(final Type type, final Class<?> contextClass, final  MediaType mediaType){
+	public boolean canWrite(final Type type, final Class<?> contextClass, final  MediaType mediaType) {
 		boolean outWriteable = false;
 	
         if (  ReflectionUtils.classOfType(type).equals(_mappedType)) {

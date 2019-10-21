@@ -151,7 +151,7 @@ public abstract class SpringRootConfigBootstrapGuiceBase
 		@Override
 		public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) throws BeansException {
 	       List<Class<?>>  exposedClass = _getExposedServicesAsClass();
-	       for (final Class<?> serviceClass : exposedClass  ){
+	       for (final Class<?> serviceClass : exposedClass  ) {
 	    	   BeanDefinitionBuilder  beanDefBuilder =  BeanDefinitionBuilder.genericBeanDefinition(serviceClass).setLazyInit(true);
 	    	   registry.registerBeanDefinition( serviceClass.getName(),beanDefBuilder.getBeanDefinition());
 	       }
@@ -171,7 +171,7 @@ public abstract class SpringRootConfigBootstrapGuiceBase
     			 boolean isAsignable =
     					 ServiceInterface.class.isAssignableFrom(b.getKey().getTypeLiteral().getRawType()) ;
     			 if (isAsignable) {
-    				 if (b.getKey().getTypeLiteral().getRawType().isAnnotationPresent(ExposedServiceInterface.class) ){
+    				 if (b.getKey().getTypeLiteral().getRawType().isAnnotationPresent(ExposedServiceInterface.class) ) {
 						servicesInterfaces.add(ReflectionUtils.typeFromClassName( b.getKey().getTypeLiteral().getRawType().getCanonicalName()));
     				 }
     			 }

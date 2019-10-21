@@ -4,7 +4,7 @@ package r01f.persistence.db.sql;
  * Es una clase de ayuda para ejecutar diversas operaciones de base de datos.
  * Para poder utilizar los metodos generales de esta clase, es necesario establecer
  * las propiedades de la conexion de base de datos que se va a utilizar, para ello
- * se utiliza el constructor o el metodo setConnectionProperties. A estos métodos
+ * se utiliza el constructor o el metodo setConnectionProperties. A estos mï¿½todos
  * hay que pasar un objeto Properties con datos para obtener la conexion.
  * Los datos de la conexion normalmente se obtienen de un fichero .properties.xml
  * que ha de tener una seccion con la forma:
@@ -56,19 +56,19 @@ package r01f.persistence.db.sql;
  * Utilizando el metodo DBSQLHelpper.getConnectionProperties(appCode,connectionName)
  * se obtiene el objeto Properties a partir del XML anterior.
  *
- * Adicionalmente se ofrecen una serie de métodos estáticos para obtener conexiones
+ * Adicionalmente se ofrecen una serie de mï¿½todos estï¿½ticos para obtener conexiones
  *
  * IMPORTANTE!!!!
  * Hay dos modos de uso:
- * MODO NORMAL:		Se abre una conexíón o una transaccion antes de ejecutar cualquier cosa
+ * MODO NORMAL:		Se abre una conexï¿½ï¿½n o una transaccion antes de ejecutar cualquier cosa
  * 					y se cierra al final
  * 					DBSQLHelpper sqlHelp = new DBSQLHelpper(properties);
  * 					sqlHelp.obtainConnection();  // o bien sqlHelp.beginTransaction();
  * 					sqlHelp.<cualquier operacion>
  * 					sqlHelp.releaseConnection(); // o bien sqlHelp.endTransaction();
  *
- * MODO STANDALONE:	Para cada operación se abre implicitamente una conexión de base de datos
- * 					y se cierra automáticamente
+ * MODO STANDALONE:	Para cada operaciï¿½n se abre implicitamente una conexiï¿½n de base de datos
+ * 					y se cierra automï¿½ticamente
  * 					SQLHelppper sqlHelp = new DBSQLHelpper(properties);
  * 					sqlHelp.<cualquier operacion>
  */
@@ -94,7 +94,7 @@ public class DBManager {
 //  ESTADO
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Getter @Setter protected Properties _conxProps;  	// Propiedades para obtener la conexion a BD
-    				protected Connection _conx = null;	// Conexión a base de datos
+    				protected Connection _conx = null;	// Conexiï¿½n a base de datos
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR/DESTRUCTOR
@@ -127,11 +127,11 @@ public class DBManager {
     	 * @throws SQLException
     	 */
     	public void beginTransaction() throws SQLException {
-    		if (_conxProps == null) throw new SQLException( "No se han establecido las propiedades para obtener la conexión (null)" );
+    		if (_conxProps == null) throw new SQLException( "No se han establecido las propiedades para obtener la conexiï¿½n (null)" );
     		if (_conx == null) _conx = DBConnectionHelpper.getConnection(_conxProps);
     	}
     	/**
-    	 * Finaliza la transacción haciendo un commit implicitamente
+    	 * Finaliza la transacciï¿½n haciendo un commit implicitamente
     	 * @throws SQLException
     	 */
     	public void endTransaction() throws SQLException {
@@ -143,7 +143,7 @@ public class DBManager {
 
     	}
     	/**
-    	 * Cancela los cambios en la transacción
+    	 * Cancela los cambios en la transacciï¿½n
     	 * @throws SQLException
     	 */
     	public void rollBackTransaction() throws SQLException {
@@ -181,11 +181,11 @@ public class DBManager {
             return executeQuery(sql,params);
         }
         /**
-         * Método que permite ejecutar una query con parametros en la base de datos
+         * Mï¿½todo que permite ejecutar una query con parametros en la base de datos
          * Primero se prepara la query sustituyendo los simbolos "?" del String (primer parametro)
          * por los parametros pasados en la lista (segudo parametro) y a continuacion se recuperan los datos
          * de la BD devolviendo una lista con las filas en la que cada elemento es otra lista con las columnas.
-         * En el caso de que la lista de parametros (segundo parametro) sea nulo, NO será necesario
+         * En el caso de que la lista de parametros (segundo parametro) sea nulo, NO serï¿½ necesario
          * realizar el paso previo de montar la query final.
          * @param sql Query SQL que quiere ser ejecutada.
          * @param params Lista de parametros que completan la query final que va a ser ejecutada.
@@ -201,7 +201,7 @@ public class DBManager {
             if (sql == null) throw new SQLException("La sentencia SQL no puede ser nula");
 
             try {
-                // Obtener una nueva conexion solo si no hay una ya creada (transacción)
+                // Obtener una nueva conexion solo si no hay una ya creada (transacciï¿½n)
                 conx = (_conx == null ? DBConnectionHelpper.getConnection(_conxProps) : _conx);
 
                 // Obtener un Statement y sustituir los parametros si los hay
@@ -219,7 +219,7 @@ public class DBManager {
                 ps = null;
                 if (rs != null) rs.close();
                 rs = null;
-                // Solo cerrar la conexión si esta se ha creado para la transacción actual
+                // Solo cerrar la conexiï¿½n si esta se ha creado para la transacciï¿½n actual
                 if (_conx == null && conx != null) {
                     DBConnectionHelpper.closeConnection(conx);
                     conx = null;
@@ -242,7 +242,7 @@ public class DBManager {
                     }
                     // Meter el objeto en la lista
                     outList.add(rowMap);
-                } while(rs.next());
+                } while (rs.next());
             }
             return outList;
         }
@@ -316,11 +316,11 @@ public class DBManager {
         }
         /**
          * Ejecuta un statement en la base de datos a partir de una sentencia SQL a ejecutar
-         * y los parámetros a dicha sentencia.
+         * y los parï¿½metros a dicha sentencia.
          * @param sql La query a ejecutar
          * @param params Los parametros de la query
          * @return El numero de filas afectadas por la operacion
-         * @throws SQLException si hay algún error en la base de datos
+         * @throws SQLException si hay algï¿½n error en la base de datos
          */
 		@SuppressWarnings("resource")
 		public int executeStatement(final String sql,final List<String> params) throws SQLException {
@@ -328,7 +328,7 @@ public class DBManager {
             PreparedStatement ps = null;
             if (sql == null) throw new SQLException("La sentencia SQL no puede ser nula");
             try {
-    	        // Obtener una nueva conexion solo si no hay una ya creada (transacción)
+    	        // Obtener una nueva conexion solo si no hay una ya creada (transacciï¿½n)
     	        conx = (_conx == null ? DBConnectionHelpper.getConnection(_conxProps) : _conx);
 
     	        // Obtener un Statement y sustituir los parametros si los hay
@@ -342,7 +342,7 @@ public class DBManager {
             } finally {
                 if (ps != null) ps.close();
                 ps = null;
-                // Solo cerrar la conexión si esta se ha creado para la transacción actual
+                // Solo cerrar la conexiï¿½n si esta se ha creado para la transacciï¿½n actual
                 if (_conx == null && conx != null) {
                     DBConnectionHelpper.closeConnection(conx);
                     conx = null;
@@ -370,14 +370,14 @@ public class DBManager {
         try {
             strSql = "CREATE SEQUENCE " + seqName + " " +
                                "START WITH " + startValue;
-            // Obtener una nueva conexion solo si no hay una ya creada (transacción)
+            // Obtener una nueva conexion solo si no hay una ya creada (transacciï¿½n)
 			conx = (_conx == null ? DBConnectionHelpper.getConnection(_conxProps) : _conx);
             stmt = conx.prepareStatement(strSql);
             return stmt.execute();
         } finally {
             // Cerrar todo
         	if (stmt != null) stmt.close();
-        	// Solo cerrar la conexión si esta se ha creado para la transacción actual
+        	// Solo cerrar la conexiï¿½n si esta se ha creado para la transacciï¿½n actual
             if (_conx == null && conx != null) {
                 DBConnectionHelpper.closeConnection(conx);
     	        conx = null;
@@ -397,7 +397,7 @@ public class DBManager {
         String sql = null;
         try {
             sql = "SELECT " + seqName + ".nextVal FROM DUAL";
-            // Obtener una nueva conexion solo si no hay una ya creada (transacción)
+            // Obtener una nueva conexion solo si no hay una ya creada (transacciï¿½n)
 			conx = (_conx == null ? DBConnectionHelpper.getConnection(_conxProps) : _conx);
             ps = conx.prepareStatement(sql);
             ps.executeQuery();      //OJO!! No hacer rs = ps.executeQuery ya que falla con los TXDatasources
@@ -407,7 +407,7 @@ public class DBManager {
         } finally {
             if (rs != null) rs.close();
             if (ps != null) ps.close();
-            // Solo cerrar la conexión si esta se ha creado para la transacción actual
+            // Solo cerrar la conexiï¿½n si esta se ha creado para la transacciï¿½n actual
             if (_conx == null && conx != null) {
                 DBConnectionHelpper.closeConnection(conx);
     	        conx = null;
