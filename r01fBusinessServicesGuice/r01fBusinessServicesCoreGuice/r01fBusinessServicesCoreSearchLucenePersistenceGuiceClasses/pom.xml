@@ -9,16 +9,16 @@
 <!-- ====================================================================== -->
 	<parent>
 		<groupId>r01.r01f.businessservices.guice.core</groupId>
-    	<artifactId>r01fBusinessServicesCoreGuice</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-  	</parent>
-  	
+		<artifactId>r01fBusinessServicesCoreGuice</artifactId>
+		<version>${revision}</version>
+	</parent>
+
 <!-- ====================================================================== -->
 <!-- ARTIFACT                                                               -->
 <!-- ====================================================================== -->
 	<name>r01fBusinessServicesCoreSearchLucenePersistenceGuiceClasses</name>
 	<artifactId>r01fBusinessServicesCoreSearchLucenePersistenceGuiceClasses</artifactId>
-	
+
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->
@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>r01.r01f.businessservices.guice.core</groupId>
 			<artifactId>r01fBusinessServicesCoreSearchPersistenceGuiceClasses</artifactId>
-			<version>${r01f.version}</version>
+			<version>${revision}</version>
 		</dependency>
 		<!-- ///////////////////////////////////////// -->
 		<!-- Lucene SearchPersistence                  -->
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>r01.r01f.businessservices.core.persistence.search</groupId>
 			<artifactId>r01fSearchLuceneClasses</artifactId>
-			<version>${r01f.version}</version>
+			<version>${revision}</version>
 		</dependency>
 	</dependencies>
 </project>

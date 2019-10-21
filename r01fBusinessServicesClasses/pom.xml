@@ -9,16 +9,16 @@
 <!-- ====================================================================== -->
 	<parent>
 		<groupId>r01.r01f.businessservices</groupId>
-    	<artifactId>r01fBusinessServices</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-  	</parent>
-  	
+		<artifactId>r01fBusinessServices</artifactId>
+		<version>${revision}</version>
+	</parent>
+
 <!-- ====================================================================== -->
 <!-- ARTIFACT                                                               -->
 <!-- ====================================================================== -->
 	<name>r01fBusinessServicesClasses</name>
 	<artifactId>r01fBusinessServicesClasses</artifactId>
-	
+
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->
@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>r01.r01f.base</groupId>
 			<artifactId>r01fModelClasses</artifactId>
-			<version>${r01f.version}</version>
+			<version>${revision}</version>
 		</dependency>
 		<!-- ///////////////////////////////////////// -->
 		<!-- R01: Properties                           -->
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>r01.r01f.properties</groupId>
 			<artifactId>r01fPropertiesInterfaceClasses</artifactId>
-			<version>${r01f.version}</version>
+			<version>${revision}</version>
 		</dependency>
 	</dependencies>
 </project>

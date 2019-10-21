@@ -9,16 +9,16 @@
 <!-- ====================================================================== -->
 	<parent>
 		<groupId>r01.r01f.businessservices.core.persistence.search</groupId>
-    	<artifactId>r01fBusinessServicesCoreSearchPersistence</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-  	</parent>
-  	
+		<artifactId>r01fBusinessServicesCoreSearchPersistence</artifactId>
+		<version>${revision}</version>
+	</parent>
+
 <!-- ====================================================================== -->
 <!-- ARTIFACT                                                               -->
 <!-- ====================================================================== -->
 	<name>r01fSearchLuceneClasses</name>
 	<artifactId>r01fSearchLuceneClasses</artifactId>
-	
+
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->
@@ -29,14 +29,14 @@
 		<dependency>
 			<groupId>r01.r01f.businessservices.core.persistence.search</groupId>
 			<artifactId>r01fSearchPersistenceClasses</artifactId>
-			<version>${r01f.version}</version>
+			<version>${revision}</version>
 		</dependency>
-		
+
 		<!-- ///////////////////////////////////////// -->
 		<!-- Lucene                                    -->
 		<!-- http://archive.apache.org/dist/lucene/java-->
 		<!-- ///////////////////////////////////////// -->
-		<!-- last version supported by java 6 is v4.7.2 https://lucene.apache.org/core/4_7_2/SYSTEM_REQUIREMENTS.html -->		
+		<!-- last version supported by java 6 is v4.7.2 https://lucene.apache.org/core/4_7_2/SYSTEM_REQUIREMENTS.html -->
 		<!-- last version supported by java 7 is v5.5.4 https://lucene.apache.org/core/5_5_4/SYSTEM_REQUIREMENTS.html -->
 		<dependency>
 		    <groupId>org.apache.lucene</groupId>

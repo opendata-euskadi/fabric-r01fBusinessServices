@@ -7,10 +7,10 @@
 <!-- ====================================================================== -->
 	<parent>
 		<groupId>r01.r01f.businessservices.guice</groupId>
-    	<artifactId>r01fBusinessServicesGuice</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-  	</parent>
-  	
+		<artifactId>r01fBusinessServicesGuice</artifactId>
+		<version>${revision}</version>
+	</parent>
+
 <!-- ====================================================================== -->
 <!-- ARTIFACT                                                               -->
 <!-- ====================================================================== -->
@@ -18,19 +18,19 @@
 	<name>r01fBusinessServicesCoreGuice</name>
 	<artifactId>r01fBusinessServicesCoreGuice</artifactId>
 	<packaging>pom</packaging>				<!-- it's a parent project -->
-	
+
 <!-- ====================================================================== -->
 <!-- MODULES                                                                -->
 <!-- ====================================================================== -->
-  <modules>
-  	<module>r01fBusinessServicesCoreGuiceClasses</module>
-  	<module>r01fBusinessRESTServicesCoreGuiceClasses</module>
-  	<module>r01fBusinessServicesCoreSearchPersistenceGuiceClasses</module>
-  	<module>r01fBusinessServicesCoreSearchLucenePersistenceGuiceClasses</module>
-    <module>r01fBusinessWebServicesCoreGuiceClasses</module>
-    <module>r01fBusinessWebServicesCoreGuiceSpringClasses</module>
-  </modules>
-	
+	<modules>
+		<module>r01fBusinessServicesCoreGuiceClasses</module>
+		<module>r01fBusinessRESTServicesCoreGuiceClasses</module>
+		<module>r01fBusinessServicesCoreSearchPersistenceGuiceClasses</module>
+		<module>r01fBusinessServicesCoreSearchLucenePersistenceGuiceClasses</module>
+		<module>r01fBusinessWebServicesCoreGuiceClasses</module>
+		<module>r01fBusinessWebServicesCoreGuiceSpringClasses</module>
+	</modules>
+
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->

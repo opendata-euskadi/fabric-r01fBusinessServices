@@ -11,16 +11,16 @@
 <!-- ====================================================================== -->
 	<parent>
 		<groupId>r01.r01f.businessservices.guice.core</groupId>
-    	<artifactId>r01fBusinessServicesCoreGuice</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-  	</parent>
-  	
+		<artifactId>r01fBusinessServicesCoreGuice</artifactId>
+		<version>${revision}</version>
+	</parent>
+
 <!-- ====================================================================== -->
 <!-- ARTIFACT                                                               -->
 <!-- ====================================================================== -->
 	<name>r01fBusinessServicesCoreSearchPersistenceGuiceClasses</name>
 	<artifactId>r01fBusinessServicesCoreSearchPersistenceGuiceClasses</artifactId>
-	
+
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->
@@ -31,16 +31,16 @@
 		<dependency>
 			<groupId>r01.r01f.businessservices.guice.core</groupId>
 			<artifactId>r01fBusinessServicesCoreGuiceClasses</artifactId>
-			<version>${r01f.version}</version>
+			<version>${revision}</version>
 		</dependency>
-		
+
 		<!-- ///////////////////////////////////////// -->
 		<!-- SearchPersistence                         -->
 		<!-- ///////////////////////////////////////// -->
 		<dependency>
 			<groupId>r01.r01f.businessservices.core.persistence.search</groupId>
 			<artifactId>r01fSearchPersistenceClasses</artifactId>
-			<version>${r01f.version}</version>
+			<version>${revision}</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -7,10 +7,10 @@
 <!-- ====================================================================== -->
 	<parent>
 		<groupId>r01.r01f.businessservices</groupId>
-    	<artifactId>r01fBusinessServices</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-  	</parent>
-  	
+		<artifactId>r01fBusinessServices</artifactId>
+		<version>${revision}</version>
+	</parent>
+
 <!-- ====================================================================== -->
 <!-- ARTIFACT                                                               -->
 <!-- ====================================================================== -->
@@ -18,18 +18,18 @@
 	<name>r01fBusinessServicesCore</name>
 	<artifactId>r01fBusinessServicesCore</artifactId>
 	<packaging>pom</packaging>				<!-- it's a parent project -->
-	
+
 <!-- ====================================================================== -->
 <!-- MODULES                                                                -->
 <!-- ====================================================================== -->
-  <modules>
-    <module>r01fBusinessServicesCoreClasses</module>
-    <module>r01fBusinessServicesCoreDBPersistence</module>
-    <module>r01fBusinessServicesCoreSearchPersistence</module>
-    <module>r01fBusinessRESTServicesCoreClasses</module>
-    <module>r01fBusinessRESTServicesCoreSpringClasses</module>
-  </modules>
-	
+	<modules>
+		<module>r01fBusinessServicesCoreClasses</module>
+		<module>r01fBusinessServicesCoreDBPersistence</module>
+		<module>r01fBusinessServicesCoreSearchPersistence</module>
+		<module>r01fBusinessRESTServicesCoreClasses</module>
+		<module>r01fBusinessRESTServicesCoreSpringClasses</module>
+	</modules>
+
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->

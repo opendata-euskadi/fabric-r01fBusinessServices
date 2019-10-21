@@ -9,16 +9,16 @@
 <!-- ====================================================================== -->
 	<parent>
 		<groupId>r01.r01f.businessservices</groupId>
-    	<artifactId>r01fBusinessServices</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-  	</parent>
-  	
+		<artifactId>r01fBusinessServices</artifactId>
+		<version>${revision}</version>
+	</parent>
+
 <!-- ====================================================================== -->
 <!-- ARTIFACT                                                               -->
 <!-- ====================================================================== -->
 	<name>r01fBusinessServicesTestClasses</name>
 	<artifactId>r01fBusinessServicesTestClasses</artifactId>
-	
+
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->
@@ -29,30 +29,32 @@
 		<dependency>
 			<groupId>r01.r01f.config</groupId>
 			<artifactId>r01fConfig</artifactId>
-			<version>${r01f.version}</version>
-		</dependency>			
+			<version>${revision}</version>
+		</dependency>
+
 		<!-- ///////////////////////////////////////// -->
 		<!-- Guice                                     -->
 		<!-- ///////////////////////////////////////// -->
 		<dependency>
 			<groupId>r01.r01f.base</groupId>
 			<artifactId>r01fGuiceClasses</artifactId>
-			<version>${r01f.version}</version>
-		</dependency>		
+			<version>${revision}</version>
+		</dependency>
+
 		<!-- ///////////////////////////////////////// -->
 		<!-- R01: BusinessServices                     -->
 		<!-- ///////////////////////////////////////// -->
 		<dependency>
 			<groupId>r01.r01f.businessservices</groupId>
 			<artifactId>r01fBusinessServicesClasses</artifactId>
-			<version>${r01f.version}</version>
+			<version>${revision}</version>
 		</dependency>
 		<dependency>
 			<groupId>r01.r01f.businessservices.core.persistence.db</groupId>
 			<artifactId>r01fBusinessServicesCoreDBGuiceClasses</artifactId>
-			<version>${r01f.version}</version>
+			<version>${revision}</version>
 		</dependency>
-		
+
 		<!-- ///////////////////////////////////////// -->
 		<!-- TEST                                      -->
 		<!-- ///////////////////////////////////////// -->

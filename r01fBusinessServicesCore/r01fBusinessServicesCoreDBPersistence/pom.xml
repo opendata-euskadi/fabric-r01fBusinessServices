@@ -7,10 +7,10 @@
 <!-- ====================================================================== -->
 	<parent>
 		<groupId>r01.r01f.businessservices.core</groupId>
-    	<artifactId>r01fBusinessServicesCore</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-  	</parent>
-  	
+		<artifactId>r01fBusinessServicesCore</artifactId>
+		<version>${revision}</version>
+	</parent>
+
 <!-- ====================================================================== -->
 <!-- ARTIFACT                                                               -->
 <!-- ====================================================================== -->
@@ -18,15 +18,15 @@
 	<name>r01fBusinessServicesCoreDBPersistence</name>
 	<artifactId>r01fBusinessServicesCoreDBPersistence</artifactId>
 	<packaging>pom</packaging>				<!-- it's a parent project -->
-	
+
 <!-- ====================================================================== -->
 <!-- MODULES                                                                -->
 <!-- ====================================================================== -->
-  <modules>
-    <module>r01fDBPersistenceClasses</module>
-    <module>r01fBusinessServicesCoreDBGuiceClasses</module>
-  </modules>
-	
+	<modules>
+		<module>r01fDBPersistenceClasses</module>
+		<module>r01fBusinessServicesCoreDBGuiceClasses</module>
+	</modules>
+
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>r01.r01f.businessservices.core</groupId>
 			<artifactId>r01fBusinessServicesCoreClasses</artifactId>
-			<version>${r01f.version}</version>
+			<version>${revision}</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -9,16 +9,16 @@
 <!-- ====================================================================== -->
 	<parent>
 		<groupId>r01.r01f.businessservices.guice.core</groupId>
-    	<artifactId>r01fBusinessServicesCoreGuice</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-  	</parent>
-  	
+		<artifactId>r01fBusinessServicesCoreGuice</artifactId>
+		<version>${revision}</version>
+	</parent>
+
 <!-- ====================================================================== -->
 <!-- ARTIFACT                                                               -->
 <!-- ====================================================================== -->
 	<name>r01fBusinessWebServicesCoreGuiceClasses</name>
 	<artifactId>r01fBusinessWebServicesCoreGuiceClasses</artifactId>
-	
+
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->
@@ -29,8 +29,8 @@
 		<dependency>
 			<groupId>r01.r01f.web</groupId>
 			<artifactId>r01fWebProfileClasses</artifactId>
-			<version>${r01f.version}</version>
-			
+			<version>${revision}</version>
+
 			<!-- exclude httpclient & fileupload usded by servlet proxy -->
 			<exclusions>
 				<exclusion>
@@ -43,16 +43,16 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<!-- ///////////////////////////////////////// -->
 		<!-- R01F: BusinessServices                    -->
 		<!-- ///////////////////////////////////////// -->
 		<dependency>
 			<groupId>r01.r01f.businessservices.guice</groupId>
 			<artifactId>r01fBusinessServicesGuiceClasses</artifactId>
-			<version>${r01f.version}</version>
+			<version>${revision}</version>
 		</dependency>
-		
+
 		<!-- ///////////////////////////////////////// -->
 		<!-- GUICE WEb                                 -->
 		<!-- ///////////////////////////////////////// -->
@@ -60,7 +60,7 @@
 		    <groupId>com.google.inject.extensions</groupId>
 		    <artifactId>guice-servlet</artifactId>
 		    <version>${guice.version}</version>
-		    
+
 		    <!-- sometimes guice-servlet forces guice-xxx-tests.jar artifact
 		         this conflicts with guice.jar main artifcat -->
 		    <exclusions>
@@ -70,11 +70,11 @@
 		    	</exclusion>
 		    </exclusions>
 		</dependency>
-		
+
 		<!-- ///////////////////////////////////////// -->
 		<!-- ServletAPI                                -->
 		<!-- ///////////////////////////////////////// -->
-		<!-- [r01fWebProfileClasses] has SevletAPI as a dependency, 
+		<!-- [r01fWebProfileClasses] has SevletAPI as a dependency,
 			 ... BUT it's SCOPE is PROVIDED so it has to be defined
 			     here again -->
 		<dependency>

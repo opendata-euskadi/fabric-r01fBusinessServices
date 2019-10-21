@@ -9,16 +9,16 @@
 <!-- ====================================================================== -->
 	<parent>
 		<groupId>r01.r01f.businessservices.core</groupId>
-    	<artifactId>r01fBusinessServicesCore</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-  	</parent>
-  	
+		<artifactId>r01fBusinessServicesCore</artifactId>
+		<version>${revision}</version>
+	</parent>
+
 <!-- ====================================================================== -->
 <!-- ARTIFACT                                                               -->
 <!-- ====================================================================== -->
 	<name>r01fBusinessRESTServicesCoreSpringClasses</name>
 	<artifactId>r01fBusinessRESTServicesCoreSpringClasses</artifactId>
-	
+
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->
@@ -29,22 +29,22 @@
 		<dependency>
 			<groupId>r01.r01f.businessservices</groupId>
 			<artifactId>r01fBusinessServicesClasses</artifactId>
-			<version>${r01f.version}</version>
+			<version>${revision}</version>
 		</dependency>
-		
+
 		<!-- ///////////////////////////////////////// -->
 		<!-- R01: REST                                 -->
 		<!-- ///////////////////////////////////////// -->
 		<dependency>
 			<groupId>r01.r01f.spring.web</groupId>
 			<artifactId>r01fRESTServicesSpringClasses</artifactId>
-			<version>${r01f.version}</version>
+			<version>${revision}</version>
 		</dependency>
-		
+
 		<!-- ///////////////////////////////////////// -->
 		<!-- ServletAPI                                -->
 		<!-- ///////////////////////////////////////// -->
-		<!-- [r01fWebProfileClasses] has SevletAPI as a dependency, 
+		<!-- [r01fWebProfileClasses] has SevletAPI as a dependency,
 			 ... BUT it's SCOPE is PROVIDED so it has to be defined
 			     here again -->
 		<dependency>

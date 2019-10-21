@@ -7,10 +7,10 @@
 <!-- ====================================================================== -->
 	<parent>
 		<groupId>r01.r01f.businessservices</groupId>
-    	<artifactId>r01fBusinessServices</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-  	</parent>
-  	
+		<artifactId>r01fBusinessServices</artifactId>
+		<version>${revision}</version>
+	</parent>
+
 <!-- ====================================================================== -->
 <!-- ARTIFACT                                                               -->
 <!-- ====================================================================== -->
@@ -18,15 +18,15 @@
 	<name>r01fBusinessServicesGuice</name>
 	<artifactId>r01fBusinessServicesGuice</artifactId>
 	<packaging>pom</packaging>				<!-- it's a parent project -->
-	
+
 <!-- ====================================================================== -->
 <!-- MODULES                                                                -->
 <!-- ====================================================================== -->
-  <modules>
-    <module>r01fBusinessServicesGuiceClasses</module>
-    <module>r01fBusinessServicesCoreGuice</module>
-  </modules>
-	
+	<modules>
+		<module>r01fBusinessServicesGuiceClasses</module>
+		<module>r01fBusinessServicesCoreGuice</module>
+	</modules>
+
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>r01.r01f.base</groupId>
 			<artifactId>r01fGuiceClasses</artifactId>
-			<version>${r01f.version}</version>
+			<version>${revision}</version>
 		</dependency>
 	</dependencies>
 </project>
