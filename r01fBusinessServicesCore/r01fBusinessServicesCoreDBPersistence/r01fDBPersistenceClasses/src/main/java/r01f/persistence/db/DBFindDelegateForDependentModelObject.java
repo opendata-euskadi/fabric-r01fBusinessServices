@@ -1,5 +1,7 @@
 package r01f.persistence.db;
 
+import javax.persistence.Tuple;
+
 import com.google.common.base.Function;
 
 import lombok.Getter;
@@ -63,7 +65,7 @@ public abstract class DBFindDelegateForDependentModelObject<O extends Persistabl
 														   final PO parentOid) {
 		QueryDBEntityWrapper qry = _dbFind.new QueryDBEntityWrapper();
 		qry.addFilterByOidPredicate(parentOid,_getParentOidDBEntityFieldName());
-		return qry.exec(securityContext);
+		return qry.findUsing(securityContext);
 	}
 	@Override @SuppressWarnings({ "unchecked","rawtypes" })
 	public <PO extends OID> FindSummariesResult<M> findSummariesOfDependentsOf(final SecurityContext securityContext,
@@ -127,5 +129,5 @@ public abstract class DBFindDelegateForDependentModelObject<O extends Persistabl
 	 * Returns a function that transforms a db row to a summarized model object
 	 * @return
 	 */
-	protected abstract <S extends SummarizedModelObject<M>> Function<Object[],S> _dbRowToSummarizedModelObjectTranformFunction(SecurityContext securityContext);
+	protected abstract <S extends SummarizedModelObject<M>> Function<Tuple,S> _dbRowToSummarizedModelObjectTranformFunction(SecurityContext securityContext);
 }

@@ -87,10 +87,10 @@ public class ServicesBootstrap {
 			ServiceInterfacesMatchings serviceInterfaceMatchings = _consolidateServiceInterfaceMatchings(bootstrapCfgs);
 			
 			// [2] - Create the client and core matchings
-			for (final ServicesBootstrapConfig bootstrapCfg  : bootstrapCfgs) {
+			for (final ServicesBootstrapConfig bootstrapCfg : bootstrapCfgs) {
 				
 				// [a] - Create a guice module for the client and for every core module
-				final Collection<Module> clientAndCodeBootstrap = _createClientAndCoreBootstrapModules(bootstrapCfg,
+				final Collection<Module> clientAndCoreBootstrap = _createClientAndCoreBootstrapModules(bootstrapCfg,
 																									   serviceInterfaceMatchings);
 				
 				// [b] - Client bindings:
@@ -99,15 +99,15 @@ public class ServicesBootstrap {
 				//		 	  this are the binding that the client will use
 				//		 	  ... so if both the core impl and the proxy to the core impl are available, 
 				//		          the core impl will be used
-				clientAndCodeBootstrap.add(_createClientApiAndServiceInterfaceBindingsModule(bootstrapCfg.getClientConfig().getClientApiType(),
+				clientAndCoreBootstrap.add(_createClientApiAndServiceInterfaceBindingsModule(bootstrapCfg.getClientConfig().getClientApiType(),
 																							 serviceInterfaceMatchings));
 				
 				// [c] - bind event bus for core events
 				Module coreEventBusBindingModule = ServicesBootstrapUtil.createCoreEventBusBindingModule(bootstrapCfg.getClientApiAppCode(),
 																										 bootstrapCfg.getCoreEventsConfig());
-				clientAndCodeBootstrap.add(coreEventBusBindingModule);
+				clientAndCoreBootstrap.add(coreEventBusBindingModule);
 	
-				if (CollectionUtils.hasData(clientAndCodeBootstrap)) bootstrapModules.addAll(clientAndCodeBootstrap);
+				if (CollectionUtils.hasData(clientAndCoreBootstrap)) bootstrapModules.addAll(clientAndCoreBootstrap);
 			}
 		}
 		
@@ -261,57 +261,57 @@ public class ServicesBootstrap {
 	private Module _createClientApiAndServiceInterfaceBindingsModule(final Class<? extends ClientAPI> clientApiType,
 																	 final ServiceInterfacesMatchings serviceInterfaceMatchings) {
 		return new Module() {
-						@Override
-						public void configure(final Binder binder) {
-							// [0] - Bind the client api as a singleton
-							binder.bind(clientApiType)
-								  .in(Singleton.class);
+					@Override
+					public void configure(final Binder binder) {
+						// [0] - Bind the client api as a singleton
+						binder.bind(clientApiType)
+							  .in(Singleton.class);
+						
+						// [1] - Bind client proxies as singletons
+						// 		 BEWARE CORE impl was binded as singletons at the private module (see ServicesCoreBootstrapPrivateGuiceModule)
+						if (serviceInterfaceMatchings.hasData()) {
 							
-							// [1] - Bind client proxies as singletons
-							// 		 BEWARE CORE impl was binded as singletons at the private module (see ServicesCoreBootstrapPrivateGuiceModule)
-							if (serviceInterfaceMatchings.hasData()) {
+							for (final ServiceInterfaceMatch ifaceMatch : serviceInterfaceMatchings) {
+								Class<? extends ServiceInterface> iface = ifaceMatch.getServiceInterfaceType();
+								Class<? extends ServiceInterface> implOrProxy = ifaceMatch.getProxyOrImplMatchingType();
 								
-								for (final ServiceInterfaceMatch ifaceMatch : serviceInterfaceMatchings) {
-									Class<? extends ServiceInterface> iface = ifaceMatch.getServiceInterfaceType();
-									Class<? extends ServiceInterface> implOrProxy = ifaceMatch.getProxyOrImplMatchingType();
-									
-									if (ifaceMatch.isProxy()
-									 && !serviceInterfaceMatchings.existsCoreImplMatchingFor(ifaceMatch.getCoreAppCode(),ifaceMatch.getCoreModule(),
-											 											     ifaceMatch.getServiceInterfaceType())) {
-										// a proxy must NOT be binded if there's another matching for the core bean impl
-										binder.bind(_captureSubType(implOrProxy))
-											  .in(Singleton.class);
-									} else if (ifaceMatch.isCoreImpl()) {
-										// BEWARE! - the core impls usually are binded as singletons in the private module (see ServicesCoreBootstrapPrivateGuiceModule) and exposed to the outer world
-									}
-									
-									// b) bind the service interface to the proxy or impl
-									binder.bind(_captureType(iface))
-										  .to(_captureSubType(implOrProxy));
+								if (ifaceMatch.isProxy()
+								 && !serviceInterfaceMatchings.existsCoreImplMatchingFor(ifaceMatch.getCoreAppCode(),ifaceMatch.getCoreModule(),
+										 											     ifaceMatch.getServiceInterfaceType())) {
+									// a proxy must NOT be binded if there's another matching for the core bean impl
+									binder.bind(_captureSubType(implOrProxy))
+										  .in(Singleton.class);
+								} else if (ifaceMatch.isCoreImpl()) {
+									// BEWARE! - the core impls usually are binded as singletons in the private module (see ServicesCoreBootstrapPrivateGuiceModule) and exposed to the outer world
 								}
-							}
-							
-							// [3] - Bind the service interface types to bean impl or proxy types as:
-							//		 [a] - A MapBinder that binds the service interface type to the bean impl or proxy instance
-							//			   This MapBinder is used at the API's proxy aggregator to inject the correct service interface bean impl or proxy 
-							//			   (see ServicesClientProxyLazyLoaderGuiceMethodInterceptor)
-							//		 [b] - A direct bind of the service interface type to the bean impl or proxy type
-							Named mapBinderNamed = Names.named(serviceInterfaceMatchings.getClientApiAppCode().asString());
-							@SuppressWarnings("rawtypes")
-							MapBinder<Class,ServiceInterface> serviceIfaceTypeToImplOrProxyBinder = MapBinder.newMapBinder(binder,
-																									 				 	   Class.class,ServiceInterface.class,
-																									 				 	   mapBinderNamed);
-							if (serviceInterfaceMatchings.hasData()) {
-								for (final ServiceInterfaceMatch ifaceMatch : serviceInterfaceMatchings) {
-									Class<? extends ServiceInterface> iface = ifaceMatch.getServiceInterfaceType();
-									Class<? extends ServiceInterface> implOrProxy = ifaceMatch.getProxyOrImplMatchingType();
-									
-									// a an interface to impl / proxy binding to the Map used at ServicesClientProxyLazyLoaderGuiceMethodInterceptor
-									serviceIfaceTypeToImplOrProxyBinder.addBinding(_captureType(iface))
-													 			 	   .to(_captureSubType(implOrProxy));
-								}
+								
+								// b) bind the service interface to the proxy or impl
+								binder.bind(_captureType(iface))
+									  .to(_captureSubType(implOrProxy));
 							}
 						}
+						
+						// [3] - Bind the service interface types to bean impl or proxy types as:
+						//		 [a] - A MapBinder that binds the service interface type to the bean impl or proxy instance
+						//			   This MapBinder is used at the API's proxy aggregator to inject the correct service interface bean impl or proxy 
+						//			   (see ServicesClientProxyLazyLoaderGuiceMethodInterceptor)
+						//		 [b] - A direct bind of the service interface type to the bean impl or proxy type
+						Named mapBinderNamed = Names.named(serviceInterfaceMatchings.getClientApiAppCode().asString());
+						@SuppressWarnings("rawtypes")
+						MapBinder<Class,ServiceInterface> serviceIfaceTypeToImplOrProxyBinder = MapBinder.newMapBinder(binder,
+																								 				 	   Class.class,ServiceInterface.class,
+																								 				 	   mapBinderNamed);
+						if (serviceInterfaceMatchings.hasData()) {
+							for (final ServiceInterfaceMatch ifaceMatch : serviceInterfaceMatchings) {
+								Class<? extends ServiceInterface> iface = ifaceMatch.getServiceInterfaceType();
+								Class<? extends ServiceInterface> implOrProxy = ifaceMatch.getProxyOrImplMatchingType();
+								
+								// a an interface to impl / proxy binding to the Map used at ServicesClientProxyLazyLoaderGuiceMethodInterceptor
+								serviceIfaceTypeToImplOrProxyBinder.addBinding(_captureType(iface))
+												 			 	   .to(_captureSubType(implOrProxy));
+							}
+						}
+					}
 			   };
 	}
 	@SuppressWarnings("unchecked")
