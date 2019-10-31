@@ -112,7 +112,11 @@
 <!-- PLUGINS                                                                -->
 <!-- ====================================================================== -->
 	<build>
-
+		<!--
+		Default plugin config
+		BEWARE!! In [eclipse] ensure this config is set:
+					[window] > [preferences] > [Maven] > [Errors/Wranings] > [Plugin execution NOT covered by lifecycle configuration] >>> se to WARNING 
+		-->
 		<pluginManagement>
 			<plugins>
 				<!--
@@ -170,10 +174,20 @@
 				<plugin>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>3.1.1</version>	<!-- version 3.1.2 is problematic in older versions of eclipse (upgrade the maven conector from https://download.eclipse.org/m2e-wtp/releases/1.4/) -->
+					<configuration>
+						<archive>
+							<addMavenDescriptor>false</addMavenDescriptor>
+						</archive>
+					</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-war-plugin</artifactId>
 					<version>3.2.3</version>
+					<configuration>
+						<archive>
+							<addMavenDescriptor>false</addMavenDescriptor>
+						</archive>
+					</configuration>
 				</plugin>
 				<!--
 					[5] - INSTALL: https://maven.apache.org/plugins/maven-war-plugin/
@@ -224,8 +238,7 @@
 					</executions>
 				</plugin>
 
-				<!-- When we have a multi module build. We have a parent pom and one or more children -->
-				<!-- With this plugin automatic replace parent variable version -->
+				<!-- Automatic replacement of a parent [version] variable in child modules -->
 				<!-- https://www.mojohaus.org/flatten-maven-plugin/usage.html -->
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -243,7 +256,6 @@
 								<goal>flatten</goal>
 							</goals>
 						</execution>
-<!--
 						<execution>
 							<id>flatten.clean</id>
 							<phase>clean</phase>
@@ -251,7 +263,6 @@
 								<goal>clean</goal>
 							</goals>
 						</execution>
--->
 					</executions>
 				</plugin>
 
@@ -264,6 +275,23 @@
 
 			</plugins>
 		</pluginManagement>
+
+		<!--
+		Plugins to be run by default 
+		-->
+		<plugins>
+			<!--
+			Run the [flatten] plugin by default
+			if the [flatten] plugin is NOT run by default the GOAL MUST be run instead:
+				mvn clean flatten:flatten install
+			If none of the above is done, the folder containing the artifact will be 
+			incorrectly named ${revision} instead of the revision number
+			-->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
 
 		<!--
 		The Resources Plugin handles the copying of project resources to the output directory
