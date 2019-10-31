@@ -135,8 +135,21 @@ public abstract class DBModuleConfigBase
 
 		// [6] - Other properties
 		String otherPropsXPath = "persistence/unit[@type='" + _unitType + "']/properties";
-		_otherProps = xmlProps.propertyAt(otherPropsXPath)
-							   	.asProperties();
+		Properties otherProps = xmlProps.propertyAt(otherPropsXPath)
+							   			.asProperties();
+		Properties customProps = new Properties();
+		for (Entry<Object,Object> e : otherProps.entrySet()) {
+			String key = (String)e.getKey();
+			String val = (String)e.getValue();
+						
+			if (Strings.isNOTNullOrEmpty(key)
+			 && Strings.isNOTNullOrEmpty(val)) {
+				String customVal = val.replaceAll("\\{APPCODE\\}",_appCode.asString())
+									  .replaceAll("\\{APP_MODULE\\}",_appModule.asString());
+				customProps.put(key,customVal);
+			}
+		}
+		_otherProps = customProps;
 		if (CollectionUtils.isNullOrEmpty(_otherProps)) log.info("There're NO aditional JPA properties at {} at properties file {}",
 					   											 otherPropsXPath,_appCode);
 	}
