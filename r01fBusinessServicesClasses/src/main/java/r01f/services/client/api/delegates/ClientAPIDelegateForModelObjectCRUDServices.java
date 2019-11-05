@@ -136,6 +136,7 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 			if (!((DirtyStateTrackable)record).getTrackingStatus().isThisNew()) throw new IllegalStateException(Throwables.message("{} instance is NOT new... maybe you have to call update() or save() method instead of create",
 																													    		   record.getClass()));
 		}
+		
 		// [1] - Do the creation
 		CRUDResult<M> saveOpResult = this.getServiceProxy()
 											.create(this.getSecurityContext(),

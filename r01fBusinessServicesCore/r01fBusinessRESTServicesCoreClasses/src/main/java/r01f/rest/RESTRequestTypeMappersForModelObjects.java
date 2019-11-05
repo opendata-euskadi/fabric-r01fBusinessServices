@@ -20,7 +20,7 @@ import r01f.model.ModelObject;
 import r01f.objectstreamer.Marshaller;
 import r01f.persistence.index.IndexManagementCommand;
 import r01f.reflection.ReflectionUtils;
-import r01f.rest.RESTRequestTypeMappersForBasicTypes.XMLMarshalledObjectRequestTypeMapper;
+import r01f.rest.RESTRequestTypeMappersForBasicTypes.MarshalledObjectRequestTypeMapper;
 import r01f.types.jobs.EnqueuedJob;
 import r01f.util.types.Strings;
 
@@ -34,12 +34,12 @@ public class RESTRequestTypeMappersForModelObjects {
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Accessors(prefix="_")
 	public static abstract class ModelObjectRequestTypeMapperBase<M extends ModelObject> 
-		  	    		 extends XMLMarshalledObjectRequestTypeMapper<M> {
+		  	    		 extends MarshalledObjectRequestTypeMapper<M> {
 		
 		@Getter private final Marshaller _objectsMarshaller;
 		
-		public ModelObjectRequestTypeMapperBase(final Marshaller marshaller) {
-			super(ModelObject.class);
+		public ModelObjectRequestTypeMapperBase(final Marshaller marshaller, final MediaType mediaType) {
+			super(ModelObject.class, mediaType);
 			_objectsMarshaller = marshaller;
 		}
 	}
@@ -91,12 +91,12 @@ public class RESTRequestTypeMappersForModelObjects {
 	 */
 	@Accessors(prefix="_")
 	public static abstract class IndexManagementCommandRequestTypeMapperBase 
-		     			 extends XMLMarshalledObjectRequestTypeMapper<IndexManagementCommand> {
+		     			 extends MarshalledObjectRequestTypeMapper<IndexManagementCommand> {
 		
 		@Getter private final Marshaller _objectsMarshaller;
 		
-		public IndexManagementCommandRequestTypeMapperBase(final Marshaller marshaller) {
-			super(IndexManagementCommand.class);
+		public IndexManagementCommandRequestTypeMapperBase(final Marshaller marshaller, final MediaType mediaType) {
+			super(IndexManagementCommand.class, mediaType);
 			_objectsMarshaller = marshaller;
 		}
 	}
@@ -105,12 +105,12 @@ public class RESTRequestTypeMappersForModelObjects {
 	 */
 	@Accessors(prefix="_")
 	public static abstract class EnqueuedJobRequestTypeMapperBase 
-		     			 extends XMLMarshalledObjectRequestTypeMapper<EnqueuedJob> {
+		     			 extends MarshalledObjectRequestTypeMapper<EnqueuedJob> {
 		
 		@Getter private final Marshaller _objectsMarshaller;
 		
-		public EnqueuedJobRequestTypeMapperBase(final Marshaller marshaller) {
-			super(EnqueuedJob.class);
+		public EnqueuedJobRequestTypeMapperBase(final Marshaller marshaller, final MediaType mediaType) {
+			super(EnqueuedJob.class, mediaType);
 			_objectsMarshaller = marshaller;
 		}
 	}
