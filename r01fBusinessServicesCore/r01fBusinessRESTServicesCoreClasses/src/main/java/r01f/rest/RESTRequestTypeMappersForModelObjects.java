@@ -38,10 +38,14 @@ public class RESTRequestTypeMappersForModelObjects {
 		
 		@Getter private final Marshaller _objectsMarshaller;
 		
+		public ModelObjectRequestTypeMapperBase(final Marshaller marshaller) {
+			this(marshaller, MediaType.APPLICATION_XML_TYPE);			
+		}
+		
 		public ModelObjectRequestTypeMapperBase(final Marshaller marshaller, final MediaType mediaType) {
 			super(ModelObject.class, mediaType);
 			_objectsMarshaller = marshaller;
-		}
+		}			
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	OID
@@ -95,6 +99,10 @@ public class RESTRequestTypeMappersForModelObjects {
 		
 		@Getter private final Marshaller _objectsMarshaller;
 		
+		public IndexManagementCommandRequestTypeMapperBase(final Marshaller marshaller) {
+			this(marshaller, MediaType.APPLICATION_XML_TYPE);			
+		}
+		
 		public IndexManagementCommandRequestTypeMapperBase(final Marshaller marshaller, final MediaType mediaType) {
 			super(IndexManagementCommand.class, mediaType);
 			_objectsMarshaller = marshaller;
@@ -108,6 +116,10 @@ public class RESTRequestTypeMappersForModelObjects {
 		     			 extends MarshalledObjectRequestTypeMapper<EnqueuedJob> {
 		
 		@Getter private final Marshaller _objectsMarshaller;
+		
+		public EnqueuedJobRequestTypeMapperBase(final Marshaller marshaller) {
+			this(marshaller, MediaType.APPLICATION_XML_TYPE);			
+		}
 		
 		public EnqueuedJobRequestTypeMapperBase(final Marshaller marshaller, final MediaType mediaType) {
 			super(EnqueuedJob.class, mediaType);
