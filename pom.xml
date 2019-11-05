@@ -18,8 +18,7 @@
 					 for [artifact] versioning use maven versions plugin:
 						> mvn versions:set -DnewVersion=1.0.3 -->
 		<revision>0.0.1-SNAPSHOT</revision>
-		<r01f.version>${revision}</r01f.version>
-
+		
 		<!-- Dependencies versions -->
 		<guice.version>4.2.1</guice.version>	<!-- TODO 4.2.2 version exists BUT somehow it cannot be loaded! -->
 	</properties>
@@ -271,10 +270,10 @@
 					 https://stackoverflow.com/questions/30063357/how-can-i-map-maven-lifecycle-phases-not-covered-by-the-eclipse-m2e-plugin
 				-->
 				<plugin>
-				  	<groupId>org.eclipse.m2e</groupId>
-				  	<artifactId>lifecycle-mapping</artifactId>
-				  	<version>1.0.0</version>
-				  	<configuration> 
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration> 
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
 								<!-- flatten plugin -->
