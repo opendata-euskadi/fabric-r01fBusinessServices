@@ -178,6 +178,8 @@
 								<sources>
 									<source>src/main/resources</source>
 									<source>src/test/resources</source>
+									<source>src/main/config</source>
+									<source>src/main/aspect</source>
 								</sources>
 							</configuration>
 						</execution>
@@ -434,13 +436,14 @@
 		<!--
 		<profile>
 			<id>env_profile</id>
-			<dependencies>	
-				<dependency>					
+			<dependencies>
+				<dependency>
 					<groupId>...the group id...</groupId>
 					<artifactId>...the artifact id...</artifactId>
-					<version>version</version>					
-		    	</dependency>
-		    </dependencies>
-		</profile> -->
+					<version>version</version>
+				</dependency>
+			</dependencies>
+		</profile> 
+		-->
 	</profiles>
 </project>
