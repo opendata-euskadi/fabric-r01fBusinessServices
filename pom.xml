@@ -13,10 +13,10 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 
-		<!-- R01F version -->
-		<!-- BEWARE! use this property on [dependencies] ONLY
-					 for [artifact] versioning use maven versions plugin:
-						> mvn versions:set -DnewVersion=1.0.3 -->
+		<!-- REVISION -->
+		<!-- Update revision: 
+				> mvn -Drevision={new revision} clean package 
+		-->
 		<revision>0.0.1-SNAPSHOT</revision>
 		
 		<!-- Dependencies versions -->
@@ -178,6 +178,8 @@
 								<sources>
 									<source>src/main/resources</source>
 									<source>src/test/resources</source>
+									<source>src/main/config</source>
+									<source>src/main/aspect</source>
 								</sources>
 							</configuration>
 						</execution>
@@ -212,7 +214,10 @@
 					</executions>
 				</plugin>
 				
-				<!-- Version plugin (not currently used -replaced by version & flatten- -->
+				<!-- 
+				Version plugin (not used; replaced by revision + flatten)
+					> mvn versions:set -DnewVersion={new version}
+				-->
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>versions-maven-plugin</artifactId>
@@ -434,13 +439,14 @@
 		<!--
 		<profile>
 			<id>env_profile</id>
-			<dependencies>	
-				<dependency>					
+			<dependencies>
+				<dependency>
 					<groupId>...the group id...</groupId>
 					<artifactId>...the artifact id...</artifactId>
-					<version>version</version>					
-		    	</dependency>
-		    </dependencies>
-		</profile> -->
+					<version>version</version>
+				</dependency>
+			</dependencies>
+		</profile> 
+		-->
 	</profiles>
 </project>
