@@ -13,8 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import r01f.guids.OID;
-import r01f.persistence.db.entities.DBEntityBase;
-import r01f.persistence.db.entities.DBEntityForModelObject;
+import r01f.persistence.db.DBEntityHasOID;
 import r01f.persistence.db.entities.primarykeys.DBPrimaryKeyForModelObject;
 import r01f.persistence.db.entities.primarykeys.DBPrimaryKeyForModelObjectImpl;
 
@@ -24,7 +23,8 @@ import r01f.persistence.db.entities.primarykeys.DBPrimaryKeyForModelObjectImpl;
 @NoArgsConstructor
 public abstract class DBEntityBaseWithOID
 			  extends DBEntityBase
-		   implements DBEntityForModelObject<DBPrimaryKeyForModelObject> {
+		   implements DBEntityForModelObject<DBPrimaryKeyForModelObject>,
+		   			  DBEntityHasOID {
 
 	private static final long serialVersionUID = -1001565203286537182L;
 /////////////////////////////////////////////////////////////////////////////////////////
