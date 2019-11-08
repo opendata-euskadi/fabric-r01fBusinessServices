@@ -24,7 +24,7 @@ import r01f.model.search.SearchModelObject;
 import r01f.objectstreamer.Marshaller;
 import r01f.persistence.index.IndexManagementCommand;
 import r01f.reflection.ReflectionUtils;
-import r01f.rest.RESTResponseTypeMappersForBasicTypes.XMLMarshalledObjectResultTypeMapperBase;
+import r01f.rest.RESTResponseTypeMappersForBasicTypes.MarshalledObjectResultTypeMapperBase;
 import r01f.types.jobs.EnqueuedJob;
 import r01f.util.types.Strings;
 
@@ -110,11 +110,19 @@ public class RESTResponseTypeMappersForModelObjects {
 	 */
 	@Accessors(prefix="_")
 	public static abstract class ModelObjectResponseTypeMapperBase<M extends ModelObject> 
-		        		 extends XMLMarshalledObjectResultTypeMapperBase<M> {
+		        		 extends MarshalledObjectResultTypeMapperBase<M> {
 		public ModelObjectResponseTypeMapperBase(final Marshaller marshaller) {
 			super(ModelObject.class,
+				  MediaType.APPLICATION_XML_TYPE,
 				  marshaller);
 		}
+		
+		public ModelObjectResponseTypeMapperBase(final Marshaller marshaller, final MediaType mediaType) {
+			super(ModelObject.class,
+				  mediaType,
+				  marshaller);
+		}
+
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	SearchModelObject
@@ -124,12 +132,20 @@ public class RESTResponseTypeMappersForModelObjects {
 	 */
 	@Accessors(prefix="_")
 	public static abstract class SearchModelObjectResponseTypeMapperBase 
-		     			 extends XMLMarshalledObjectResultTypeMapperBase<SearchModelObject> {
+		     			 extends MarshalledObjectResultTypeMapperBase<SearchModelObject> {
 		
 		public SearchModelObjectResponseTypeMapperBase(final Marshaller marshaller) {
 			super(SearchModelObject.class,
+				  MediaType.APPLICATION_XML_TYPE,
 				  marshaller);
 		}
+		
+		public SearchModelObjectResponseTypeMapperBase(final Marshaller marshaller, final MediaType mediaType) {
+			super(SearchModelObject.class,
+				  mediaType,
+				  marshaller);
+		}
+
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  RecordPersistenceOperationResult
@@ -138,9 +154,17 @@ public class RESTResponseTypeMappersForModelObjects {
 	 * MessageBodyWriter for all {@link PersistenceOperationOK}
 	 */
 	public static abstract class PersistenceOperationResultTypeMapperBase 
-		                 extends XMLMarshalledObjectResultTypeMapperBase<PersistenceOperationExecOK<?>> {		
+		                 extends MarshalledObjectResultTypeMapperBase<PersistenceOperationExecOK<?>> {		
+		
 		public PersistenceOperationResultTypeMapperBase(final Marshaller modelObjectsMarshaller) {
 			super(PersistenceOperationExecOK.class,
+				  MediaType.APPLICATION_XML_TYPE,
+				  modelObjectsMarshaller);
+		}
+		
+		public PersistenceOperationResultTypeMapperBase(final Marshaller modelObjectsMarshaller, final MediaType mediaType) {
+			super(PersistenceOperationExecOK.class,
+				  mediaType,
 				  modelObjectsMarshaller);
 		}
 	}
@@ -196,11 +220,17 @@ public class RESTResponseTypeMappersForModelObjects {
 	 */
 	@Accessors(prefix="_")
 	public static abstract class IndexManagementCommandResponseTypeMapperBase 
-		     			 extends XMLMarshalledObjectResultTypeMapperBase<IndexManagementCommand> {
-		
+		     			 extends MarshalledObjectResultTypeMapperBase<IndexManagementCommand> {
 		
 		public IndexManagementCommandResponseTypeMapperBase(final Marshaller marshaller) {
 			super(IndexManagementCommand.class,
+				  MediaType.APPLICATION_XML_TYPE,
+				  marshaller);
+		}
+		
+		public IndexManagementCommandResponseTypeMapperBase(final Marshaller marshaller, final MediaType mediaType) {
+			super(IndexManagementCommand.class,
+				  mediaType,
 				  marshaller);
 		}
 	}
@@ -209,10 +239,17 @@ public class RESTResponseTypeMappersForModelObjects {
 	 */
 	@Accessors(prefix="_")
 	public static abstract class EnqueuedJobResponseTypeMapperBase 
-		     			 extends XMLMarshalledObjectResultTypeMapperBase<EnqueuedJob> {
+		     			 extends MarshalledObjectResultTypeMapperBase<EnqueuedJob> {
 		
 		public EnqueuedJobResponseTypeMapperBase(final Marshaller marshaller) {
 			super(EnqueuedJob.class,
+				  MediaType.APPLICATION_XML_TYPE,
+				  marshaller);
+		}
+		
+		public EnqueuedJobResponseTypeMapperBase(final Marshaller marshaller, final MediaType mediaType) {
+			super(EnqueuedJob.class,
+				  mediaType,
 				  marshaller);
 		}
 	}
