@@ -138,15 +138,17 @@ public abstract class DBModuleConfigBase
 		Properties otherProps = xmlProps.propertyAt(otherPropsXPath)
 							   			.asProperties();
 		Properties customProps = new Properties();
-		for (Entry<Object,Object> e : otherProps.entrySet()) {
-			String key = (String)e.getKey();
-			String val = (String)e.getValue();
-						
-			if (Strings.isNOTNullOrEmpty(key)
-			 && Strings.isNOTNullOrEmpty(val)) {
-				String customVal = val.replaceAll("\\{APPCODE\\}",_appCode.asString())
-									  .replaceAll("\\{APP_MODULE\\}",_appModule.asString());
-				customProps.put(key,customVal);
+		if (CollectionUtils.hasData(otherProps)) {
+			for (Entry<Object,Object> e : otherProps.entrySet()) {
+				String key = (String)e.getKey();
+				String val = (String)e.getValue();
+							
+				if (Strings.isNOTNullOrEmpty(key)
+				 && Strings.isNOTNullOrEmpty(val)) {
+					String customVal = val.replaceAll("\\{APPCODE\\}",_appCode.asString())
+										  .replaceAll("\\{APP_MODULE\\}",_appModule.asString());
+					customProps.put(key,customVal);
+				}
 			}
 		}
 		_otherProps = customProps;
