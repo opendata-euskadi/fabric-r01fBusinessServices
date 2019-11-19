@@ -7,6 +7,7 @@ import javax.persistence.Query;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 
 import r01f.guids.OID;
 import r01f.guids.OIDs;
@@ -138,7 +139,7 @@ public abstract class DBSearcherForModelObjectBase<F extends SearchFilterForMode
 																						return OIDs.createOIDFromString(oidType,pk);
 																					}
 																		 })
-												: null;
+												: Lists.newArrayList();
 		return (Collection<O>)oids;
 	}
 }

@@ -79,8 +79,10 @@ public abstract class DBSearcherBase<F extends SearchFilter,I extends SearchResu
 		TypedQuery<Long> countQry = _searchQueryFactory.create()
 													   .getCountQuery(filter);
 		int totalItems = countQry.getSingleResult().intValue();
-		log.debug("JPA COUNT Query: {}",countQry.toString());
-		log.info("Total number of results: {}",totalItems);
+		log.debug("JPA COUNT Query: {}",
+				  countQry.toString());
+		log.info("Total number of results: {}",
+				 totalItems);
 		
 		return totalItems;
 	}
@@ -88,7 +90,8 @@ public abstract class DBSearcherBase<F extends SearchFilter,I extends SearchResu
 	public SearchResults<F,I> filterRecords(final SecurityContext securityContext,
 								 			final F filter,final Collection<SearchResultsOrdering> ordering,
 								 			final int firstRowNum,final int numberOfRows) {
-		log.info("Filtering: {}",filter.getBooleanQuery().encodeAsString());
+		log.info("Filtering: {}",
+				 filter.getBooleanQuery().encodeAsString());
 		
 		// [0] - Get the entity manager
 		// TODO needs some research... really must have to call clear??
@@ -100,12 +103,15 @@ public abstract class DBSearcherBase<F extends SearchFilter,I extends SearchResu
 		TypedQuery<Long> countQry = _searchQueryFactory.create()
 													   .getCountQuery(filter);
 		int totalItems = countQry.getSingleResult().intValue();
-		log.debug("JPA COUNT Query: {}",countQry.toString());
-		log.debug("Total number of results: {}",totalItems);
+		log.debug("JPA COUNT Query: {}",
+				  countQry.toString());
+		log.debug("Total number of results: {}",
+				  totalItems);
 		
 		// [2] - Get the page results
 		Collection<DB> pageEntities = null;
-		if (totalItems > 0) {
+		if (numberOfRows > 0
+		 && totalItems > 0) {
 			TypedQuery<DB> qry = _searchQueryFactory.create()
 													.getResultsQuery(filter,
 																	 ordering);
