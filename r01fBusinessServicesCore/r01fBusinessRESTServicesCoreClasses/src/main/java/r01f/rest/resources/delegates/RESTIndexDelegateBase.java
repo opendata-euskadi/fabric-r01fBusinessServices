@@ -3,6 +3,7 @@ package r01f.rest.resources.delegates;
 import java.net.URI;
 import java.util.Collection;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import lombok.experimental.Accessors;
@@ -24,6 +25,7 @@ public abstract class RESTIndexDelegateBase<O extends OID,M extends IndexableMod
 //  FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////
 	private final IndexServicesForModelObject<O,M> _indexServices;
+	private final MediaType _mediaType;	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -38,6 +40,14 @@ public abstract class RESTIndexDelegateBase<O extends OID,M extends IndexableMod
 								 final IndexServicesForModelObject<O,M> indexServices) {
 		super(modelObjType);
 		_indexServices = indexServices;
+		_mediaType = MediaType.APPLICATION_XML_TYPE;
+	}
+	public RESTIndexDelegateBase(final Class<M> modelObjType,
+								 final IndexServicesForModelObject<O,M> indexServices,
+								 final MediaType mediaType) {
+		super(modelObjType);
+		_indexServices = indexServices;
+		_mediaType = mediaType;		
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  INDEX
@@ -54,7 +64,7 @@ public abstract class RESTIndexDelegateBase<O extends OID,M extends IndexableMod
 		EnqueuedJob job = _indexServices.index(securityContext,
 									      	   modelObject);
 		Response outResponse = Response.ok()
-									   .entity(job)
+									   .entity(job)									   
 									   .build();			
 		return outResponse;
 	}
@@ -70,7 +80,8 @@ public abstract class RESTIndexDelegateBase<O extends OID,M extends IndexableMod
 		EnqueuedJob job = _indexServices.updateIndex(securityContext,
 											    	 modelObject);
 		Response outResponse  = RESTOperationsResponseBuilder.searchIndex()
-															 .at(URI.create(resourcePath))
+																 .at(URI.create(resourcePath))
+																 .mediaType(_mediaType)
 															 .build(job);			
 		return outResponse;
 	}
@@ -89,7 +100,8 @@ public abstract class RESTIndexDelegateBase<O extends OID,M extends IndexableMod
 		EnqueuedJob job = _indexServices.removeFromIndex(securityContext,
 											   	    	 oid);
 		Response outResponse  = RESTOperationsResponseBuilder.searchIndex()
-															 .at(URI.create(resourcePath))
+																 .at(URI.create(resourcePath))
+																 .mediaType(_mediaType)
 															 .build(job);			
 		return outResponse;
 	}
@@ -110,7 +122,8 @@ public abstract class RESTIndexDelegateBase<O extends OID,M extends IndexableMod
 												   	all);		
 		}
 		Response outResponse  = RESTOperationsResponseBuilder.searchIndex()
-															 .at(URI.create(resourcePath))
+																 .at(URI.create(resourcePath))
+																 .mediaType(_mediaType)
 															 .build(job);
 		return outResponse;
 	}
@@ -129,8 +142,9 @@ public abstract class RESTIndexDelegateBase<O extends OID,M extends IndexableMod
 		EnqueuedJob job = _indexServices.reIndex(securityContext,
 									      	     oid);
 		Response outResponse  = RESTOperationsResponseBuilder.searchIndex()
-															 .at(URI.create(resourcePath))
-															 .build(job);			
+																 .at(URI.create(resourcePath))
+																 .mediaType(_mediaType)
+															  .build(job);			
 		return outResponse;
 	}
 	/**
@@ -150,7 +164,8 @@ public abstract class RESTIndexDelegateBase<O extends OID,M extends IndexableMod
 											all);
 		}
 		Response outResponse  = RESTOperationsResponseBuilder.searchIndex()
-															 .at(URI.create(resourcePath))
+																 .at(URI.create(resourcePath))
+																 .mediaType(_mediaType)
 															 .build(job);
 		return outResponse;
 	}

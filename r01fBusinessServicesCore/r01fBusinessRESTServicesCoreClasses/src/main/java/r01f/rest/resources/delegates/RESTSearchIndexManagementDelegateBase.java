@@ -2,6 +2,7 @@ package r01f.rest.resources.delegates;
 
 import java.net.URI;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import lombok.experimental.Accessors;
@@ -21,12 +22,20 @@ public abstract class RESTSearchIndexManagementDelegateBase
 //  FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////
 	private final IndexManagementServices _indexManagementServices;
+	private final MediaType _mediaType;
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
 	public RESTSearchIndexManagementDelegateBase(final IndexManagementServices indexManagementServices) {
 		_indexManagementServices = indexManagementServices;
+		_mediaType = MediaType.APPLICATION_XML_TYPE;
 	}
+	public RESTSearchIndexManagementDelegateBase(final IndexManagementServices indexManagementServices,
+												 final MediaType mediaType) {
+		_indexManagementServices = indexManagementServices;
+		_mediaType = mediaType;
+	}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //  INDEX MANAGEMENT
@@ -53,7 +62,8 @@ public abstract class RESTSearchIndexManagementDelegateBase
 		}
 		// return
 		Response outResponse  = RESTOperationsResponseBuilder.searchIndex()
-															 .at(URI.create(resourcePath))
+																 .at(URI.create(resourcePath))
+																 .mediaType(_mediaType)
 															 .build(outJob);
 		return outResponse;
 	}

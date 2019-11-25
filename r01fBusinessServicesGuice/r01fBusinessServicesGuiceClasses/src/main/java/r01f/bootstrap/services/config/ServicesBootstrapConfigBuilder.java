@@ -75,7 +75,7 @@ public abstract class ServicesBootstrapConfigBuilder
 			return _build(null);	// no core events used
 		}
 		public ServicesClientBootstrapConfigCoreModulesBuildStep usingCommonCoreEventsHandler() {
-			return _build(null);	// Common Core Events Handler
+			return _build(null);	// Common Core Events Handler 
 		}
 		public ServicesClientBootstrapConfigCoreModulesBuildStep coreEventsHandledAs(final ServicesCoreModuleEventsConfig cfg) {
 			if (cfg.getExecutionMode().is(ExecutionMode.ASYNC)) {

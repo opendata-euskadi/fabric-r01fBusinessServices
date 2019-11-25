@@ -3,6 +3,7 @@ package r01f.rest.resources.delegates;
 import java.net.URI;
 import java.util.Collection;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import lombok.experimental.Accessors;
@@ -24,6 +25,7 @@ public abstract class RESTSearchDelegateBase<F extends SearchFilter,I extends Se
 //  FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////
 	private final SearchServices<F,I> _searchServices;
+	private final MediaType _mediaType;	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -36,6 +38,14 @@ public abstract class RESTSearchDelegateBase<F extends SearchFilter,I extends Se
 /////////////////////////////////////////////////////////////////////////////////////////
 	public RESTSearchDelegateBase(final SearchServices<F,I> searchServices) {
 		_searchServices = searchServices;
+		_mediaType = MediaType.APPLICATION_XML_TYPE;
+		
+	}
+	public RESTSearchDelegateBase(final SearchServices<F,I> searchServices,
+			                      final MediaType mediaType) {
+		_searchServices = searchServices;
+		_mediaType = mediaType;
+		
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  SEARCH
@@ -58,6 +68,7 @@ public abstract class RESTSearchDelegateBase<F extends SearchFilter,I extends Se
 									   		    	  startingRow,itemsToReturn);
 		Response outResponse = RESTOperationsResponseBuilder.searchIndex()
 															.at(URI.create(resourcePath))
+															.mediaType(_mediaType)
 															.build(searchResults);
 		return outResponse;
 	}

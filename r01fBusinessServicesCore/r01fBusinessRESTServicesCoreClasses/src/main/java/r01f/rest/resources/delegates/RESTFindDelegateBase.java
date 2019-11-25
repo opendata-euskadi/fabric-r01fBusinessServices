@@ -3,6 +3,7 @@ package r01f.rest.resources.delegates;
 import java.net.URI;
 import java.util.Date;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import lombok.experimental.Accessors;
@@ -26,7 +27,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 //  NOT INJECTED STATUS
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected final FindServicesForModelObject<O,M> _findServices;
-	
+	protected final MediaType _mediaType;	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -42,7 +43,17 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 								final FindServicesForModelObject<O,M> findServices) {
 		super(modelObjectType);
 		_findServices = findServices;
+		_mediaType = MediaType.APPLICATION_XML_TYPE;
 	}
+	
+	public RESTFindDelegateBase(final Class<M> modelObjectType,
+								final FindServicesForModelObject<O,M> findServices,
+								final MediaType mediaType) {
+		super(modelObjectType);
+		_findServices = findServices;
+		_mediaType = mediaType;
+	}
+	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIND
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +67,8 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	public Response findAll(final SecurityContext securityContext,final String resourcePath) {
 		FindOIDsResult<O> findResult = _findServices.findAll(securityContext);
 		Response outResponse = RESTOperationsResponseBuilder.findOn(_modelObjectType)
-														    .at(URI.create(resourcePath))
+															    .at(URI.create(resourcePath))
+															    .mediaType(_mediaType)
 															.build(findResult);
 		return outResponse;
 	}
@@ -73,7 +85,8 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 		FindOIDsResult<O> findResult = _findServices.findByCreateDate(securityContext,
 																	  createDate);
 		Response outResponse = RESTOperationsResponseBuilder.findOn(_modelObjectType)
-															.at(URI.create(resourcePath))
+																.at(URI.create(resourcePath))
+																.mediaType(_mediaType)
 															.build(findResult);
 		return outResponse;
 	}
@@ -90,7 +103,8 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 		FindOIDsResult<O> findResult = _findServices.findByLastUpdateDate(securityContext,
 																		 lastUpdateDate);
 		Response outResponse = RESTOperationsResponseBuilder.findOn(_modelObjectType)
-															.at(URI.create(resourcePath))
+																.at(URI.create(resourcePath))
+																.mediaType(_mediaType)
 															.build(findResult);
 		return outResponse;
 	}
@@ -107,7 +121,8 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 		FindOIDsResult<O> findResult = _findServices.findByCreator(securityContext,
 																   creatorUserCode);
 		Response outResponse = RESTOperationsResponseBuilder.findOn(_modelObjectType)
-															.at(URI.create(resourcePath))
+																.at(URI.create(resourcePath))
+																.mediaType(_mediaType)
 															.build(findResult);
 		return outResponse;
 	}
@@ -124,7 +139,8 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 		FindOIDsResult<O> findResult = _findServices.findByLastUpdator(securityContext,
 																	   lastUpdtorUserCode);
 		Response outResponse = RESTOperationsResponseBuilder.findOn(_modelObjectType)
-															.at(URI.create(resourcePath))
+																.at(URI.create(resourcePath))
+																.mediaType(_mediaType)
 															.build(findResult);
 		return outResponse;
 	}

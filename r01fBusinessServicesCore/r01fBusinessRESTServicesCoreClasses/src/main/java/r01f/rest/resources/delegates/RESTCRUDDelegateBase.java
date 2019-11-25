@@ -2,6 +2,7 @@ package r01f.rest.resources.delegates;
 
 import java.net.URI;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import lombok.experimental.Accessors;
@@ -23,6 +24,7 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 //  NOT INJECTED STATUS
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected final CRUDServicesForModelObject<O,M> _persistenceServices;
+	protected final MediaType _mediaType;
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +39,17 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 							    final CRUDServicesForModelObject<O,M> persistenceServices) {
 		super(modelObjectType);
 		_persistenceServices = persistenceServices;
+		_mediaType = MediaType.APPLICATION_XML_TYPE;
 	}
+	
+	public RESTCRUDDelegateBase(final Class<M> modelObjectType,
+							    final CRUDServicesForModelObject<O,M> persistenceServices,
+							    final MediaType mediaType) {
+		super(modelObjectType);
+		_persistenceServices = persistenceServices;
+		_mediaType = mediaType;
+	}
+	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  PERSISTENCE
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +67,8 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 		CRUDResult<M> loadResult = _persistenceServices.load(securityContext,
 									  					     oid);
 		Response outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
-														    .at(URI.create(resourcePath))
+															    .at(URI.create(resourcePath))
+															    .mediaType(_mediaType)
 															.build(loadResult);
 		return outResponse;
 	}
@@ -72,7 +85,8 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 		CRUDResult<M> createResult = _persistenceServices.create(securityContext,
 										   	   					 modelObject);
 		Response outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
-														    .at(URI.create(resourcePath))
+															    .at(URI.create(resourcePath))
+															    .mediaType(_mediaType)
 														    .build(createResult);
 		return outResponse;
 	}
@@ -89,7 +103,8 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 		CRUDResult<M> updateResult = _persistenceServices.update(securityContext,
 										   	      				 modelObject);
 		Response outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
-															.at(URI.create(resourcePath))
+																.at(URI.create(resourcePath))
+																.mediaType(_mediaType)
 															.build(updateResult);
 		return outResponse;
 	}
@@ -107,6 +122,7 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 																 oid);
 		Response outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
 														    .at(URI.create(resourcePath))
+														    .mediaType(_mediaType)
 															.build(deleteResult);
 		return outResponse;
 	}

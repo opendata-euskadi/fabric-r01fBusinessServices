@@ -3,6 +3,7 @@ package r01f.rest.resources.delegates;
 import java.net.URI;
 import java.util.Date;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import lombok.experimental.Accessors;
@@ -38,6 +39,13 @@ public class RESTVersionableCRUDDelegateBase<O extends OIDForVersionableModelObj
 		super(modelObjectType,
 			  persistenceServices);
 	}
+	public RESTVersionableCRUDDelegateBase(final Class<M> modelObjectType,
+									   	   final CRUDServicesForModelObject<O,M> persistenceServices,
+									   	   final MediaType mediaType) {
+		super(modelObjectType,
+			  persistenceServices,
+			  mediaType);
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -72,7 +80,8 @@ public class RESTVersionableCRUDDelegateBase<O extends OIDForVersionableModelObj
 											.loadActiveVersionAt(securityContext,
 												  				 oid,date);
 		Response outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
-															.at(URI.create(resourcePath))
+																.at(URI.create(resourcePath))
+																.mediaType(_mediaType)
 															.build(loadResult);
 		return outResponse;
 	}
@@ -92,6 +101,7 @@ public class RESTVersionableCRUDDelegateBase<O extends OIDForVersionableModelObj
 												       	   		 oid);
 		Response outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
 															.at(URI.create(resourcePath))
+															.mediaType(_mediaType)
 															.build(loadResult);
 		return outResponse;
 	}
@@ -130,6 +140,7 @@ public class RESTVersionableCRUDDelegateBase<O extends OIDForVersionableModelObj
 																				       entityOid);
 		Response outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
 															.at(URI.create(resourcePath))
+															.mediaType(_mediaType)
 															.build(deleteResults);	
 		return outResponse;
 	}
@@ -152,6 +163,7 @@ public class RESTVersionableCRUDDelegateBase<O extends OIDForVersionableModelObj
 															  entityToBeActivated);
 		Response outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
 															.at(URI.create(resourcePath))
+															.mediaType(_mediaType)
 															.build(activationResult);
 		return outResponse;
 	}

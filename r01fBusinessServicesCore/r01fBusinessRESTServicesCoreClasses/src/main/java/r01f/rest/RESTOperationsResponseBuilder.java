@@ -68,32 +68,75 @@ public abstract class RESTOperationsResponseBuilder
 	public final class RESTCRUDOperationResponseBuilderForModelObjectURIStep<M> {
 		private final Class<M> _modelObjectType;
 		
-		public RESTCRUDOperationResponseBuilderForModelObjectResultStep<M> at(final URI resourceURI) {
-			return new RESTCRUDOperationResponseBuilderForModelObjectResultStep<M>(_modelObjectType,
-																  				   resourceURI);
+		public RESTCRUDOperationResponseBuilderForModelObjectMediaTypeStep<M> at(final URI resourceURI) {
+			return new RESTCRUDOperationResponseBuilderForModelObjectMediaTypeStep<M>(_modelObjectType,
+																  				      resourceURI);
 		}
 	}
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTFindOperationResponseBuilderForModelObjectURIStep<O extends PersistableObjectOID,M extends PersistableModelObject<O>> {
 		private final Class<M> _modelObjectType;
 		
-		public RESTFindOperationResponseBuilderForModelObjectResultStep<O,M> at(final URI resourceURI) {
-			return new RESTFindOperationResponseBuilderForModelObjectResultStep<O,M>(_modelObjectType,
-																  				     resourceURI);
+		public RESTFindOperationResponseBuilderForModelObjectMediaTypeStep<O,M> at(final URI resourceURI) {
+			return new RESTFindOperationResponseBuilderForModelObjectMediaTypeStep<O,M>(_modelObjectType,
+																  				        resourceURI);
 		}
 	}
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTExecOperationResponseBuilderForModelObjectURIStep {
-		@SuppressWarnings("static-method")
-		public RESTEXECOperationResponseBuilderResultStep at(final URI resourceURI) {
-			return new RESTEXECOperationResponseBuilderResultStep(resourceURI);
+		
+		public RESTEXECOperationResponseBuilderForModelObjectMediaTypeStep at(final URI resourceURI) {
+			return new RESTEXECOperationResponseBuilderForModelObjectMediaTypeStep(resourceURI);
 		}
 	}
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTSearchIndexOperationResponseBuilderForModelObjectURIStep {
-		@SuppressWarnings("static-method")
-		public RESTSearchIndexOperationResponseBuilderResultStep at(final URI resourceURI) {
-			return new RESTSearchIndexOperationResponseBuilderResultStep(resourceURI);
+		public RESTSearchIndexOperationResponseBuilderForModelObjectMediaTypeStep at(final URI resourceURI) {
+			return new RESTSearchIndexOperationResponseBuilderForModelObjectMediaTypeStep(resourceURI);
+		}
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//  
+/////////////////////////////////////////////////////////////////////////////////////////	
+    @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
+	public final class RESTCRUDOperationResponseBuilderForModelObjectMediaTypeStep<M> {
+		private final Class<M> _modelObjectType;
+		private final URI _resourceURI;
+		
+		public RESTCRUDOperationResponseBuilderForModelObjectResultStep<M> mediaType(final MediaType mediaType) {
+			return new RESTCRUDOperationResponseBuilderForModelObjectResultStep<M>(_modelObjectType,
+																  				   _resourceURI,
+																  				    mediaType);
+		}
+	}
+    @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
+	public final class RESTFindOperationResponseBuilderForModelObjectMediaTypeStep<O extends PersistableObjectOID,M extends PersistableModelObject<O>> {
+		private final Class<M> _modelObjectType;
+		private final URI _resourceURI;
+		
+		public RESTFindOperationResponseBuilderForModelObjectResultStep<O,M> mediaType(final MediaType mediaType) {
+			return new RESTFindOperationResponseBuilderForModelObjectResultStep<O,M>(_modelObjectType,
+																  				    _resourceURI,
+																  				     mediaType);
+		}
+	}
+    @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
+	public final class RESTSearchIndexOperationResponseBuilderForModelObjectMediaTypeStep {	
+		private final URI _resourceURI;		
+		
+		public RESTSearchIndexOperationResponseBuilderResultStep mediaType(final MediaType mediaType) {
+			return new RESTSearchIndexOperationResponseBuilderResultStep(mediaType,
+					                                                    _resourceURI);
+		}
+	}
+    
+    @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
+	public final class RESTEXECOperationResponseBuilderForModelObjectMediaTypeStep {	
+		private final URI _resourceURI;		
+		
+		public RESTEXECOperationResponseBuilderResultStep mediaType(final MediaType mediaType) {
+			return new RESTEXECOperationResponseBuilderResultStep(mediaType,
+					                                              _resourceURI);
 		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -103,6 +146,7 @@ public abstract class RESTOperationsResponseBuilder
 	public final class RESTCRUDOperationResponseBuilderForModelObjectResultStep<M> {
 		private final Class<M> _modelObjectType;
 		private final URI _resourceURI;
+		private final MediaType _mediaType;
 		/**
 		 * Returns a REST {@link Response} for a CRUD operation
 		 * @param crudResult 
@@ -127,34 +171,34 @@ public abstract class RESTOperationsResponseBuilder
 					outResponse = Response.ok()
 										  .header("x-r01-modelObjType",_modelObjectType.getName())
 									  	  .entity(persistCRUDOK)
-									  	  .type(MediaType.APPLICATION_XML_TYPE)
+									  	  .type(_mediaType)
 									  	  .build();
 				} else if (persistCRUDOK.hasBeenDeleted()) {
 					outResponse = Response.ok()
 										  .contentLocation(_resourceURI)
 										  .header("x-r01-modelObjType",_modelObjectType.getName())
 									  	  .entity(persistCRUDOK)
-									  	  .type(MediaType.APPLICATION_XML_TYPE)
+									  	  .type(_mediaType)
 									  	  .build();
 				} else if (persistCRUDOK.hasBeenCreated()) {
 					outResponse = Response.created(_resourceURI)
 										  .header("x-r01-modelObjType",_modelObjectType.getName())
 									  	  .entity(persistCRUDOK)
-									  	  .type(MediaType.APPLICATION_XML_TYPE)
+									  	  .type(_mediaType)
 									  	  .build();
 				} else if (persistCRUDOK.hasBeenUpdated()) {
 					outResponse = Response.ok()
 									  	  .contentLocation(_resourceURI)
 										  .header("x-r01-modelObjType",_modelObjectType.getName())
 									  	  .entity(persistCRUDOK)
-									  	  .type(MediaType.APPLICATION_XML_TYPE)
+									  	  .type(_mediaType)
 									  	  .build();
 				} else if (persistCRUDOK.hasNotBeenModified()) {
 					outResponse = Response.notModified()	
 										  .contentLocation(_resourceURI)
 										  .header("x-r01-modelObjType",_modelObjectType.getName())
 										  .entity(persistCRUDOK)	
-										  .type(MediaType.APPLICATION_XML_TYPE)
+										  .type(_mediaType)
 									  	  .build();
 				} else {
 					throw new UnsupportedOperationException(Throwables.message("{} is NOT a supported operation",persistCRUDOK.getRequestedOperation()));
@@ -185,7 +229,7 @@ public abstract class RESTOperationsResponseBuilder
 									  .contentLocation(_resourceURI)
 									  .header("x-r01-modelObjType",_modelObjectType.getName())
 									  .entity(multipleCRUDResult)
-									  .type(MediaType.APPLICATION_XML_TYPE)
+									  .type(_mediaType)
 									  .build();
 			}
 			return outResponse;
@@ -198,6 +242,7 @@ public abstract class RESTOperationsResponseBuilder
 	public final class RESTFindOperationResponseBuilderForModelObjectResultStep<O extends PersistableObjectOID,M extends PersistableModelObject<O>> {
 		private final Class<M> _modelObjectType;
 		private final URI _resourceURI;
+		private final MediaType _mediaType;
 		/**
 		 * Returns a REST {@link Response} for a FIND operation
 		 * @param findOIDsResult 
@@ -221,7 +266,7 @@ public abstract class RESTOperationsResponseBuilder
 									  .contentLocation(_resourceURI)
 									  .header("x-r01-modelObjType",_modelObjectType.getName())
 									  .entity(findOK)
-									  .type(MediaType.APPLICATION_XML_TYPE)
+									  .type(_mediaType)
 									  .build();
 			}
 			return outResponse;
@@ -243,7 +288,7 @@ public abstract class RESTOperationsResponseBuilder
 									  .contentLocation(_resourceURI)
 									  .header("x-r01-modelObjType",_modelObjectType.getName())
 									  .entity(findOK)
-									  .type(MediaType.APPLICATION_XML_TYPE)
+									  .type(_mediaType)
 									  .build();
 			}
 			return outResponse;
@@ -265,7 +310,7 @@ public abstract class RESTOperationsResponseBuilder
 									  .contentLocation(_resourceURI)
 									  .header("x-r01-modelObjType",_modelObjectType.getName())
 									  .entity(findOK)
-									  .type(MediaType.APPLICATION_XML_TYPE)
+									  .type(_mediaType)
 									  .build();
 			}
 			return outResponse;
@@ -276,6 +321,7 @@ public abstract class RESTOperationsResponseBuilder
 /////////////////////////////////////////////////////////////////////////////////////////
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTEXECOperationResponseBuilderResultStep {
+		private final MediaType _mediaType;
 		private final URI _resourceURI;
 		/**
 		 * Returns a REST {@link Response} for a core-layer executed persistence operation
@@ -299,7 +345,7 @@ public abstract class RESTOperationsResponseBuilder
 				outResponse = Response.ok()
 									  .contentLocation(_resourceURI)
 									  .entity(execOK)
-									  .type(MediaType.APPLICATION_XML_TYPE)
+									  .type(_mediaType)
 									  .build();
 			}
 			return outResponse;
@@ -324,6 +370,7 @@ public abstract class RESTOperationsResponseBuilder
 /////////////////////////////////////////////////////////////////////////////////////////
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTSearchIndexOperationResponseBuilderResultStep {
+		private final MediaType _mediaType;
 		private final URI _resourceURI;
 		
 		/**
@@ -336,6 +383,7 @@ public abstract class RESTOperationsResponseBuilder
 			Response outResponse = Response.ok()
 										   .contentLocation(_resourceURI)
 										   .entity(searchResults)
+										   .type(_mediaType)
 										   .build();
 			return outResponse;
 		}
@@ -349,8 +397,10 @@ public abstract class RESTOperationsResponseBuilder
 			Response outResponse = Response.ok()
 										   .contentLocation(_resourceURI)
 										   .entity(job)
+										   .type(_mediaType)
 										   .build();
 			return outResponse;
 		}
+		
 	}
 }
