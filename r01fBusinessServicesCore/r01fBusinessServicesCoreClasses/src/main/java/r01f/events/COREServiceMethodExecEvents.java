@@ -81,6 +81,10 @@ public abstract class COREServiceMethodExecEvents {
 		public COREServiceMethodExecOK<?> getAsCOREServiceMethodExecOK() {
 			return (COREServiceMethodExecOK<?>)_COREServiceMethodExecResult;
 		}
+		@SuppressWarnings("unchecked")
+		public <T> COREServiceMethodExecOK<T> getAsCOREServiceMethodExecOKOn(final Class<T> type) {
+			return (COREServiceMethodExecOK<T>)_COREServiceMethodExecResult;
+		}
 		@Override
 		public boolean isForCOREMethodCallOK() {
 			return true;
