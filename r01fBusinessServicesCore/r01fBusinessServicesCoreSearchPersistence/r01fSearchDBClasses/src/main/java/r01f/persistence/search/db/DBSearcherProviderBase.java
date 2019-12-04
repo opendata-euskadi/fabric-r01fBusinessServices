@@ -3,7 +3,6 @@ package r01f.persistence.search.db;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
-import r01f.model.IndexableModelObject;
 import r01f.model.search.SearchFilter;
 import r01f.model.search.SearchResultItem;
 import r01f.objectstreamer.Marshaller;
@@ -21,12 +20,10 @@ public abstract class DBSearcherProviderBase<F extends SearchFilter,I extends Se
 /////////////////////////////////////////////////////////////////////////////////////////
 //	CONSTRUCTOR                                                                          
 /////////////////////////////////////////////////////////////////////////////////////////	
-	protected DBSearcherProviderBase(final Class<? extends IndexableModelObject> indexableObjectType,
-									 final Marshaller marshaller,
+	protected DBSearcherProviderBase(final Marshaller marshaller,
 									 final DBModuleConfig dbModuleConfig,
 									 final Provider<EntityManager> entityManagerProvider) {
-		super(indexableObjectType,
-			  marshaller);
+		super(marshaller);
 		_dbModuleConfig = dbModuleConfig;
 		_entityManagerProvider = entityManagerProvider;
 	}

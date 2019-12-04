@@ -15,32 +15,29 @@ import r01f.persistence.search.SearcherProviderBase;
 public abstract class LuceneSearcherProviderBase<F extends SearchFilter,I extends SearchResultItem>
   			  extends SearcherProviderBase<F,I> {
 /////////////////////////////////////////////////////////////////////////////////////////
-//	FIELDS                                                                          
-/////////////////////////////////////////////////////////////////////////////////////////	
+//	FIELDS
+/////////////////////////////////////////////////////////////////////////////////////////
 	protected final LuceneIndex _luceneIndex;
 /////////////////////////////////////////////////////////////////////////////////////////
-//	CONSTRUCTOR                                                                          
-/////////////////////////////////////////////////////////////////////////////////////////	
-	protected LuceneSearcherProviderBase(final Class<? extends IndexableModelObject> indexableObjectType,
-										 final Marshaller marshaller,
-										 final LuceneIndex luceneIndex) {
-		super(indexableObjectType,
-			  marshaller);
-		_luceneIndex = luceneIndex;
-	}	
+//	CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
-//	                                                                          
-/////////////////////////////////////////////////////////////////////////////////////////	
-	@Override
+	protected LuceneSearcherProviderBase(final Marshaller marshaller,
+										 final LuceneIndex luceneIndex) {
+		super(marshaller);
+		_luceneIndex = luceneIndex;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+/////////////////////////////////////////////////////////////////////////////////////////
 	@SuppressWarnings({ "unchecked","rawtypes" })
-	protected IndexDocumentFieldConfigSet<? extends IndexableModelObject> getIndexableObjTypeFieldsConfigSet() {
-		IndexDocumentFieldConfigSet<? extends IndexableModelObject> outFieldsConfigSet = _fieldsConfigSetByIndexableObjType.get(_indexableObjectType);
+	protected IndexDocumentFieldConfigSet<? extends IndexableModelObject> getIndexableObjTypeFieldsConfigSet(final Class<? extends IndexableModelObject> indexableObjectType) {
+		IndexDocumentFieldConfigSet<? extends IndexableModelObject> outFieldsConfigSet = _fieldsConfigSetByIndexableObjType.get(indexableObjectType);
 		if (outFieldsConfigSet == null) {
 			TypeMetaData<? extends IndexableModelObject> indexableObjTypeMetadata = TypeMetaDataInspector.singleton()
-													  													 .getTypeMetaDataFor(_indexableObjectType);
-			outFieldsConfigSet = new IndexDocumentFieldConfigSet(_indexableObjectType,
+													  													 .getTypeMetaDataFor(indexableObjectType);
+			outFieldsConfigSet = new IndexDocumentFieldConfigSet(indexableObjectType,
 															     indexableObjTypeMetadata);
-			_fieldsConfigSetByIndexableObjType.put(_indexableObjectType, 
+			_fieldsConfigSetByIndexableObjType.put(indexableObjectType,
 												   outFieldsConfigSet);
 		}
 		return outFieldsConfigSet;
