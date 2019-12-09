@@ -13,6 +13,7 @@ import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable;
 import r01f.model.persistence.FindOIDsResult;
 import r01f.rest.RESTOperationsResponseBuilder;
+import r01f.rest.RESTOperationsResponseBuilder.PersistenceOperationOnObjectResulCollectionToReponseEntity;
 import r01f.securitycontext.SecurityContext;
 import r01f.services.interfaces.FindServicesForModelObject;
 import r01f.types.Range;
@@ -28,32 +29,37 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected final FindServicesForModelObject<O,M> _findServices;
 	protected final MediaType _mediaType;	
+	protected final PersistenceOperationOnObjectResulCollectionToReponseEntity<M> _transformer;
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
 	@SuppressWarnings("unchecked")
-	protected <F extends FindServicesForModelObject<O,M>> F getFindServicesAs(@SuppressWarnings("unused") final Class<F> type) {
+	protected <F extends FindServicesForModelObject<O,M>> F getFindServicesAs(final Class<F> type) {
 		return (F)_findServices;
 	}
-	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
 	public RESTFindDelegateBase(final Class<M> modelObjectType,
-								final FindServicesForModelObject<O,M> findServices) {
-		super(modelObjectType);
-		_findServices = findServices;
-		_mediaType = MediaType.APPLICATION_XML_TYPE;
-	}
-	
+							    final FindServicesForModelObject<O,M> persistenceServices) {
+		this(modelObjectType, persistenceServices, null, null);
+	}	
 	public RESTFindDelegateBase(final Class<M> modelObjectType,
-								final FindServicesForModelObject<O,M> findServices,
-								final MediaType mediaType) {
+							    final FindServicesForModelObject<O,M> persistenceServices,
+							    final MediaType mediaType ) {
+		this(modelObjectType,persistenceServices,mediaType, null );		
+	}	
+	public RESTFindDelegateBase(final Class<M> modelObjectType,
+							    final FindServicesForModelObject<O,M> findServices,
+							    final MediaType mediaType,
+							    final PersistenceOperationOnObjectResulCollectionToReponseEntity<M> transformer) {
 		super(modelObjectType);
 		_findServices = findServices;
-		_mediaType = mediaType;
-	}
-	
+		_mediaType =    ( mediaType   != null )?  mediaType :
+			                                      MediaType.APPLICATION_XML_TYPE;
+		_transformer =  ( transformer != null )?  transformer :        //Default transformer received via Constructor or created in-situ with a default behaviour (returning CRUDResult)
+			                                      c -> {return c ; }; 
+	}	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIND
 /////////////////////////////////////////////////////////////////////////////////////////

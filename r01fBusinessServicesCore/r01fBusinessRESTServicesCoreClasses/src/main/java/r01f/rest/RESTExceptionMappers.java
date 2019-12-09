@@ -96,15 +96,15 @@ public class RESTExceptionMappers {
 		@SuppressWarnings("unchecked")
 		protected  Response _handleThrowable(final Throwable th) {
 			// Print stack trace before any treatment (cause this could fail and mask the original Exception!!!!!) 
-			th.printStackTrace();
+			//th.printStackTrace();
+			log.warn( " Error: {}", Throwables.getStackTraceAsString(th));
 			// serialize 
 			Response outResponse = null;
 			// Persistence exceptions
 			if (th instanceof COREServiceException) {				
 				COREServiceException coreEx = (COREServiceException)th;
 				// server errors
-				if (coreEx.isServerError()) {			
-					
+				if (coreEx.isServerError()) {
 					// Server Error
 					// force exception stack trace print
 					log.error(" COREServiceException, server error");

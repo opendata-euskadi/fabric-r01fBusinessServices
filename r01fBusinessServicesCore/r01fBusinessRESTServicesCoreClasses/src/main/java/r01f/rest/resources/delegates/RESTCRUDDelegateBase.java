@@ -11,11 +11,12 @@ import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.PersistenceException;
 import r01f.rest.RESTOperationsResponseBuilder;
+import r01f.rest.RESTOperationsResponseBuilder.PersistenceOperationOnObjectResulToReponseEntity;
 import r01f.securitycontext.SecurityContext;
 import r01f.services.interfaces.CRUDServicesForModelObject;
 
 /**
- * Base type for REST services that encapsulates the common CRUD ops>
+ * Base type for REST services that encapsulates the common CRUD ops
  */
 @Accessors(prefix="_")
 public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M extends PersistableModelObject<O>> 
@@ -25,31 +26,43 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected final CRUDServicesForModelObject<O,M> _persistenceServices;
 	protected final MediaType _mediaType;
+	protected final PersistenceOperationOnObjectResulToReponseEntity<M> _transformer;
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
 	@SuppressWarnings("unchecked")
-	protected <C extends CRUDServicesForModelObject<O,M>> C getCRUDServicesAs(@SuppressWarnings("unused") final Class<C> type) {
+	protected <C extends CRUDServicesForModelObject<O,M>> C getCRUDServicesAs(final Class<C> type) {
 		return (C)_persistenceServices;
 	}
+	@SuppressWarnings("unchecked")
+	public <R extends RESTCRUDDelegateBase<O,M>> R getRESTCRUDDelegateAs(final Class<R> type) {
+		return (R)this;
+	}
+	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
 	public RESTCRUDDelegateBase(final Class<M> modelObjectType,
 							    final CRUDServicesForModelObject<O,M> persistenceServices) {
-		super(modelObjectType);
-		_persistenceServices = persistenceServices;
-		_mediaType = MediaType.APPLICATION_XML_TYPE;
+		this(modelObjectType, persistenceServices, null, null);
+	}	
+	public RESTCRUDDelegateBase(final Class<M> modelObjectType,
+							    final CRUDServicesForModelObject<O,M> persistenceServices,
+							    final MediaType mediaType ) {
+		this(modelObjectType,persistenceServices,mediaType, null );		
 	}
 	
 	public RESTCRUDDelegateBase(final Class<M> modelObjectType,
 							    final CRUDServicesForModelObject<O,M> persistenceServices,
-							    final MediaType mediaType) {
+							    final MediaType mediaType,
+							    final PersistenceOperationOnObjectResulToReponseEntity<M> transformer) {
 		super(modelObjectType);
 		_persistenceServices = persistenceServices;
-		_mediaType = mediaType;
+		_mediaType =    ( mediaType   != null )?  mediaType :
+			                                      MediaType.APPLICATION_XML_TYPE;
+		_transformer =  ( transformer != null )?  transformer :        //Default transformer received via Constructor or created in-situ with a default behaviour (returning CRUDResult)
+			                                      c -> {return c ; }; 
 	}
-	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  PERSISTENCE
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -63,55 +76,100 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 	 */
 	public Response load(final SecurityContext securityContext,final String resourcePath,
 						 final O oid) throws PersistenceException {
-		
+		return load(securityContext,resourcePath,_transformer,oid);
+	}	
+	/**
+	 * Loads a db entity 
+	 * @param securityContext
+	 * @param resourcePath
+	 * @param transformer if needed to transform persistence result to response entity.
+	 * @param oid
+	 * @return
+	 * @throws PersistenceException 
+	 */
+	public Response load(final SecurityContext securityContext,final String resourcePath, final PersistenceOperationOnObjectResulToReponseEntity<M> transformer,
+						 final O oid) throws PersistenceException {		
 		CRUDResult<M> loadResult = _persistenceServices.load(securityContext,
-									  					     oid);
+									  					     oid);			
 		Response outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
 															    .at(URI.create(resourcePath))
 															    .mediaType(_mediaType)
+															    .withPersistenceOperationTransformer(transformer)
 															.build(loadResult);
 		return outResponse;
 	}
-	/**
-	 * Creates a db entity
+	
+    /** 
+     * Creates a db entity
 	 * @param securityContext
 	 * @param resourcePath
 	 * @param modelObject
 	 * @return
 	 * @throws PersistenceException 
-	 */ 
+	 */ 	
 	public Response create(final SecurityContext securityContext,final String resourcePath,
+						   final M modelObject) throws PersistenceException {
+		 return create(securityContext,resourcePath,_transformer,modelObject);
+	}	
+	/**
+	 * Creates a db entity
+	 * @param securityContext
+	 * @param resourcePath
+	 * @param transformer if needed to transform persistence result to response entity.
+	 * @param modelObject
+	 * @return
+	 * @throws PersistenceException 
+	 */ 
+	public Response create(final SecurityContext securityContext,final String resourcePath, final PersistenceOperationOnObjectResulToReponseEntity<M> transformer,
 						   final M modelObject) throws PersistenceException {
 		CRUDResult<M> createResult = _persistenceServices.create(securityContext,
 										   	   					 modelObject);
 		Response outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
 															    .at(URI.create(resourcePath))
 															    .mediaType(_mediaType)
+															    .withPersistenceOperationTransformer(transformer)
 														    .build(createResult);
 		return outResponse;
+	}
+	
+	/**
+	 * Updates a db entity
+	 * @param securityContext
+	 * @param resourcePath	
+	 * @param modelObject
+	 * @return
+	 * @throws PersistenceException 
+	 */ 
+	public Response update(final SecurityContext securityContext,final String resourcePath, 
+						   final M modelObject) {		
+		return update(securityContext,resourcePath,_transformer,modelObject);
 	}
 	/**
 	 * Updates a db entity
 	 * @param securityContext
 	 * @param resourcePath
+	 * @param transformer if needed to transform persistence result to response entity.
 	 * @param modelObject
 	 * @return
 	 * @throws PersistenceException 
 	 */ 
-	public Response update(final SecurityContext securityContext,final String resourcePath,
+	public Response update(final SecurityContext securityContext,final String resourcePath, final PersistenceOperationOnObjectResulToReponseEntity<M> transformer,
 						   final M modelObject) throws PersistenceException {
 		CRUDResult<M> updateResult = _persistenceServices.update(securityContext,
 										   	      				 modelObject);
 		Response outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
 																.at(URI.create(resourcePath))
 																.mediaType(_mediaType)
-															.build(updateResult);
+																.withPersistenceOperationTransformer(transformer)
+															   .build(updateResult);
 		return outResponse;
 	}
+	
 	/**
 	 * Removes a db entity
 	 * @param securityContext
 	 * @param resourcePath
+	 * @param transformer if needed to transform persistence result to response entity.
 	 * @param oid
 	 * @return
 	 * @throws PersistenceException 
@@ -121,8 +179,30 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 		CRUDResult<M> deleteResult = _persistenceServices.delete(securityContext,
 																 oid);
 		Response outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
-														    .at(URI.create(resourcePath))
-														    .mediaType(_mediaType)
+															     .at(URI.create(resourcePath))
+															     .mediaType(_mediaType)
+															     .withPersistenceOperationTransformer(_transformer)
+															.build(deleteResult);
+		return outResponse;
+	}
+	
+	/**
+	 * Removes a db entity
+	 * @param securityContext
+	 * @param resourcePath
+	 * @param transformer if needed to transform persistence result to response entity.
+	 * @param oid
+	 * @return
+	 * @throws PersistenceException 
+	 */
+	public Response delete(final SecurityContext securityContext,final String resourcePath,final PersistenceOperationOnObjectResulToReponseEntity<M> transformer,
+						   final O oid) throws PersistenceException {
+		CRUDResult<M> deleteResult = _persistenceServices.delete(securityContext,
+																 oid);
+		Response outResponse = RESTOperationsResponseBuilder.crudOn(_modelObjectType)
+															     .at(URI.create(resourcePath))
+															     .mediaType(_mediaType)
+															     .withPersistenceOperationTransformer(transformer)
 															.build(deleteResult);
 		return outResponse;
 	}

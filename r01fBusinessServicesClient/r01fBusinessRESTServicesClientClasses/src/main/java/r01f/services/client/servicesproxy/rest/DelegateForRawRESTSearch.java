@@ -66,6 +66,7 @@ public class DelegateForRawRESTSearch<F extends SearchFilter,I extends SearchRes
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
+	@SuppressWarnings("unchecked")
 	public SearchResults<F,I> mapHttpResponseForSearchResults(final SecurityContext securityContext,
 															  final Url restResourceUrl,
 														   	  final HttpResponse httpResponse) {
