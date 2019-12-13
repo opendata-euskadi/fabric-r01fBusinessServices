@@ -275,7 +275,7 @@ public class CRUDResultForSingleEntityBuilder {
 											 				 entity);
 			return outPersistenceOpResult;			
 		}
-		public <DB extends DBEntity> CRUDResultBuilderForOKTransformerStep<DB,T> dbEntity(final DB dbEntity) {			
+		public <DB extends DBEntity> CRUDResultBuilderForOKTransformerStep<DB,T> dbEntity(final DB dbEntity) {
 			return new CRUDResultBuilderForOKTransformerStep<DB,T>(_securityContext,
 															 	   _entityType,
 																   _requestedOp,_performedOp,
@@ -291,7 +291,7 @@ public class CRUDResultForSingleEntityBuilder {
 		protected final PersistencePerformedOperation _performedOp;
 		protected final DB _dbEntity;
 		
-		public <M extends PersistableModelObject<? extends OID>> CRUDOK<M> transformedToModelObjectUsing(final TransformsDBEntityIntoModelObject<DB,M> dbEntityToModelObjectTransformer) {			
+		public <M extends PersistableModelObject<? extends OID>> CRUDOK<M> transformedToModelObjectUsing(final TransformsDBEntityIntoModelObject<DB,M> dbEntityToModelObjectTransformer) {
 			return this.transformedToModelObjectUsing(DBEntityToModelObjectTransformerBuilder.createFor(_securityContext,
 																										dbEntityToModelObjectTransformer));
 		}
@@ -302,7 +302,7 @@ public class CRUDResultForSingleEntityBuilder {
 			M obj = dbEntityToModelObjConverter.apply(_dbEntity);
 			CRUDOK<M> outPersistenceOpResult = new CRUDOK<M>((Class<M>)_entityType,
 															 _requestedOp,_performedOp,
-				 						     				 obj);
+															 obj);
 			return outPersistenceOpResult;
 		}
 	}
