@@ -43,6 +43,10 @@ public abstract class ServicesClientBootstrapConfigBuilder
 			return new ServicesClientBootstrapConfigBuilderServiceInterfacesStep(_clientApiAppCode,
 																				 clientApiType);
 		}
+		public ServicesClientBootstrapConfigBuilderServiceInterfacesStep notExposingApi() {
+			return new ServicesClientBootstrapConfigBuilderServiceInterfacesStep(_clientApiAppCode,
+																				 null);
+		}
 	}
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class ServicesClientBootstrapConfigBuilderServiceInterfacesStep {

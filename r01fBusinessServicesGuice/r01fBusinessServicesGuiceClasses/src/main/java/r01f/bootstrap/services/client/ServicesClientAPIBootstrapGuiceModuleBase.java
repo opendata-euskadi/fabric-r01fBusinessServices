@@ -7,7 +7,7 @@ import com.google.inject.Binder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-
+import r01f.bootstrap.services.ServicesBootstrap;
 import r01f.bootstrap.services.config.client.ServicesClientGuiceBootstrapConfig;
 import r01f.inject.HasMoreBindings;
 import r01f.model.metadata.HasTypesMetaData;
@@ -77,7 +77,9 @@ public abstract class ServicesClientAPIBootstrapGuiceModuleBase
 
 		// [3] - Bind the client API aggregator types as singletons
 		//		 The ClientAPI is injected with a service proxy aggregator defined at [2]
-		binder.bind(_clientBootstrapCfg.getClientApiType())
-			  .in(Singleton.class);
+		if (_clientBootstrapCfg.getClientApiType() != null) {
+			binder.bind(_clientBootstrapCfg.getClientApiType())
+				  .in(Singleton.class);
+		}
 	}
 }
