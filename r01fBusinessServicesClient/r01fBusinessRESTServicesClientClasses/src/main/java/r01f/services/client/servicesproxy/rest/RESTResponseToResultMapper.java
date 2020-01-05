@@ -35,7 +35,6 @@ public class RESTResponseToResultMapper {
 	 * @return
 	 * @throws PersistenceException
 	 */
-	@SuppressWarnings("cast")
 	public <T> T mapHttpResponse(final SecurityContext securityContext,
 								 final Url restResourceUrl,
 								 final HttpResponse httpResponse,

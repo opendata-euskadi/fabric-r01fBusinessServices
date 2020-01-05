@@ -37,8 +37,7 @@ public abstract class RESTCRUDDelegateBase<O extends PersistableObjectOID,M exte
 	@SuppressWarnings("unchecked")
 	public <R extends RESTCRUDDelegateBase<O,M>> R getRESTCRUDDelegateAs(final Class<R> type) {
 		return (R)this;
-	}
-	
+	}	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////

@@ -16,28 +16,64 @@
 <!-- ====================================================================== -->
 <!-- ARTIFACT                                                               -->
 <!-- ====================================================================== -->
-	<name>r01fBusinessRESTServicesCoreGuiceClasses</name>
-	<artifactId>r01fBusinessRESTServicesCoreGuiceClasses</artifactId>
+	<name>r01fBusinessWebServicesCoreGuiceHK2Classes</name>
+	<artifactId>r01fBusinessWebServicesCoreGuiceHK2Classes</artifactId>
 
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->
 	<dependencies>
+	
+<!-- ====================================================================== -->
+<!-- PARENT                                                                 -->
+<!-- ====================================================================== -->
+
 		<!-- ///////////////////////////////////////// -->
-		<!-- R01: BusinessServices                     -->
+		<!-- R01F:   Web Profile                  -->
 		<!-- ///////////////////////////////////////// -->
-		<dependency>
-			<groupId>r01.r01f.businessservices.core</groupId>
-			<artifactId>r01fBusinessRESTServicesCoreClasses</artifactId>
-			<version>${revision}</version>
-		</dependency>
+	
+		<!-- ///////////////////////////////////////// -->
+		<!-- R01F: BusinessServices                    -->
+		<!-- ///////////////////////////////////////// -->
 		<dependency>
 			<groupId>r01.r01f.businessservices.guice.core</groupId>
 			<artifactId>r01fBusinessWebServicesCoreGuiceClasses</artifactId>
 			<version>${revision}</version>
 		</dependency>
+		<!-- ///////////////////////////////////////// -->
+		<!-- WEB CONTAINER                              -->
+		<!-- ///////////////////////////////////////// -->
+		<dependency>
+	    	<groupId>org.glassfish.jersey.containers</groupId>
+	    	<artifactId>jersey-container-servlet</artifactId>
+	    	 <version>2.29.1</version>
+	    </dependency>
+		<!-- ///////////////////////////////////////// -->
+		<!-- HK2 GUICE BRIDGE                                -->
+		<!-- ///////////////////////////////////////// -->
+		<dependency>
+		    <groupId>org.glassfish.hk2</groupId>
+		    <artifactId>guice-bridge</artifactId>
+		    <version>2.6.1</version>
+		</dependency> 
+		  <dependency>
+		    <groupId>org.glassfish.jersey.inject</groupId>
+		    <artifactId>jersey-hk2</artifactId>
+		    <version>2.29.1</version>
+		</dependency>
+		<!-- ///////////////////////////////////////// -->
+		<!-- ServletAPI                                -->
+		<!-- ///////////////////////////////////////// -->
+		<!-- [r01fWebProfileClasses] has SevletAPI as a dependency,
+			 ... BUT it's SCOPE is PROVIDED so it has to be defined
+			     here again -->
+		<dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>javax.servlet-api</artifactId>
+		    <version>4.0.1</version>
+		    <scope>provided</scope>		<!-- BEWARE!!! -->
+		</dependency>
 	</dependencies>
-	
 	
 <!-- ====================================================================== -->
 <!-- BUILD                                                                  -->

@@ -247,8 +247,7 @@ public abstract class RESTOperationsResponseBuilder
 		 * @return the response
 		 * @throws PersistenceException
 		 */
-		public Response build(final CRUDResult<M> crudResult) throws PersistenceException {		
-		
+		public Response build(final CRUDResult<M> crudResult) throws PersistenceException {				
 			Response outResponse = null;			
 			// Failed operation
 			if (crudResult.hasFailed()) {

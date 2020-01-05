@@ -25,10 +25,12 @@
 	<modules>
 		<module>r01fBusinessServicesCoreGuiceClasses</module>
 		<module>r01fBusinessRESTServicesCoreGuiceClasses</module>
+		<module>r01fBusinessRESTServicesCoreGuiceHK2Classes</module>
 		<module>r01fBusinessServicesCoreSearchPersistenceGuiceClasses</module>
 		<module>r01fBusinessServicesCoreSearchLucenePersistenceGuiceClasses</module>
 		<module>r01fBusinessWebServicesCoreGuiceClasses</module>
 		<module>r01fBusinessWebServicesCoreGuiceSpringClasses</module>
+		<module>r01fBusinessWebServicesCoreGuiceHK2Classes</module>
 	</modules>
 
 <!-- ====================================================================== -->

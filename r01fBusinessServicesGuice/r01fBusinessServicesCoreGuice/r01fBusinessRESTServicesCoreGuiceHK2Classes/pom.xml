@@ -16,16 +16,18 @@
 <!-- ====================================================================== -->
 <!-- ARTIFACT                                                               -->
 <!-- ====================================================================== -->
-	<name>r01fBusinessRESTServicesCoreGuiceClasses</name>
-	<artifactId>r01fBusinessRESTServicesCoreGuiceClasses</artifactId>
+	<name>r01fBusinessRESTServicesCoreGuiceHK2Classes</name>
+	<artifactId>r01fBusinessRESTServicesCoreGuiceHK2Classes</artifactId>
 
 <!-- ====================================================================== -->
 <!-- DEPENDENCIES                                                           -->
 <!-- ====================================================================== -->
 	<dependencies>
-		<!-- ///////////////////////////////////////// -->
-		<!-- R01: BusinessServices                     -->
-		<!-- ///////////////////////////////////////// -->
+		<!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+		<!-- R01: BusinessServices :                                                                                   -->
+		<!--          1.  r01fBusinessRESTServicesCoreClasses                                                          -->
+		<!--          2.  r01fBusinessWebServicesCoreGuiceHK2Classes ( r01fBusinessWebServicesCoreGuice + GuiceHK2Bridge)  -->
+		<!-- ////////////////////////////////////////////////////////////////////////////// -->
 		<dependency>
 			<groupId>r01.r01f.businessservices.core</groupId>
 			<artifactId>r01fBusinessRESTServicesCoreClasses</artifactId>
@@ -33,12 +35,18 @@
 		</dependency>
 		<dependency>
 			<groupId>r01.r01f.businessservices.guice.core</groupId>
-			<artifactId>r01fBusinessWebServicesCoreGuiceClasses</artifactId>
+			<artifactId>r01fBusinessWebServicesCoreGuiceHK2Classes</artifactId>
 			<version>${revision}</version>
 		</dependency>
-	</dependencies>
-	
-	
+		<!-- ///////////////////////////////////////////////////// -->
+		<!-- R01: JERSEY 2                             -->
+		<!-- ////////////////////////////////////////////////// -->
+		<dependency>
+			<groupId>r01.r01f.web</groupId>
+			<artifactId>r01fRESTServicesJersey2Classes</artifactId>
+			<version>${revision}</version>
+		</dependency>
+	</dependencies>	
 <!-- ====================================================================== -->
 <!-- BUILD                                                                  -->
 <!-- ====================================================================== -->

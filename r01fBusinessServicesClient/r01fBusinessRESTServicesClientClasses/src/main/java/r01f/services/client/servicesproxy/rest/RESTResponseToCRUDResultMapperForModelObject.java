@@ -121,7 +121,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 /////////////////////////////////////////////////////////////////////////////////////////
 //  SUCCESS
 /////////////////////////////////////////////////////////////////////////////////////////
-	@SuppressWarnings({ "unused","serial" })
+	@SuppressWarnings({ "serial" })
 	protected CRUDOK<M> _mapHttpResponseForSuccess(final SecurityContext securityContext,
 												   final PersistenceRequestedOperation requestedOp,
 												   final Url restResourceUrl,final HttpResponse httpResponse) {
@@ -129,18 +129,21 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 		
 		// [0] - Load the response		
 		String responseStr = httpResponse.loadAsString();		// DO not move!!
-		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
+		if (Strings.isNullOrEmpty(responseStr)) {
+			throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
+		
 															   									   restResourceUrl));
+		}
 		// [1] - Map the response
 		outOperationResult = _marshaller.forReading().fromXml(responseStr,
-															  new TypeToken<CRUDOK<M>>() { /* nothging */});
+															  new TypeToken<CRUDOK<M>>() { /* nothing */});
 		
 		// [2] - Return
 		return outOperationResult;
 	}
-/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 //  ERROR
-/////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Builds back a {@link CRUDError} object from the {@link HttpResponse} object
 	 * The exception was mapped to the {@link HttpResponse} at server type r01f.rest.RESTExceptionMappers object
