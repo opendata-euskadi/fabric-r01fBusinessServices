@@ -51,8 +51,7 @@ import r01f.rest.RESTResourceConfigBase;
 						        <url-pattern>/*</url-pattern>
 						   </filter-mapping>
 						   
-		   		- JerseyServletModule(and GuiceFilter) can be used [ see  Jersey2 link [ @, but don't use GuiceServletContextListener ( this was used to create Injector in Jersey 1)
-	   		
+		   		- JerseyServletModule(and GuiceFilter) can be used [ see  Jersey2 link [ @, but don't use GuiceServletContextListener ( this was used to create Injector in Jersey 1)	   		
  * </pre>
  */
 @Slf4j
