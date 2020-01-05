@@ -31,11 +31,11 @@ public class RESTExceptionMappers {
 			extends RESTExceptionMapperBase<PersistenceException>		
 	     implements ExceptionMapper<PersistenceException> {
 		
-		public RESTPersistenceExceptionMapper(){
+		public RESTPersistenceExceptionMapper() {
 			super();
 		}
 		
-		public RESTPersistenceExceptionMapper(final MediaType mediaType, final ExceptionToReponseEntity<PersistenceException> transformer){
+		public RESTPersistenceExceptionMapper(final MediaType mediaType, final ExceptionToReponseEntity<PersistenceException> transformer) {
 			super(mediaType,transformer);
 		 }
 	
@@ -52,10 +52,10 @@ public class RESTExceptionMappers {
 			extends RESTExceptionMapperBase<Throwable>
 	       implements ExceptionMapper<Throwable> {
 		
-		public RESTUncaughtExceptionMapper(){
+		public RESTUncaughtExceptionMapper() {
 			super();
 		}		
-		public RESTUncaughtExceptionMapper(final MediaType mediaType, final ExceptionToReponseEntity<Throwable> transformer){
+		public RESTUncaughtExceptionMapper(final MediaType mediaType, final ExceptionToReponseEntity<Throwable> transformer) {
 			super(mediaType,transformer);
 		 }
 		
@@ -79,11 +79,11 @@ public class RESTExceptionMappers {
 		 protected final MediaType _mediaType;
 		 protected final ExceptionToReponseEntity<T> _transformer;
 
-		 public RESTExceptionMapperBase(){// This has been the default behaviour for many years...
+		 public RESTExceptionMapperBase() {// This has been the default behaviour for many years...
 			_mediaType = MediaType.TEXT_HTML_TYPE;
 			_transformer =  ( error, th )  -> { return  Throwables.getStackTraceAsString(th); };
 		}		 
-		 public RESTExceptionMapperBase(final MediaType mediaType, final ExceptionToReponseEntity<T> transformer){
+		 public RESTExceptionMapperBase(final MediaType mediaType, final ExceptionToReponseEntity<T> transformer) {
 			_mediaType = mediaType;
 			_transformer = transformer;
 		} 		 

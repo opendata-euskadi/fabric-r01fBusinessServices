@@ -115,7 +115,7 @@ public abstract class RESTMessageConverterBase<T>
 			// write
 		  if (Strings.isNOTNullOrEmpty(json)) {
 			  outputMessage.getBody().write(json.getBytes());
-		  }else {
+		  } else {
 			  log.error("Received JSON Error !!");
 		  }
 	}

@@ -264,8 +264,8 @@ public class ServicesBootstrap {
 					@Override
 					public void configure(final Binder binder) {
 						// [0] - Bind the client api as a singleton
-						binder.bind(clientApiType)
-							  .in(Singleton.class);
+						if (clientApiType != null) binder.bind(clientApiType)
+							  							 .in(Singleton.class);
 						
 						// [1] - Bind client proxies as singletons
 						// 		 BEWARE CORE impl was binded as singletons at the private module (see ServicesCoreBootstrapPrivateGuiceModule)

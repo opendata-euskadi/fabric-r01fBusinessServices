@@ -147,7 +147,7 @@ public class ServiceMatcher {
 																					serviceInterfaceTypes);
 		
 		// [2.1] - CORE impl matchings		
-		log.warn("\n....................................................................................................");
+		log.warn("....................................................................................................");
 		if (CollectionUtils.hasData(servicesBootstrapCfg.getCoreModulesConfig())) {
 			for (final ServicesCoreBootstrapConfig coreModuleCfg : servicesBootstrapCfg.getCoreModulesConfig()) {
 				if (coreModuleCfg.getImplType() != ServicesImpl.Bean) continue;		// skip no bean core modules
@@ -210,7 +210,7 @@ public class ServiceMatcher {
 				}
 			}
 		}
-		log.warn("\n....................................................................................................");
+		log.warn("....................................................................................................");
 		
 		log.warn("\n[Service interface matchings]:\n{}",
 				 outMatchings.debugInfo());
