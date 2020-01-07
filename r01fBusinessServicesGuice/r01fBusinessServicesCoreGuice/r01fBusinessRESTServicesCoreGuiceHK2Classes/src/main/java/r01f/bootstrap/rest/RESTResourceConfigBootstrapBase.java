@@ -69,8 +69,9 @@ public abstract class RESTResourceConfigBootstrapBase
 /////////////////////////////////////////////////////////////////////////////////////////
     public RESTResourceConfigBootstrapBase(final ServiceLocator serviceLocator) {       
     	 super();
-        _resourceConfigBootstrapDelegate = new ResourceConfigBootstrapGuiceHK2Delegate(serviceLocator,bootstrapGuiceInjector()); // bootstrapGuiceInjector //Inherited ResourceConfigBootstrap<ResourceConfig> 
-          // After ResourceConfigBootstrapGuiceHK2Delegate bridge, create a ContainerLifecycleListener to Start Guice Services
+        _resourceConfigBootstrapDelegate = new ResourceConfigBootstrapGuiceHK2Delegate(serviceLocator,
+        		                                                                       buildResourceConfigBootstrapData()); // bootstrapGuiceInjector //Inherited ResourceConfigBootstrap<ResourceConfig> 
+          // After ResourceConfigBootstrapGuiceHK2Delegate bridge, create a ContainerLifecycleListener to Start Guice Services.Do this order.
          register( new  ContainerLifecycleListener() {
 										@Override
 										public void onStartup(Container container) {									
