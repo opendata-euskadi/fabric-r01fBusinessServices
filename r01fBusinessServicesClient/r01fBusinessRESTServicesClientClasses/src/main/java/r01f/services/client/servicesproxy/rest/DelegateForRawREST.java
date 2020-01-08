@@ -7,6 +7,7 @@ import r01f.httpclient.HttpClient;
 import r01f.httpclient.HttpRequestHeader;
 import r01f.httpclient.HttpRequestPayload;
 import r01f.httpclient.HttpResponse;
+import r01f.mime.MimeType;
 import r01f.mime.MimeTypes;
 import r01f.objectstreamer.Marshaller;
 import r01f.services.COREServiceProxyException;
@@ -44,95 +45,142 @@ public abstract class DelegateForRawREST {
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static HttpResponse GET(final Url restResourceUrl,
 								   final String securityContextXml) {
+		return GET(restResourceUrl, new HttpRequestHeader("securityContext",securityContextXml));
+	}
+	
+	public static HttpResponse GET(final Url restResourceUrl,
+								   final HttpRequestHeader securityHeader) {
 		log.trace("\t\tGET resource: {}",restResourceUrl);
 			
 		HttpResponse outHttpResponse = null;
 		try {
 			outHttpResponse = HttpClient.forUrl(restResourceUrl)
-									    .withHeader("securityContext",securityContextXml)
+									    // Security Header
+										 .withHeader(securityHeader.getName(),securityHeader.getValue())
 									    .GET()
 									  	.getResponse()
 									  		.directNoAuthConnected();
-		} catch(IOException ioEx) {
+		} catch(final IOException ioEx) {
 			log.error("Error while GETing {}: {}",restResourceUrl,ioEx.getMessage());
 			throw new COREServiceProxyException(ioEx);
 		}
 		return outHttpResponse;
 	}
+	
+	
 	public static HttpResponse POST(final Url restResourceUrl,
 									final String securityContextXml,
 							     	final String entityXml,
 							     	final HttpRequestHeader... headers) {
+		return POST(restResourceUrl,
+				    MimeTypes.APPLICATION_XML, 
+				    new HttpRequestHeader("securityContext",securityContextXml),
+				    entityXml,
+				    headers);
+	
+	}
+	
+	public static HttpResponse POST(final Url restResourceUrl,
+			                        final MimeType mimeType,
+									final HttpRequestHeader securityHeader,
+							     	final String entityAsString,							     	
+							     	final HttpRequestHeader... otherHeaders) {
 		log.trace("\t\tPOST resource: {}",restResourceUrl);
 		HttpResponse outHttpResponse = null;
 		try {
-			if (Strings.isNOTNullOrEmpty(entityXml)) {
+			if (Strings.isNOTNullOrEmpty(entityAsString)) {
 				outHttpResponse = HttpClient.forUrl(restResourceUrl)		
-										    .withHeader("securityContext",securityContextXml)
-											.withHeaders(headers)		// any additional header
+											// Security Header
+										    .withHeader(securityHeader.getName(),securityHeader.getValue())
+											.withHeaders(otherHeaders)		// any additional header
 										    .POST()
-									      		.withPayload(HttpRequestPayload.wrap(entityXml)
-																			   .mimeType(MimeTypes.APPLICATION_XML))
+									      		.withPayload(HttpRequestPayload.wrap(entityAsString)
+																			   .mimeType(mimeType))
 										    .getResponse()
 										    	.directNoAuthConnected();
 			} else {
 				outHttpResponse = HttpClient.forUrl(restResourceUrl)		
-								   	        .withHeader("securityContext",securityContextXml)
-											.withHeaders(headers)		// any additional header
+											// Security Header
+								   	        .withHeader(securityHeader.getName(),securityHeader.getValue())
+											.withHeaders(otherHeaders)		// any additional header
 										    .POST()
-										 		.withoutPayload(MimeTypes.APPLICATION_XML)
+										 		.withoutPayload(mimeType)
 										    .getResponse()
 										    	.directNoAuthConnected();
 			}
-		} catch(IOException ioEx) {
+		} catch(final IOException ioEx) {
 			log.error("Error while POSTing to {}: {}",restResourceUrl,ioEx.getMessage());
 			throw new COREServiceProxyException(ioEx);
 		}				
 		return outHttpResponse;
 	}
+	
 	public static HttpResponse PUT(final Url restResourceUrl,
 								   final String securityContextXml,
 				 			  	   final String entityXml,
-				 			  	   final HttpRequestHeader... headers) {
+				 			  	   final HttpRequestHeader... headers) {		
+		return PUT(restResourceUrl,
+				    MimeTypes.APPLICATION_XML, 
+				    new HttpRequestHeader("securityContext",securityContextXml),
+				    entityXml,
+				    headers);
+		
+	}	
+	public static HttpResponse PUT(final Url restResourceUrl,
+								   final MimeType mimeType,
+								   final HttpRequestHeader securityHeader,
+				 			  	   final String entityAsString,
+				 			  	   final HttpRequestHeader... otherHeaders) {
 		log.trace("\t\tPUT resource: {}",restResourceUrl);
 		HttpResponse outHttpResponse = null;
 		try {
-			if (entityXml != null) {
+			if (entityAsString != null) {
 				outHttpResponse = HttpClient.forUrl(restResourceUrl)		
-											.withHeader("securityContext",securityContextXml)
-											.withHeaders(headers)			// any additional header
+											// Security Header
+										    .withHeader(securityHeader.getName(),securityHeader.getValue())
+										    //Additional Headers
+											.withHeaders(otherHeaders)		
 											.PUT()
 	
-											.withPayload(HttpRequestPayload.wrap(entityXml)
-																			   .mimeType(MimeTypes.APPLICATION_XML))
+											.withPayload(HttpRequestPayload.wrap(entityAsString)
+																			   .mimeType(mimeType))
 											.getResponse()
 												.directNoAuthConnected();
 			} else {
-				outHttpResponse = HttpClient.forUrl(restResourceUrl)		
-											.withHeader("securityContext",securityContextXml)
-											.withHeaders(headers)			// any additional header
+				outHttpResponse = HttpClient.forUrl(restResourceUrl)
+											// Security Header
+											.withHeader(securityHeader.getName(),securityHeader.getValue())
+											 //Additional Headers
+											.withHeaders(otherHeaders)			
 											.PUT()
-												.withoutPayload(MimeTypes.APPLICATION_XML)
+												.withoutPayload(mimeType)
 											.getResponse()
 												.directNoAuthConnected();
 			}
-		} catch(IOException ioEx) {
+		} catch(final IOException ioEx) {
 			log.error("Error while PUTing to {}: {}",restResourceUrl,ioEx.getMessage());
 			throw new COREServiceProxyException(ioEx);
 		}		
 		return outHttpResponse;
 	}
+	
+	
 	public static HttpResponse DELETE(final Url restResourceUrl,
-									  final String securityContextXml) {
+									  final String securityContextXml) {	
+		return DELETE(restResourceUrl, new HttpRequestHeader("securityContext",securityContextXml));	
+	}
+	
+	public static HttpResponse DELETE(final Url restResourceUrl, final HttpRequestHeader securityHeader) {
 		log.trace("\t\tDELETE resource: {}",restResourceUrl);
 		HttpResponse outHttpResponse = null;
 		try {
 			outHttpResponse = HttpClient.forUrl(restResourceUrl)
-										.withHeader("securityContext",securityContextXml)
+										// Security Header
+										 .withHeader(securityHeader.getName(),securityHeader.getValue())
 										.DELETE()
 										.getResponse()	
 											.directNoAuthConnected();
-		} catch(IOException ioEx) {
+		} catch(final IOException ioEx) {
 			log.error("Error while DELETEing {}: {}",restResourceUrl,ioEx.getMessage());
 			throw new COREServiceProxyException(ioEx);
 		}

@@ -11,6 +11,8 @@ import r01f.guids.AnyOID;
 import r01f.guids.OID;
 import r01f.guids.PersistableObjectOID;
 import r01f.httpclient.HttpResponse;
+import r01f.mime.MimeType;
+import r01f.mime.MimeTypes;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDError;
 import r01f.model.persistence.CRUDOK;
@@ -34,13 +36,21 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected final Marshaller _marshaller;
 	protected final Class<M> _modelObjectType;
+	protected final MimeType _mimeType;
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
 	public RESTResponseToCRUDResultMapperForModelObject(final Marshaller marshaller,
 							    						final Class<M> modelObjectType) {
+		this(marshaller,modelObjectType,MimeTypes.APPLICATION_XML);
+	}
+	public RESTResponseToCRUDResultMapperForModelObject(final Marshaller marshaller,
+							    						final Class<M> modelObjectType,
+							    						final MimeType mimeType) {
 		_marshaller = marshaller;
 		_modelObjectType = modelObjectType;
+		_mimeType = mimeType;
+		
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
@@ -135,9 +145,15 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 															   									   restResourceUrl));
 		}
 		// [1] - Map the response
-		outOperationResult = _marshaller.forReading().fromXml(responseStr,
-															  new TypeToken<CRUDOK<M>>() { /* nothing */});
-		
+		if (_mimeType.equals(MimeTypes.APPLICATION_XML)) {
+			outOperationResult = _marshaller.forReading().fromXml(responseStr,
+																  new TypeToken<CRUDOK<M>>() { /* nothing */});
+		} else if (_mimeType.equals(MimeTypes.APPLICATION_JSON)){
+			outOperationResult = _marshaller.forReading().fromJson(responseStr,
+																  new TypeToken<CRUDOK<M>>() { /* nothing */});
+		} else {
+			throw new IllegalArgumentException(Strings.customized( " {} mimeType not suported", _mimeType)) ;
+		}		
 		// [2] - Return
 		return outOperationResult;
 	}
