@@ -48,12 +48,10 @@ public class RESTMessageConverterForException {
 		public ThrowableExceptionConverter() {
 			super(Throwable.class);
 		}
-
 		@Override
 		protected void _doWrite(final Throwable exception, HttpOutputMessage outputMessage) throws IOException {
 			 outputMessage.getBody().write(Throwables.getStackTraceAsString(exception).getBytes());
 		}
-
 		@Override
 		protected Throwable _doRead(Class<? extends Throwable> type, HttpInputMessage inputMessage) throws IOException {
 			throw new IllegalArgumentException( " A exception should not be read ");

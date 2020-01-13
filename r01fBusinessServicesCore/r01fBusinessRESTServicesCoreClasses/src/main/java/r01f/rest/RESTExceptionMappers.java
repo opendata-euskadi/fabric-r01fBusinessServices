@@ -103,6 +103,8 @@ public class RESTExceptionMappers {
 			// Persistence exceptions
 			if (th instanceof COREServiceException) {				
 				COREServiceException coreEx = (COREServiceException)th;
+				COREServiceErrorType coreErrorType = coreEx.getType();
+				 log.error(" COREServiceException, coreErrorType {} ", coreErrorType);
 				// server errors
 				if (coreEx.isServerError()) {
 					// Server Error
@@ -120,8 +122,7 @@ public class RESTExceptionMappers {
 				} 
 				// client errors
 				else if (coreEx.isClientError()) {	
-					COREServiceErrorType coreErrorType = coreEx.getType();
-				    log.error(" COREServiceException, client error");
+					
 					// record not found
 					if (coreErrorType.is(PersistenceServiceErrorTypes.ENTITY_NOT_FOUND)) {		
 						outResponse = Response.status(Status.NOT_FOUND)						
@@ -177,6 +178,7 @@ public class RESTExceptionMappers {
 			// any other exception type
 			else {
 				//th.printStackTrace();
+				log.error(" Error {}", th.getLocalizedMessage());;
 				outResponse = Response.status(Status.INTERNAL_SERVER_ERROR)
 									  .header("x-r01-errorCode",COREServiceErrorTypes.SERVER_ERROR.encodeAsString())
 									  .header("x-r01-errorMessage",th.getMessage())

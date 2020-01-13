@@ -106,4 +106,5 @@ public interface CRUDServicesForModelObject<O extends PersistableObjectOID,M ext
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 								final O oid,
 								final COREServiceMethodCallbackSpec callbackSpec);
+	
 }

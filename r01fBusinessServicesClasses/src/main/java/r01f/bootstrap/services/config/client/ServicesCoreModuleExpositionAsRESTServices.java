@@ -1,7 +1,7 @@
 package r01f.bootstrap.services.config.client;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import r01f.bootstrap.services.config.ServicesImpl;
 import r01f.types.url.Host;
@@ -10,17 +10,25 @@ import r01f.util.types.Strings;
 
 
 @Accessors(prefix="_")
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class ServicesCoreModuleExpositionAsRESTServices 
   implements ServicesCoreModuleExposition {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
-	@Getter private final Host _host;
-	@Getter private final UrlPath _baseUrlPath;
+	@Getter private  Host _host;
+	@Getter private  UrlPath _baseUrlPath;	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
+	public ServicesCoreModuleExpositionAsRESTServices(final Host host, final UrlPath baseUrlPath) {
+		_host = host;
+		_baseUrlPath = baseUrlPath;
+	}
+////////////////////////////////////////////	/////////////////////////////////////////////
+//  
+/////////////////////////////////////////////////////////////////////////////////////////
+	
 	@Override
 	public ServicesImpl getServiceImpl() {
 		return ServicesImpl.REST;

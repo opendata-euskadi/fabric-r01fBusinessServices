@@ -51,6 +51,7 @@ public class RESTServiceResourceUrlPathBuilders {
 		public RESTServiceEndPointUrl(final ServicesCoreModuleExpositionAsRESTServices coreModuleRESTExposition) {
 			_host = coreModuleRESTExposition.getHost();
 			_endPointBasePath = coreModuleRESTExposition.getBaseUrlPath();
+		
 		}
 		
 		public RESTServiceEndPointUrl(final XMLPropertiesForAppComponent clientProps,

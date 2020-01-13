@@ -49,18 +49,21 @@ public abstract class DelegateForRawREST {
 	}
 	
 	public static HttpResponse GET(final Url restResourceUrl,
-								   final HttpRequestHeader securityHeader) {
-		log.trace("\t\tGET resource: {}",restResourceUrl);
+								   final HttpRequestHeader securityHeader,
+								   final HttpRequestHeader... otherHeaders) {
+		log.warn("\t\tGET resource: {}",restResourceUrl);
 			
 		HttpResponse outHttpResponse = null;
 		try {
 			outHttpResponse = HttpClient.forUrl(restResourceUrl)
 									    // Security Header
 										 .withHeader(securityHeader.getName(),securityHeader.getValue())
-									    .GET()
-									  	.getResponse()
+										 .withHeaders(otherHeaders)		// any additional header
+									     .GET()
+									  	 .getResponse()
 									  		.directNoAuthConnected();
 		} catch(final IOException ioEx) {
+			ioEx.getLocalizedMessage();
 			log.error("Error while GETing {}: {}",restResourceUrl,ioEx.getMessage());
 			throw new COREServiceProxyException(ioEx);
 		}
@@ -85,7 +88,7 @@ public abstract class DelegateForRawREST {
 									final HttpRequestHeader securityHeader,
 							     	final String entityAsString,							     	
 							     	final HttpRequestHeader... otherHeaders) {
-		log.trace("\t\tPOST resource: {}",restResourceUrl);
+		log.warn("\t\tPOST resource: {}",restResourceUrl);
 		HttpResponse outHttpResponse = null;
 		try {
 			if (Strings.isNOTNullOrEmpty(entityAsString)) {
@@ -109,6 +112,7 @@ public abstract class DelegateForRawREST {
 										    	.directNoAuthConnected();
 			}
 		} catch(final IOException ioEx) {
+			ioEx.getLocalizedMessage();
 			log.error("Error while POSTing to {}: {}",restResourceUrl,ioEx.getMessage());
 			throw new COREServiceProxyException(ioEx);
 		}				
@@ -170,13 +174,16 @@ public abstract class DelegateForRawREST {
 		return DELETE(restResourceUrl, new HttpRequestHeader("securityContext",securityContextXml));	
 	}
 	
-	public static HttpResponse DELETE(final Url restResourceUrl, final HttpRequestHeader securityHeader) {
-		log.trace("\t\tDELETE resource: {}",restResourceUrl);
+	public static HttpResponse DELETE(final Url restResourceUrl, 
+									  final HttpRequestHeader securityHeader,
+									  final HttpRequestHeader... otherHeaders) {
+		log.warn("\t\tDELETE resource: {}",restResourceUrl);
 		HttpResponse outHttpResponse = null;
 		try {
 			outHttpResponse = HttpClient.forUrl(restResourceUrl)
 										// Security Header
-										 .withHeader(securityHeader.getName(),securityHeader.getValue())
+										  .withHeader(securityHeader.getName(),securityHeader.getValue())
+										  .withHeaders(otherHeaders)		// any additional header
 										.DELETE()
 										.getResponse()	
 											.directNoAuthConnected();
