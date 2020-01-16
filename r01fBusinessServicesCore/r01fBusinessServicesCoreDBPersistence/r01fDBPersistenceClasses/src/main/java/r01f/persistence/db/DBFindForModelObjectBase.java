@@ -25,16 +25,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
 import r01f.facets.util.Facetables;
 import r01f.guids.CommonOIDs.UserCode;
 import r01f.guids.OID;
 import r01f.guids.OIDs;
 import r01f.guids.PersistableObjectOID;
-import r01f.model.HasTrackingInfo;
 import r01f.model.PersistableModelObject;
 import r01f.model.SummarizedModelObject;
-import r01f.model.facets.HasEntityVersion;
 import r01f.model.facets.Versionable.HasVersionableFacet;
 import r01f.model.persistence.FindOIDsResult;
 import r01f.model.persistence.FindOIDsResultBuilder;
@@ -59,7 +56,6 @@ import r01f.util.types.collections.CollectionUtils;
  * @param <PK>
  * @param <DB>
  */
-@Slf4j
 @Accessors(prefix="_")
 public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M extends PersistableModelObject<O>,
 							     			   PK extends DBPrimaryKeyForModelObject,DB extends DBEntity & DBEntityForModelObject<PK>>
@@ -409,30 +405,6 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 /////////////////////////////////////////////////////////////////////////////////////////
 //  RESULTS BUILDING
 /////////////////////////////////////////////////////////////////////////////////////////
-	protected Function<DB,M> _dbEntityToModelObjTransformUsingDescriptor =
-			new Function<DB,M>() {
-					@Override
-					public M apply(final DB dbEntity) {
-						DBEntityHasModelObjectDescriptor hasXmlDescriptor = (DBEntityHasModelObjectDescriptor)dbEntity;
-						String xmlDescriptorAsString = hasXmlDescriptor.getDescriptor();
-						M outM = _modelObjectsMarshaller.forReading().fromXml(xmlDescriptorAsString,
-																			  _modelObjectType);
-						// do not forget to copy the tracking info and entity version info
-						if (dbEntity instanceof HasEntityVersion) {
-							outM.setEntityVersion(((HasEntityVersion)dbEntity).getEntityVersion());
-						} else {
-							log.debug("{} does NOT has entity version (does NOT implements {})",
-									  outM.getClass().getSimpleName(),HasTrackingInfo.class.getName());
-						}
-						if (dbEntity instanceof HasTrackingInfo) {
-							outM.setTrackingInfo(((HasTrackingInfo)dbEntity).getTrackingInfo());
-						} else {
-							log.debug("{} does NOT has tracking info (does NOT implements {})",
-									  outM.getClass().getSimpleName(),HasTrackingInfo.class.getName());
-						}
-						return outM;
-					}
-			};
 	protected FindResult<M> _buildResultsFromDBEntities(final SecurityContext securityContext,
 													    final Collection<? extends DB> dbEntities) {
 		if (!ReflectionUtils.isImplementing(_DBEntityType,DBEntityHasModelObjectDescriptor.class)) {
@@ -441,9 +413,17 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 		}
 		FindResult<M> outResult = null;
 		if (CollectionUtils.hasData(dbEntities)) {
+			// dbEntity -> model object
 			Collection<M> modelObjs = FluentIterable.from(dbEntities)
-													.transform(_dbEntityToModelObjTransformUsingDescriptor)
+													.transform(new Function<DB,M>() {
+																		@Override
+																		public M apply(final DB dbEntity) {
+																			return _dbEntityIntoModelObjectTransformer.dbEntityToModelObject(securityContext,
+																																			 dbEntity);
+																		}
+																})
 													.toList();
+			// build result
 			outResult = FindResultBuilder.using(securityContext)
 										 .on(_modelObjectType)
 										 .foundEntities(modelObjs);

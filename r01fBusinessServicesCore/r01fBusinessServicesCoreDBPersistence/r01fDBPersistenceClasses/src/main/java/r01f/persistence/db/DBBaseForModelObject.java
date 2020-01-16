@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import javax.persistence.EntityManager;
 
+import com.google.common.base.Function;
+
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +52,16 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 	 * Transforms a db entity into a model object
 	 */
 	@Getter protected final TransformsDBEntityIntoModelObject<DB,M> _dbEntityIntoModelObjectTransformer;
+	
+			@Deprecated 	// use dbEntity -> _dbEntityIntoModelObjectTransformer.dbEntityToModelObject(securityContext,
+							//																			 dbEntity);
+			protected final Function<DB,M> _dbEntityToModelObjTransformUsingDescriptor = new Function<DB,M>() {
+																								@Override
+																								public M apply(final DB dbEntity) {
+																									return _dbEntityIntoModelObjectTransformer.dbEntityToModelObject(null,	// WTF!
+																																			 	 					 dbEntity);
+																								}
+																						 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
@@ -87,33 +99,10 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 			  marshaller);
 		_modelObjectType = modelObjectType;
 		_DBEntityType = dbEntityType;
+		
 		// create a default transformer using the marshaller
-		_dbEntityIntoModelObjectTransformer = new TransformsDBEntityIntoModelObject<DB,M>() {
-														@Override
-														public M dbEntityToModelObject(final SecurityContext securityContext,
-																					   final DB dbEntity) {
-																M outObj = null;
-																// use the descriptor to build the model object
-																if (dbEntity instanceof DBEntityHasModelObjectDescriptor) {
-																	DBEntityHasModelObjectDescriptor hasDescriptor = (DBEntityHasModelObjectDescriptor)dbEntity;
-																	outObj = _modelObjectsMarshaller.forReading().fromXml(hasDescriptor.getDescriptor(),
-																														  _modelObjectType);
-																} else {
-																	log.warn("The db entity of type {} does NOT implements {} so the db entity MUST be manually translated bo model object",
-																			 dbEntity.getClass().getSimpleName(),DBEntityHasModelObjectDescriptor.class.getSimpleName());
-																}
-																// copy some info from the dbEntity
-																if (outObj != null) {
-																	if (dbEntity instanceof HasTrackingInfo) {
-																		outObj.setTrackingInfo(((HasTrackingInfo)dbEntity).getTrackingInfo());
-																	}
-																	if (dbEntity instanceof HasEntityVersion) {
-																		outObj.setEntityVersion(((HasEntityVersion)dbEntity).getEntityVersion());
-																	}
-																}
-																return outObj;
-														}
-											  };
+		_dbEntityIntoModelObjectTransformer = _createTransFromsDBEntityIntoModelObjectUsing(_modelObjectsMarshaller,
+																							_modelObjectType);
 	}
 	public DBBaseForModelObject(final Class<M> modelObjectType,final Class<DB> dbEntityType,
 								final TransformsDBEntityIntoModelObject<DB,M> dbEntityIntoModelObjectTransformer,
