@@ -101,8 +101,8 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 		_DBEntityType = dbEntityType;
 		
 		// create a default transformer using the marshaller
-		_dbEntityIntoModelObjectTransformer = _createTransFromsDBEntityIntoModelObjectUsing(_modelObjectsMarshaller,
-																							_modelObjectType);
+		_dbEntityIntoModelObjectTransformer = DBBase.createTransFromsDBEntityIntoModelObjectUsing(_modelObjectsMarshaller,
+																						   		  modelObjectType);
 	}
 	public DBBaseForModelObject(final Class<M> modelObjectType,final Class<DB> dbEntityType,
 								final TransformsDBEntityIntoModelObject<DB,M> dbEntityIntoModelObjectTransformer,

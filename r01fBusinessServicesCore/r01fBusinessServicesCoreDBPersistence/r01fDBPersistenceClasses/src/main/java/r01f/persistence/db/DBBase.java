@@ -68,9 +68,9 @@ public abstract class DBBase
 	 * @param modelObjectType
 	 * @return
 	 */
-	protected static <DB extends DBEntity,
-					  M extends ModelObject> TransformsDBEntityIntoModelObject<DB,M> _createTransFromsDBEntityIntoModelObjectUsing(final Marshaller marshaller,
-							  																									   final Class<M> modelObjectType) {
+	public static <DB extends DBEntity,
+				   M extends ModelObject> TransformsDBEntityIntoModelObject<DB,M> createTransFromsDBEntityIntoModelObjectUsing(final Marshaller marshaller,
+							  																								   final Class<M> modelObjectType) {
 		return new TransformsDBEntityIntoModelObject<DB,M>() {
 						@Override
 						public M dbEntityToModelObject(final SecurityContext securityContext,
