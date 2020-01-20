@@ -14,11 +14,10 @@ import r01f.securitycontext.SecurityContextProviderForSystemUserBase;
 /**
  * see {@link SecurityContextProviderForSystemUserBase}
  */
-@Deprecated	// use @ClientAPIForSystemUser
-@Qualifier //@BindingAnnotation						
+@Qualifier //@BindingAnnotation			
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD,ElementType.FIELD,ElementType.PARAMETER})
-public @interface ClientAPIForMasterUser {
+@Target({ElementType.METHOD,ElementType.PARAMETER})
+public @interface SecurityContextProviderForSystemUser {
 	/* nothing to do */
 }
  

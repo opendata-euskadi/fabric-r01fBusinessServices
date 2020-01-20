@@ -7,18 +7,17 @@ import java.lang.annotation.Target;
 
 import javax.inject.Qualifier;
 
-import r01f.securitycontext.SecurityContextProviderForSystemUserBase;
+import r01f.securitycontext.SecurityContextProviderForMasterUserBase;
 
 
 
 /**
- * see {@link SecurityContextProviderForSystemUserBase}
+ * see {@link SecurityContextProviderForMasterUserBase}
  */
-@Deprecated	// use @ClientAPIForSystemUser
 @Qualifier //@BindingAnnotation						
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD,ElementType.FIELD,ElementType.PARAMETER})
-public @interface ClientAPIForMasterUser {
+public @interface ClientAPIForSystemUser {
 	/* nothing to do */
 }
  

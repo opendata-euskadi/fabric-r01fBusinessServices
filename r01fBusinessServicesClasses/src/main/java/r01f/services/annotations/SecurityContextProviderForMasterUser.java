@@ -14,6 +14,7 @@ import r01f.securitycontext.SecurityContextProviderForMasterUserBase;
 /**
  * see {@link SecurityContextProviderForMasterUserBase}
  */
+@Deprecated 	// use SecurityContextProviderForSystemUser
 @Qualifier //@BindingAnnotation			
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD,ElementType.PARAMETER})
