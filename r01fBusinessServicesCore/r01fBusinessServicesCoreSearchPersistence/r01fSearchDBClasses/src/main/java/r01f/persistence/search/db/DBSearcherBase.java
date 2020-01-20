@@ -67,7 +67,8 @@ public abstract class DBSearcherBase<F extends SearchFilter,I extends SearchResu
 	@Override
 	public int countRecords(final SecurityContext securityContext,
 							final F filter) {
-		log.info("Filtering: {}",filter.getBooleanQuery().encodeAsString());
+		log.info("Filtering: {}",
+				 filter != null ? filter.getBooleanQuery().encodeAsString() : null);
 		
 		// [0] - Get the entity manager
 		// TODO needs some research... really must have to call clear??
@@ -91,7 +92,7 @@ public abstract class DBSearcherBase<F extends SearchFilter,I extends SearchResu
 								 			final F filter,final Collection<SearchResultsOrdering> ordering,
 								 			final int firstRowNum,final int numberOfRows) {
 		log.info("Filtering: {}",
-				 filter.getBooleanQuery().encodeAsString());
+				 filter != null ? filter.getBooleanQuery().encodeAsString() : null);
 		
 		// [0] - Get the entity manager
 		// TODO needs some research... really must have to call clear??
@@ -127,7 +128,7 @@ public abstract class DBSearcherBase<F extends SearchFilter,I extends SearchResu
 		}
 		
 		// [3] - Compose the search results
-		final Language uiLang = filter.getUILanguage();
+		final Language uiLang = filter != null ? filter.getUILanguage() : Language.DEFAULT;
 		SearchResults<F,I> outResults = new SearchResults<F,I>(filter,
 					  										   totalItems,firstRowNum,
 					  										   numberOfRows,
