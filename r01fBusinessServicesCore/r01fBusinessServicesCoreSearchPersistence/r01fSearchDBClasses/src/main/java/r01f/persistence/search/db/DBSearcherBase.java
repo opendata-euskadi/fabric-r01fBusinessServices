@@ -67,7 +67,7 @@ public abstract class DBSearcherBase<F extends SearchFilter,I extends SearchResu
 	@Override
 	public int countRecords(final SecurityContext securityContext,
 							final F filter) {
-		log.info("Filtering: {}",
+		log.info("search-count with filter={}",
 				 filter != null ? filter.getBooleanQuery().encodeAsString() : null);
 		
 		// [0] - Get the entity manager
@@ -82,8 +82,8 @@ public abstract class DBSearcherBase<F extends SearchFilter,I extends SearchResu
 		int totalItems = countQry.getSingleResult().intValue();
 		log.debug("JPA COUNT Query: {}",
 				  countQry.toString());
-		log.info("Total number of results: {}",
-				 totalItems);
+		log.debug("search-count: total number of results: {}",
+				  totalItems);
 		
 		return totalItems;
 	}
@@ -91,7 +91,7 @@ public abstract class DBSearcherBase<F extends SearchFilter,I extends SearchResu
 	public SearchResults<F,I> filterRecords(final SecurityContext securityContext,
 								 			final F filter,final Collection<SearchResultsOrdering> ordering,
 								 			final int firstRowNum,final int numberOfRows) {
-		log.info("Filtering: {}",
+		log.info("search with filter={}",
 				 filter != null ? filter.getBooleanQuery().encodeAsString() : null);
 		
 		// [0] - Get the entity manager
@@ -106,13 +106,13 @@ public abstract class DBSearcherBase<F extends SearchFilter,I extends SearchResu
 		int totalItems = countQry.getSingleResult().intValue();
 		log.debug("JPA COUNT Query: {}",
 				  countQry.toString());
-		log.debug("Total number of results: {}",
+		log.debug("search-retrieve: total number of results: {}",
 				  totalItems);
 		
 		// [2] - Get the page results
 		Collection<DB> pageEntities = null;
 		if (numberOfRows > 0
-		 && totalItems > 0) {
+		 && totalItems > 0) {	
 			TypedQuery<DB> qry = _searchQueryFactory.create()
 													.getResultsQuery(filter,
 																	 ordering);
@@ -126,7 +126,7 @@ public abstract class DBSearcherBase<F extends SearchFilter,I extends SearchResu
 		} else {
 			pageEntities = Lists.newArrayList();
 		}
-		
+
 		// [3] - Compose the search results
 		final Language uiLang = filter != null ? filter.getUILanguage() : Language.DEFAULT;
 		SearchResults<F,I> outResults = new SearchResults<F,I>(filter,
