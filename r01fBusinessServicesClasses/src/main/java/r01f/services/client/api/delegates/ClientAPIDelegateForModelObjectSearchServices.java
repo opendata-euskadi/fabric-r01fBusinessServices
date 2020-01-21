@@ -11,15 +11,15 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import r01f.model.search.SearchFilterForModelObject;
-import r01f.model.search.SearchResultItemForModelObject;
+import r01f.model.search.SearchFilter;
+import r01f.model.search.SearchResultItem;
 import r01f.model.search.SearchResults;
 import r01f.model.search.SearchResultsProvider;
 import r01f.model.search.query.SearchResultsOrdering;
 import r01f.objectstreamer.Marshaller;
 import r01f.persistence.search.SearchResultsLoader;
 import r01f.securitycontext.SecurityContext;
-import r01f.services.interfaces.SearchServicesForModelObject;
+import r01f.services.interfaces.SearchServices;
 import r01f.util.types.collections.CollectionUtils;
 import r01f.util.types.collections.Lists;
 
@@ -29,8 +29,8 @@ import r01f.util.types.collections.Lists;
  * @param <I>
  */
 @Accessors(prefix="_")
-public abstract class ClientAPIDelegateForModelObjectSearchServices<F extends SearchFilterForModelObject,I extends SearchResultItemForModelObject<?>> 
-	 		  extends ClientAPIServiceDelegateBase<SearchServicesForModelObject<F,I>> {
+public abstract class ClientAPIDelegateForModelObjectSearchServices<F extends SearchFilter,I extends SearchResultItem> 
+	 		  extends ClientAPIServiceDelegateBase<SearchServices<F,I>> {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTANTS
@@ -48,7 +48,7 @@ public abstract class ClientAPIDelegateForModelObjectSearchServices<F extends Se
 /////////////////////////////////////////////////////////////////////////////////////////
 	public ClientAPIDelegateForModelObjectSearchServices(final Provider<SecurityContext> securityContextProvider,
 														 final Marshaller modelObjectsMarshaller,
-														 final SearchServicesForModelObject<F,I> services,
+														 final SearchServices<F,I> services,
 														 final Class<F> filterType,final Class<I> resultItemType) {
 		super(securityContextProvider,
 			  modelObjectsMarshaller,
@@ -56,10 +56,22 @@ public abstract class ClientAPIDelegateForModelObjectSearchServices<F extends Se
 		_filterType = filterType;
 		_resultItemType = resultItemType;
 	}
-
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//  COUNT
 /////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Counts the records that matches the given filter
+	 * @param filter
+	 * @return
+	 */
+	public long count(final F filter) {
+		return this.getServiceProxy()
+				   .countRecords(this.getSecurityContext(),
+						   		 filter);
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	SEARCH
+/////////////////////////////////////////////////////////////////////////////////////////	
 	/**
 	 * Searches returning only the first page results
 	 * @param filter
@@ -117,7 +129,7 @@ public abstract class ClientAPIDelegateForModelObjectSearchServices<F extends Se
 			SearchResultsLoader<F,I> loader = SearchResultsLoader.create(new SearchResultsProvider<F,I>(_filter,
 																										SEARCH_RESULT_PAGE_SIZE) {
 																				@Override
-																				public SearchResults<F, I> provide(int startPosition) {
+																				public SearchResults<F, I> provide(final int startPosition) {
 																					return ClientAPIDelegateForModelObjectSearchServicesPageStep1.this.fromItemAt(startPosition)
 																																					  .returning(this.getPageSize());
 																				}
