@@ -238,33 +238,43 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 	protected CRUDResult<M> _crudResultForSingleEntity(final SecurityContext securityContext,
 													   final OID id,
 													   final Collection<DB> dbEntities) {
+		if (CollectionUtils.hasData(dbEntities)
+		 && dbEntities.size() > 1) return CRUDResultBuilder.using(securityContext)
+											 .on(_modelObjectType)
+											 .notLoaded()
+											 	.becauseServerError("The DB is in an illegal status: there MUST exist a single db entity of {} with id {} but {} exists",
+											 						_DBEntityType,id,dbEntities.size())
+											 	.about(id).build();
+		return _crudResultForSingleEntity(securityContext,
+										  dbEntities);
+	}
+	protected CRUDResult<M> _crudResultForSingleEntity(final SecurityContext securityContext,
+													   final Collection<DB> dbEntities) {
+		if (CollectionUtils.hasData(dbEntities)
+		 && dbEntities.size() > 1) return CRUDResultBuilder.using(securityContext)
+											 .on(_modelObjectType)
+											 .notLoaded()
+											 	.becauseServerError("The DB is in an illegal status: there MUST exist a single db entity of {} but {} exists",
+											 				    	_DBEntityType,dbEntities.size())
+											 	.build();
 		// Return
 		CRUDResult<M> outResult = null;
 		if (CollectionUtils.hasData(dbEntities)) {
-			if (dbEntities.size() > 1) {
-				// there are two entities with the same id!!!
-				outResult = CRUDResultBuilder.using(securityContext)
-											 .on(_modelObjectType)
-											 .notLoaded()
-											 	.becauseServerError("There MUST be a single entity of {} with id {}",_DBEntityType,id)
-											 	.about(id).build();
-			} else {
-				// normal
-				DB dbEntity = CollectionUtils.of(dbEntities)
-											 .pickOneAndOnlyElement();
-				outResult = CRUDResultBuilder.using(securityContext)
-											 .on(_modelObjectType)
-											 .loaded()
-												.dbEntity(dbEntity)
-												.transformedToModelObjectUsing(_dbEntityIntoModelObjectTransformer);
-			}
+			// normal
+			DB dbEntity = CollectionUtils.of(dbEntities)
+										 .pickOneAndOnlyElement();	// this is now safe
+			outResult = CRUDResultBuilder.using(securityContext)
+										 .on(_modelObjectType)
+										 .loaded()
+											.dbEntity(dbEntity)
+											.transformedToModelObjectUsing(_dbEntityIntoModelObjectTransformer);
 		} else {
 			// no results
 			outResult = CRUDResultBuilder.using(securityContext)
 										 .on(_modelObjectType)
 										 .notLoaded()
 										 	.becauseClientRequestedEntityWasNOTFound()
-										 	.about(id).build();
+										 	.build();
 		}
 		return outResult;
 	}
