@@ -5,6 +5,7 @@ import java.util.Collection;
 import javax.inject.Provider;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 
 import lombok.AccessLevel;
@@ -79,8 +80,12 @@ public abstract class ClientAPIDelegateForModelObjectSearchServices<F extends Se
 	 * @return
 	 */
 	public ClientAPIDelegateForModelObjectSearchServicesPageStep1 search(final F filter,final SearchResultsOrdering... ordering) {
+		Collection<SearchResultsOrdering> theOrdering = CollectionUtils.hasData(ordering) ? FluentIterable.from(ordering)
+																								  .filter(Predicates.notNull())
+																								  .toList()
+																				  		  : null; 
 		return new ClientAPIDelegateForModelObjectSearchServicesPageStep1(filter,
-																		  CollectionUtils.hasData(ordering) ? Lists.newArrayList(ordering) : null);
+																		  theOrdering);
 	}
 	/**
 	 * Searches returning only the first page results
