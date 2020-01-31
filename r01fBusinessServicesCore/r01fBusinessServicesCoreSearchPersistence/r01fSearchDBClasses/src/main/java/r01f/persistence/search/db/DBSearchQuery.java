@@ -6,12 +6,15 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import com.google.common.collect.Lists;
+
 import r01f.locale.Language;
 import r01f.model.search.SearchFilter;
 import r01f.model.search.query.SearchResultsOrdering;
 import r01f.persistence.db.DBEntity;
 import r01f.persistence.db.config.DBModuleConfig;
 import r01f.persistence.search.QueryBase;
+import r01f.util.types.collections.CollectionUtils;
 
 /**
  * Can be used to run DB search queries 
@@ -115,6 +118,15 @@ public class DBSearchQuery<F extends SearchFilter,
 												   			   Long.class);
 		_searchQueryToJpq.setJPAQueryParameters(filter,countQry);
 		return countQry;
+	}
+	public TypedQuery<DB> getResultsQuery(final F filter) {
+		return this.getResultsQuery(filter,
+									(Collection<SearchResultsOrdering>)null);	// no ordering
+	}
+	public TypedQuery<DB> getResultsQuery(final F filter,
+										  final SearchResultsOrdering... ordering) {
+		return this.getResultsQuery(filter,
+									CollectionUtils.hasData(ordering) ? Lists.newArrayList(ordering) : null);
 	}
 	public TypedQuery<DB> getResultsQuery(final F filter,
 										  final Collection<SearchResultsOrdering> ordering) {
