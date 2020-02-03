@@ -23,7 +23,7 @@ import r01f.util.types.collections.CollectionUtils;
  */
 @Accessors(prefix="_")
 @RequiredArgsConstructor
-abstract class ServicesClientBootstrapConfigBase 
+abstract class ServicesClientBootstrapConfigBase
     implements ServicesClientBootstrapConfig {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIELDS
@@ -54,7 +54,9 @@ abstract class ServicesClientBootstrapConfigBase
 	@SuppressWarnings("unchecked")
 	public <E extends ServicesCoreModuleExposition,
 		    P extends ServicesClientProxyToCoreImpl> ServicesClientConfigForCoreModule<E,P> getConfigForCoreModule(final CoreAppCode coreAppCode,final CoreModule coreModule) {
-		if (CollectionUtils.isNullOrEmpty(_coreModuleConfigs)) throw new IllegalStateException("NO config for core modules found at client config");
+		if (CollectionUtils.isNullOrEmpty(_coreModuleConfigs)) {
+			throw new IllegalStateException("NO config for core modules found at client config");
+		}
 		ServicesClientConfigForCoreModule<?,?> outCfg = FluentIterable.from(_coreModuleConfigs)
 															.filter(new Predicate<ServicesClientConfigForCoreModule<?,?>>() {
 																			@Override
@@ -83,7 +85,7 @@ abstract class ServicesClientBootstrapConfigBase
 		return (CFG)(subCfg != null ? subCfg.getConfig() : null);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Override
 	public CharSequence debugInfo() {

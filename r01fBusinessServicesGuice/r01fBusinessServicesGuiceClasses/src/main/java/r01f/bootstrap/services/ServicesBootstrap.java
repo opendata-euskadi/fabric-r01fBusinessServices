@@ -24,7 +24,12 @@ import r01f.bootstrap.services.client.ServicesClientAPIBootstrapGuiceModuleBase;
 import r01f.bootstrap.services.client.ServicesClientBootstrapGuiceModule;
 import r01f.bootstrap.services.config.ServicesBootstrapConfig;
 import r01f.bootstrap.services.config.ServicesImpl;
+import r01f.bootstrap.services.config.client.ServicesClientConfigForCoreModule;
 import r01f.bootstrap.services.config.client.ServicesClientGuiceBootstrapConfig;
+import r01f.bootstrap.services.config.client.ServicesCoreModuleExposition;
+import r01f.bootstrap.services.config.client.ServicesCoreModuleExpositionAsBeans;
+import r01f.bootstrap.services.config.client.ServicesCoreModuleExpositionAsRESTServices;
+import r01f.bootstrap.services.config.client.ServicesCoreModuleExpositionAsServlet;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfig;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanExposed;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenRESTExposed;
@@ -65,52 +70,53 @@ public class ServicesBootstrap {
 	 */
 	Collection<Module> loadBootstrapModuleInstances() {
 		final List<Module> bootstrapModules = Lists.newArrayList();
-		
+
 		// Usually there's a single ServicesBootstrapConfig for a client api appCode, BUT is perfectly possible to
 		// bootstrap usings multiple ServicesBootstrapConfig for the SAME client api appCode or for different client api appCode
 		// ... the first step is GROUP the ServicesBootstrapConfig byt client api appCode
 		//	   (note that the ServiceInterface to CORE impl or PROXY binding Map is binded annotated by client api appCode)
 		Map<ClientApiAppCode,Collection<ServicesBootstrapConfig>> bootstrapCfgByClientApiAppCode = _bootstrapCfgsByClientApiAppCode();
-				
+
 		for (final Map.Entry<ClientApiAppCode,Collection<ServicesBootstrapConfig>> me : bootstrapCfgByClientApiAppCode.entrySet()) {
 			ClientApiAppCode clientApiAppCode = me.getKey();
 			Collection<ServicesBootstrapConfig> bootstrapCfgs = me.getValue();
-			
+
 			if (CollectionUtils.isNullOrEmpty(bootstrapCfgs)) continue;
-			
+
 			log.warn("\n\n\n\n");
 			log.warn(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 			log.warn("BOOTSTRAPING: {}",clientApiAppCode);
 			log.warn(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-			
+
 			// [1] - Consolidate the service interface matchings into a single collection
 			ServiceInterfacesMatchings serviceInterfaceMatchings = _consolidateServiceInterfaceMatchings(bootstrapCfgs);
-			
+
 			// [2] - Create the client and core matchings
 			for (final ServicesBootstrapConfig bootstrapCfg : bootstrapCfgs) {
-				
+
 				// [a] - Create a guice module for the client and for every core module
 				final Collection<Module> clientAndCoreBootstrap = _createClientAndCoreBootstrapModules(bootstrapCfg,
 																									   serviceInterfaceMatchings);
-				
+
 				// [b] - Client bindings:
 				//			- client api as singleton
 				//			- every service interface to the core impl or the proxy to the core impl
 				//		 	  this are the binding that the client will use
-				//		 	  ... so if both the core impl and the proxy to the core impl are available, 
+				//		 	  ... so if both the core impl and the proxy to the core impl are available,
 				//		          the core impl will be used
 				clientAndCoreBootstrap.add(_createClientApiAndServiceInterfaceBindingsModule(bootstrapCfg.getClientConfig().getClientApiType(),
+					                                                                         bootstrapCfg.getClientConfig().getCoreModuleConfigs(),
 																							 serviceInterfaceMatchings));
-				
+
 				// [c] - bind event bus for core events
 				Module coreEventBusBindingModule = ServicesBootstrapUtil.createCoreEventBusBindingModule(bootstrapCfg.getClientApiAppCode(),
 																										 bootstrapCfg.getCoreEventsConfig());
 				clientAndCoreBootstrap.add(coreEventBusBindingModule);
-	
+
 				if (CollectionUtils.hasData(clientAndCoreBootstrap)) bootstrapModules.addAll(clientAndCoreBootstrap);
 			}
 		}
-		
+
 		// sometimes there's NO client, this is the case of REST services bootstrapping: only the REST bootstrap module is needed
 		Collection<ServicesBootstrapConfig> bootstrapCfgsWithoutClient = FluentIterable.from(_bootstrapCfgs)
 																				.filter(new Predicate<ServicesBootstrapConfig>() {
@@ -127,7 +133,7 @@ public class ServicesBootstrap {
 				if (CollectionUtils.hasData(clientAndCodeBootstrap)) bootstrapModules.addAll(clientAndCodeBootstrap);
 			}
 		}
-		
+
 		// Add the mandatory R01F guice modules
 		bootstrapModules.add(0,new R01FBootstrapGuiceModule());
 
@@ -141,7 +147,7 @@ public class ServicesBootstrap {
 		Map<ClientApiAppCode,Collection<ServicesBootstrapConfig>> outMap = Maps.newHashMap();
 		for (final ServicesBootstrapConfig bootstrapCfg  : _bootstrapCfgs) {
 			if (bootstrapCfg.getClientConfig() == null) continue;	// no client
-			
+
 			Collection<ServicesBootstrapConfig> cfgs = outMap.get(bootstrapCfg.getClientApiAppCode());
 			if (cfgs != null) {
 				cfgs.add(bootstrapCfg);
@@ -155,7 +161,7 @@ public class ServicesBootstrap {
 		return outMap;
 	}
 	/**
-	 * Given a collection of {@link ServicesBootstrapConfig} for the SAME client api appCode, 
+	 * Given a collection of {@link ServicesBootstrapConfig} for the SAME client api appCode,
 	 * this method consolidates in a SINGLE {@link ServiceInterfacesMatchings} object all the matchings
 	 * @param bootstrapCfgs
 	 * @return
@@ -174,8 +180,8 @@ public class ServicesBootstrap {
 		return outMatchings;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
-/////////////////////////////////////////////////////////////////////////////////////////	
+//
+/////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Creates a module for the API appCode that gets installed with:
 	 * 	- A module with the client API bindings
@@ -184,6 +190,7 @@ public class ServicesBootstrap {
 	 * @param serviceInterfaceMatchings
 	 * @return
 	 */
+	@SuppressWarnings("static-method")
 	private Collection<Module> _createClientAndCoreBootstrapModules(final ServicesBootstrapConfig bootstrapCfg,
 																	final ServiceInterfacesMatchings serviceInterfaceMatchings) {
 		// contains all the guice modules to be bootstraped: client & core
@@ -192,7 +199,7 @@ public class ServicesBootstrap {
 		// [1] - Add the CLIENT bootstrap guice module
 		if (bootstrapCfg.getClientConfig() != null) {
 			ServicesClientGuiceBootstrapConfig clientBootstrapCfg = bootstrapCfg.getClientConfigAs(ServicesClientGuiceBootstrapConfig.class);
-			
+
 			// a) additional client bootstrap modules>
 			if (CollectionUtils.hasData(clientBootstrapCfg.getMoreClientBootstrapGuiceModules())) {
 				for (final Module mod : clientBootstrapCfg.getMoreClientBootstrapGuiceModules()) {
@@ -205,95 +212,125 @@ public class ServicesBootstrap {
 		} else {
 			log.warn("NO client will be bootstrapped!");
 		}
-		
+
 		// [2] - Add a module for each CORE appCode / module
 		if (CollectionUtils.isNullOrEmpty(bootstrapCfg.getCoreModulesConfig())) {
 			log.warn("NO core modules will be bootstrapped!");
 			return bootstrapModuleInstances;	// no cores
 		}
-		
+
 		for (final ServicesCoreBootstrapConfig coreModuleCfg : bootstrapCfg.getCoreModulesConfig()) {
 			// Each core bootstrap modules (the ones implementing BeanImplementedServicesCoreBootstrapGuiceModuleBase) for every core appCode / module
 			// SHOULD reside in it's own private guice module in order to avoid bindings collisions
 			// (ie JPA's guice persist modules MUST reside in separate private guice modules -see https://github.com/google/guice/wiki/GuicePersistMultiModules-)
-			// ... BUT the REST or Servlet core bootstrap modules (the ones extending RESTImplementedServicesCoreBootstrapGuiceModuleBase or ServletImplementedServicesCoreBootstrapGuiceModuleBase) 
+			// ... BUT the REST or Servlet core bootstrap modules (the ones extending RESTImplementedServicesCoreBootstrapGuiceModuleBase or ServletImplementedServicesCoreBootstrapGuiceModuleBase)
 			//     MUST be binded here in order to let the world see (specially the Guice Servlet filter) see the REST resources bindings
 			ServicesCoreGuiceBootstrapConfig guiceCoreModuleCfg = (ServicesCoreGuiceBootstrapConfig)coreModuleCfg;
-			
+
 			if (guiceCoreModuleCfg.getCoreBootstrapGuiceModuleType() == null) {
 				log.error("Could NOT bootstrap core module {}/{} since the guice module type is null",
 						  coreModuleCfg.getCoreAppCode(),coreModuleCfg.getCoreModule());
 				continue;
 			}
 
-			// a) find the service core impls that will be binded as singletons 
+			// a) find the service core impls that will be binded as singletons
 			//    (only for bean implemented core modules)
 			Collection<ServiceInterfaceMatch> coreImplMatchings = coreModuleCfg.getImplType() == ServicesImpl.Bean
 																		? serviceInterfaceMatchings != null ? serviceInterfaceMatchings.getServiceInterfacesCoreImplMatchingsFor(coreModuleCfg.getCoreAppCode(),
 																																												 coreModuleCfg.getCoreModule())
 																											: null
 																	    : null;
-			// b) create the guice module that bootstraps the core	
+			// b) create the guice module that bootstraps the core
 			ServicesCoreBootstrapGuiceModule coreBootstrapModule = _createCoreGuiceModuleInstance(guiceCoreModuleCfg);
-			
+
 			// c) create a private guice module that will:
-			Module coreGuiceModule = null;							
+			Module coreGuiceModule = null;
 			if (guiceCoreModuleCfg.isIsolate()) {
 				if (bootstrapCfg.getClientConfig() == null) throw new IllegalStateException("Only modules with client can be isolated!");
 				// At the private module:
 				//	i - bind every service core impl as a singleton
 				//	ii- bootstrap the core
 				coreGuiceModule = new ServicesCoreBootstrapPrivateGuiceModule(coreImplMatchings,	// core impls that will be binded as singletons and exposed
-																			  guiceCoreModuleCfg,	
+																			  guiceCoreModuleCfg,
 																			  coreBootstrapModule);	// the module to be isolated
 			} else {
 				// not isolated core module (ie: REST or Servlet modules)
-				// they usually DO NOT contain service core impls so there's no service core impl to bind 
+				// they usually DO NOT contain service core impls so there's no service core impl to bind
 				// ... just bootstrap the module
-				coreGuiceModule = coreBootstrapModule;	
+				coreGuiceModule = coreBootstrapModule;
 			}
 			bootstrapModuleInstances.add(coreGuiceModule);
 		}
-		
+
 		// [6] - return
 		return bootstrapModuleInstances;
 	}
-	private Module _createClientApiAndServiceInterfaceBindingsModule(final Class<? extends ClientAPI> clientApiType,
-																	 final ServiceInterfacesMatchings serviceInterfaceMatchings) {
+	private static Module _createClientApiAndServiceInterfaceBindingsModule(final Class<? extends ClientAPI> clientApiType,
+																			final Collection<ServicesClientConfigForCoreModule<?,?>> serviceClientsConfig,
+																			final ServiceInterfacesMatchings serviceInterfaceMatchings) {
 		return new Module() {
-					@Override
+					@Override @SuppressWarnings("synthetic-access")
 					public void configure(final Binder binder) {
 						// [0] - Bind the client api as a singleton
 						if (clientApiType != null) binder.bind(clientApiType)
 							  							 .in(Singleton.class);
-						
-						// [1] - Bind client proxies as singletons
+
+						// [1] - Bind client configs if needed
+						if (CollectionUtils.hasData(serviceClientsConfig)){
+							ServicesCoreModuleExpositionAsBeans servicesCoreModuleExpositionAsBeans
+			 						=  _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsBeans.class, serviceClientsConfig);
+							if ( servicesCoreModuleExpositionAsBeans != null) {
+								binder.bind(ServicesCoreModuleExpositionAsBeans.class)
+								  .toInstance(servicesCoreModuleExpositionAsBeans);
+								log.warn("... binded clientTocoreExposionConfigAsBeans > {}",
+																							servicesCoreModuleExpositionAsBeans.debugInfo());
+							}
+							ServicesCoreModuleExpositionAsRESTServices servicesCoreModuleExpositionAsRESTServices
+							 		=  _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsRESTServices.class, serviceClientsConfig);
+							if ( servicesCoreModuleExpositionAsRESTServices != null) {
+								binder.bind(ServicesCoreModuleExpositionAsRESTServices.class)
+								  .toInstance(servicesCoreModuleExpositionAsRESTServices);
+								log.warn("... binded clientTocoreExposionConfigAsREST > {}",
+																							servicesCoreModuleExpositionAsRESTServices.debugInfo());
+							}
+							ServicesCoreModuleExpositionAsServlet servicesCoreModuleExpositionAsServlet
+					 			=  _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsServlet.class, serviceClientsConfig);
+							if ( servicesCoreModuleExpositionAsServlet != null) {
+								binder.bind(ServicesCoreModuleExpositionAsServlet.class)
+								  .toInstance(servicesCoreModuleExpositionAsServlet);
+								log.warn("... binded clientTocoreExposionConfigAsServlet > {}!",
+																								servicesCoreModuleExpositionAsServlet.debugInfo());
+							}
+						}
+
+						// [2] - Bind client proxies as singletons
 						// 		 BEWARE CORE impl was binded as singletons at the private module (see ServicesCoreBootstrapPrivateGuiceModule)
 						if (serviceInterfaceMatchings.hasData()) {
-							
+
 							for (final ServiceInterfaceMatch ifaceMatch : serviceInterfaceMatchings) {
 								Class<? extends ServiceInterface> iface = ifaceMatch.getServiceInterfaceType();
 								Class<? extends ServiceInterface> implOrProxy = ifaceMatch.getProxyOrImplMatchingType();
-								
+
 								if (ifaceMatch.isProxy()
 								 && !serviceInterfaceMatchings.existsCoreImplMatchingFor(ifaceMatch.getCoreAppCode(),ifaceMatch.getCoreModule(),
 										 											     ifaceMatch.getServiceInterfaceType())) {
 									// a proxy must NOT be binded if there's another matching for the core bean impl
+
 									binder.bind(_captureSubType(implOrProxy))
 										  .in(Singleton.class);
 								} else if (ifaceMatch.isCoreImpl()) {
 									// BEWARE! - the core impls usually are binded as singletons in the private module (see ServicesCoreBootstrapPrivateGuiceModule) and exposed to the outer world
 								}
-								
+
 								// b) bind the service interface to the proxy or impl
 								binder.bind(_captureType(iface))
 									  .to(_captureSubType(implOrProxy));
 							}
 						}
-						
+
 						// [3] - Bind the service interface types to bean impl or proxy types as:
 						//		 [a] - A MapBinder that binds the service interface type to the bean impl or proxy instance
-						//			   This MapBinder is used at the API's proxy aggregator to inject the correct service interface bean impl or proxy 
+						//			   This MapBinder is used at the API's proxy aggregator to inject the correct service interface bean impl or proxy
 						//			   (see ServicesClientProxyLazyLoaderGuiceMethodInterceptor)
 						//		 [b] - A direct bind of the service interface type to the bean impl or proxy type
 						Named mapBinderNamed = Names.named(serviceInterfaceMatchings.getClientApiAppCode().asString());
@@ -305,7 +342,7 @@ public class ServicesBootstrap {
 							for (final ServiceInterfaceMatch ifaceMatch : serviceInterfaceMatchings) {
 								Class<? extends ServiceInterface> iface = ifaceMatch.getServiceInterfaceType();
 								Class<? extends ServiceInterface> implOrProxy = ifaceMatch.getProxyOrImplMatchingType();
-								
+
 								// a an interface to impl / proxy binding to the Map used at ServicesClientProxyLazyLoaderGuiceMethodInterceptor
 								serviceIfaceTypeToImplOrProxyBinder.addBinding(_captureType(iface))
 												 			 	   .to(_captureSubType(implOrProxy));
@@ -322,6 +359,30 @@ public class ServicesBootstrap {
 	private static <S extends ServiceInterface> Class<? extends S> _captureSubType(final Class<? extends ServiceInterface> type) {
 		return (Class<? extends S>)type;
 	}
+
+	@SuppressWarnings("unchecked")
+	private static <E extends ServicesCoreModuleExposition > E _clientToCoreExpositionConfig( final  Class<E> expositionConfigType,
+												                                              final  Collection<ServicesClientConfigForCoreModule<?,?>> serviceClientsConfig ) {
+
+		 Collection<ServicesClientConfigForCoreModule<?,?>> serviceClientsConfigOfType
+				 = FluentIterable.from(serviceClientsConfig)
+				               .filter(new Predicate<ServicesClientConfigForCoreModule<?,?>>(){
+														@Override
+														public boolean apply(final ServicesClientConfigForCoreModule<?, ?>  config) {
+															ServicesCoreModuleExposition servicesCoreModuleExposition =  config.getCoreExpositionConfig();
+															return expositionConfigType.isInstance(servicesCoreModuleExposition);
+														}}
+				               ).toList();
+
+         if ( CollectionUtils.isNullOrEmpty(serviceClientsConfigOfType)) {
+        	 return null;
+         } else if ( serviceClientsConfigOfType.size() > 1 ) {
+			 throw new IllegalStateException(".. Cannot have more than one configuration for just a exposition type {} "+ expositionConfigType);
+		 } else {
+			 ServicesClientConfigForCoreModule<?,?> clientConfigForCoreModule = CollectionUtils.firstOf(serviceClientsConfigOfType);
+			 return (E) clientConfigForCoreModule.getCoreExpositionConfig();
+		 }
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  BOOTSTRAP GUICE MODULES CREATION
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -332,6 +393,7 @@ public class ServicesBootstrap {
 	 */
 	@SuppressWarnings("unchecked")
 	private static <G extends ServicesClientBootstrapGuiceModule> G _createClientGuiceModuleInstance(final ServicesClientGuiceBootstrapConfig servicesClientBootstrapCfg) {
+
 		try {
 			G outMod =  ReflectionUtils.createInstanceOf((Class<G>)servicesClientBootstrapCfg.getClientBootstrapGuiceModuleType(),
 												    	 new Class<?>[] { ServicesClientGuiceBootstrapConfig.class },
@@ -351,6 +413,7 @@ public class ServicesBootstrap {
 	 */
 	@SuppressWarnings("unchecked")
 	private static <G extends ServicesCoreBootstrapGuiceModule> G _createCoreGuiceModuleInstance(final ServicesCoreGuiceBootstrapConfig servicesCoreBootstrapCfg) {
+
 		try {
 			// find the constructor arg type
 			Class<?> cfgType = null;

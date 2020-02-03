@@ -97,8 +97,8 @@ public class ServiceMatcher {
 															}
 											  		  })
 											  .toSet();
-		
-	
+
+
 		// [2] - checkings
 		if (CollectionUtils.hasData(serviceInterfaceTypes)) {
 			for (Class<? extends ServiceInterface> serviceInterfaceType : serviceInterfaceTypes) {
@@ -125,40 +125,40 @@ public class ServiceMatcher {
 	 * @param servicesBootstrapCfg
 	 * @return
 	 */
-	public ServiceInterfacesMatchings serviceInterfacesToImplOrProxyMatchings(final ServicesBootstrapConfig servicesBootstrapCfg) {		
+	public ServiceInterfacesMatchings serviceInterfacesToImplOrProxyMatchings(final ServicesBootstrapConfig servicesBootstrapCfg) {
 		ServicesClientBootstrapConfig clientBootstrapCfg = servicesBootstrapCfg.getClientConfig();
-		
+
 		if (clientBootstrapCfg.getServiceInterfacesBaseType() == null) {
 			log.warn("service interfaces will NOT be searched!");
 			return ServiceInterfacesMatchings.createEmpty(clientBootstrapCfg.getClientApiAppCode());
 		}
-		
+
 		log.warn("\n####################################################################################################");
 		log.warn("[START]-Matching service interfaces to proxy or impl at {} core modules",
 				 servicesBootstrapCfg.getCoreModulesConfig() != null ? servicesBootstrapCfg.getCoreModulesConfig().size() : 0);
-		
+
 		// [1] - Find service interfaces
 		log.warn("\t- service interface MUST extend {}",
 				 clientBootstrapCfg.getServiceInterfacesBaseType());
 		Set<Class<? extends ServiceInterface>> serviceInterfaceTypes = this.findServiceInterfaceTypes(clientBootstrapCfg.getServiceInterfacesBaseType());
-		
+
 		// [2] - Try to find matching for each service interface at the core modules
 		ServiceInterfacesMatchings outMatchings = ServiceInterfacesMatchings.create(clientBootstrapCfg.getClientApiAppCode(),
 																					serviceInterfaceTypes);
-		
-		// [2.1] - CORE impl matchings		
+
+		// [2.1] - CORE impl matchings
 		log.warn("....................................................................................................");
 		if (CollectionUtils.hasData(servicesBootstrapCfg.getCoreModulesConfig())) {
 			for (final ServicesCoreBootstrapConfig coreModuleCfg : servicesBootstrapCfg.getCoreModulesConfig()) {
 				if (coreModuleCfg.getImplType() != ServicesImpl.Bean) continue;		// skip no bean core modules
-				
+
 				Class<? extends CoreService> coreServiceImplsBaseType = coreModuleCfg.as(ServicesCoreBootstrapConfigWhenBeanExposed.class)
 							 			   											 .getCoreServiceImplBaseType();
-				
+
 				log.warn("[START]-Matching service interfaces to CORE impl for {}/{}: core bean service interface implementations MUST extend {}",
 						 coreModuleCfg.getCoreAppCode(),coreModuleCfg.getCoreModule(),
 						 coreServiceImplsBaseType);
-	
+
 				Map<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> serviceIfaceTypeToCoreImplType = null;
 				serviceIfaceTypeToCoreImplType = this.findServiceInterfaceMatchings(serviceInterfaceTypes,
 													  								   null,	// no proxy
@@ -167,7 +167,7 @@ public class ServiceMatcher {
 						 coreModuleCfg.getCoreAppCode(),coreModuleCfg.getCoreModule(),
 						 CollectionUtils.hasData(serviceIfaceTypeToCoreImplType) ? serviceIfaceTypeToCoreImplType.size() : 0,
 						 coreServiceImplsBaseType);
-				
+
 				if (CollectionUtils.hasData(serviceIfaceTypeToCoreImplType)) {
 					for (Map.Entry<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> matchEntry : serviceIfaceTypeToCoreImplType.entrySet()) {
 						ServiceInterfaceMatch match = ServiceInterfaceMatchBuilder.serviceInterface(matchEntry.getKey())
@@ -180,25 +180,25 @@ public class ServiceMatcher {
 		} else {
 			log.warn(".... No CORE Module Config provided at bootstrapping !! ..so... try to find JUST any proxy implementation.....  ");
 		}
-	
+
 		// [2.2] - client proxy to CORE impl matchings
-		for (final ServicesClientConfigForCoreModule<?,?> clientCfgForCore : clientBootstrapCfg.getCoreModuleConfigs()) {           
+		for (final ServicesClientConfigForCoreModule<?,?> clientCfgForCore : clientBootstrapCfg.getCoreModuleConfigs()) {
 			if (clientCfgForCore.getCoreImplType() == ServicesImpl.Bean) continue;		// skip bean cores (no client proxy is used)
-			
+
 			Class<? extends ServiceProxyImpl> serviceProxyImplsBaseType = clientCfgForCore.getServiceProxyImplsBaseType();
 			log.warn("[START]-Matching service interfaces to CLIENT PROXY TO CORE impl for {}/{}: client proxy to CORE impls MUST extend {}",
 					 clientCfgForCore.getCoreAppCode(),clientCfgForCore.getCoreModule(),
 					 serviceProxyImplsBaseType);
-			
+
 			Map<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> serviceIfaceTypeToProxyToCoreImplType = null;
 		    serviceIfaceTypeToProxyToCoreImplType = this.findServiceInterfaceMatchings(serviceInterfaceTypes,
-												  								       serviceProxyImplsBaseType,	
+												  								       serviceProxyImplsBaseType,
 												  								       null);	// no bean impl
 			log.warn("[END]-Matching service interfaces to CLIENT PROXY TO CORE impl for {}/{}: found {} matchings implementing {}",
 					 clientCfgForCore.getCoreAppCode(),clientCfgForCore.getCoreModule(),
 					 CollectionUtils.hasData(serviceIfaceTypeToProxyToCoreImplType) ? serviceIfaceTypeToProxyToCoreImplType.size() : 0,
 					 serviceProxyImplsBaseType);
-			
+
 			if (CollectionUtils.hasData(serviceIfaceTypeToProxyToCoreImplType)) {
 				for (Map.Entry<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> matchEntry : serviceIfaceTypeToProxyToCoreImplType.entrySet()) {
 					ServiceInterfaceMatch match = ServiceInterfaceMatchBuilder.serviceInterface(matchEntry.getKey())
@@ -209,16 +209,16 @@ public class ServiceMatcher {
 			}
 		}
 		log.warn("....................................................................................................");
-		
+
 		log.warn("\n[Service interface matchings]:\n{}",
 				 outMatchings.debugInfo());
 		log.warn("\n####################################################################################################\n\n\n\n");
-		
+
 		// [3] - Ensure there's a matching for every service inteface
 		outMatchings.checkMatchingsOrThrowfor(serviceInterfaceTypes);
-		
+
 		return outMatchings;
-	}	
+	}
 	/**
 	 * First it finds the {@link ServiceInterface}-extending interfaces and then tries to find
 	 * the best {@link ServiceInterface} matching: if a {@link CoreService} impl is available it matches this one,
@@ -279,7 +279,7 @@ public class ServiceMatcher {
 					  coreServiceBaseType);
 			if (serviceInterfacesToCoreImplMatchs != null) for (Map.Entry<Class<? extends ServiceInterface>,Class<? extends CoreService>> me : serviceInterfacesToCoreImplMatchs.entrySet()) log.debug("\t{} > {}",me.getKey(),me.getValue());
 		}
-		
+
 		// [3] - mix both
 		log.warn("[3]: Match service interface with proxy or core impl");
 		Map<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> outMatchings = Maps.newHashMapWithExpectedSize(serviceInterfaceTypes.size());
