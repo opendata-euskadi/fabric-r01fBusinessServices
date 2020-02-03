@@ -94,6 +94,9 @@ public class ServicesBootstrap {
 			// [2] - Create the client and core matchings
 			for (final ServicesBootstrapConfig bootstrapCfg : bootstrapCfgs) {
 
+				/*System.out.println(" ======================================================== ");
+				System.out.println(" bootstrapCfg "+bootstrapCfg.debugInfo()) ;
+				System.out.println(" ======================================================== ");*/
 				// [a] - Create a guice module for the client and for every core module
 				final Collection<Module> clientAndCoreBootstrap = _createClientAndCoreBootstrapModules(bootstrapCfg,
 																									   serviceInterfaceMatchings);
@@ -276,10 +279,13 @@ public class ServicesBootstrap {
 							  							 .in(Singleton.class);
 
 						// [1] - Bind client configs if needed
-						if (CollectionUtils.hasData(serviceClientsConfig)){
+						/*if (CollectionUtils.hasData(serviceClientsConfig)){
 							ServicesCoreModuleExpositionAsBeans servicesCoreModuleExpositionAsBeans
 			 						=  _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsBeans.class, serviceClientsConfig);
+
 							if ( servicesCoreModuleExpositionAsBeans != null) {
+								log.warn(" .... servicesCoreModuleExpositionAsBeans {}",
+										servicesCoreModuleExpositionAsBeans.debugInfo());
 								binder.bind(ServicesCoreModuleExpositionAsBeans.class)
 								  .toInstance(servicesCoreModuleExpositionAsBeans);
 								log.warn("... binded clientTocoreExposionConfigAsBeans > {}",
@@ -301,7 +307,7 @@ public class ServicesBootstrap {
 								log.warn("... binded clientTocoreExposionConfigAsServlet > {}!",
 																								servicesCoreModuleExpositionAsServlet.debugInfo());
 							}
-						}
+						}*/
 
 						// [2] - Bind client proxies as singletons
 						// 		 BEWARE CORE impl was binded as singletons at the private module (see ServicesCoreBootstrapPrivateGuiceModule)
@@ -326,6 +332,29 @@ public class ServicesBootstrap {
 								binder.bind(_captureType(iface))
 									  .to(_captureSubType(implOrProxy));
 							}
+
+							/// Module Exposition Config of Proxy Classes (REST / SERVLET)
+							if (CollectionUtils.hasData(serviceClientsConfig)){
+								ServicesCoreModuleExpositionAsRESTServices servicesCoreModuleExpositionAsRESTServices
+								 		=  _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsRESTServices.class, serviceClientsConfig);
+								if ( servicesCoreModuleExpositionAsRESTServices != null) {
+									binder.bind(ServicesCoreModuleExpositionAsRESTServices.class)
+											.toInstance(servicesCoreModuleExpositionAsRESTServices);
+									log.warn("... binded clientTocoreExposionConfigAsREST > {}",
+																								servicesCoreModuleExpositionAsRESTServices.debugInfo());
+								}
+								ServicesCoreModuleExpositionAsServlet servicesCoreModuleExpositionAsServlet
+						 			=  _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsServlet.class, serviceClientsConfig);
+								if ( servicesCoreModuleExpositionAsServlet != null) {
+									binder.bind(ServicesCoreModuleExpositionAsServlet.class)
+											.toInstance(servicesCoreModuleExpositionAsServlet);
+									log.warn("... binded clientTocoreExposionConfigAsServlet > {}!",
+																									servicesCoreModuleExpositionAsServlet.debugInfo());
+								}
+							}
+
+
+
 						}
 
 						// [3] - Bind the service interface types to bean impl or proxy types as:
