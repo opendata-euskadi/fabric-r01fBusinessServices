@@ -3,7 +3,6 @@ package r01f.bootstrap.persistence;
 import java.util.Properties;
 
 import javax.inject.Inject;
-import javax.persistence.Persistence;
 
 import com.google.inject.Binder;
 import com.google.inject.Key;
@@ -45,7 +44,7 @@ public abstract class DBGuiceModuleBase
 	@Override
 	public void configure(final Binder binder) {
 		Binder theBinder = binder;
-		
+
 		// bind the config
 		binder.bind(DBModuleConfig.class)
 			  .toInstance(_dbConfig);
@@ -65,7 +64,7 @@ public abstract class DBGuiceModuleBase
 		// Create the module
 		String jpaModuleName = _persistenceUnitName(_dbConfig.getUnitType());
 		JpaPersistModule jpaModule = new JpaPersistModule(jpaModuleName);	// for an alternative way see http://stackoverflow.com/questions/18101488/does-guice-persist-provide-transaction-scoped-or-application-managed-entitymanag
-		
+
 		jpaModule.properties(props);
 		theBinder.install(jpaModule);
 
@@ -118,7 +117,7 @@ public abstract class DBGuiceModuleBase
 		@Inject
 		public JPAPersistenceServiceControl(final PersistService service) {
 			_service = service;
-			
+
 		}
 		@Override
 		public void start() {
