@@ -99,48 +99,63 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 		_dbEntityType = dbEntityType;
 		_dbModuleConfig = dbModuleConfig;
 		_entityManager = entityManager;
-		_translatesFieldToDBEntityFieldFactory = indexableFieldToDBEntityFieldTranslatorFactory != null
-															? indexableFieldToDBEntityFieldTranslatorFactory
-															: new FactoryFrom<F,TranslatesIndexableFieldIDToDBEntityField>() {
-																	@Override
-																	public TranslatesIndexableFieldIDToDBEntityField from(final F filter) {
-																		return new IndexableFieldIDToDBEntityFieldTranslatorByDefault<F>(filter);	// default translator
-																	}
-															 };
-		_translatesFilterClauseToJpqlPredicateFactory = filterClauseToJpqlPredicateFactory != null 
-															? filterClauseToJpqlPredicateFactory
-															: new FactoryFrom<F,TranslatesSearchFilterClauseToJPQLWherePredicate>() {	// default clause to jpql where predicate factory
-																	@Override
-																	public SearchFilterClauseToJPQLWherePredicate from(final F filter) {
-																		return new SearchFilterClauseToJPQLWherePredicate(filter);
-																	}
-														     };
-		_setsJpqlWherePredicateParamsFromFilterClauseValueFactory = jpqlWherePredicateParamsFromFilterClauseValueFactory != null
-																		? jpqlWherePredicateParamsFromFilterClauseValueFactory
-																		: new FactoryFrom<Query,SetsJPQLWherePredicateParamFromSearchFilterClauseValue>() {
-																				@Override
-																				public SetsJPQLWherePredicateParamFromSearchFilterClauseValue from(final Query query) {
-																					return new SearchFilterClauseValueToJPQLWherePredicateParam(query);
-																				}
-																		  };
+		_translatesFieldToDBEntityFieldFactory = indexableFieldToDBEntityFieldTranslatorFactory;
+		_translatesFilterClauseToJpqlPredicateFactory = filterClauseToJpqlPredicateFactory;
+		_setsJpqlWherePredicateParamsFromFilterClauseValueFactory = jpqlWherePredicateParamsFromFilterClauseValueFactory;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	                                                                          
 /////////////////////////////////////////////////////////////////////////////////////////
-	private TranslatesIndexableFieldIDToDBEntityField _createTranslatesIndexableFieldIDToDBEntityField(final F filter) {
+	protected TranslatesIndexableFieldIDToDBEntityField _createTranslatesIndexableFieldIDToDBEntityField(final F filter) {
 		return _translatesFieldToDBEntityFieldFactory != null
-						? _translatesFieldToDBEntityFieldFactory.from(filter)
-						: new IndexableFieldIDToDBEntityFieldTranslatorByDefault<F>(filter);		// default
+						? _createTranslatesIndexableFieldIDToDBEntityField(_translatesFieldToDBEntityFieldFactory,
+																		   filter)
+						: _createTranslatesIndexableFieldIDToDBEntityField(new FactoryFrom<F,TranslatesIndexableFieldIDToDBEntityField>() {
+																					@Override
+																					public TranslatesIndexableFieldIDToDBEntityField from(final F filter) {
+																						return new IndexableFieldIDToDBEntityFieldTranslatorByDefault<F>(filter);	// default translator
+																					}
+																			},
+																		    filter);
 	}
-	private TranslatesSearchFilterClauseToJPQLWherePredicate _createTranslatesSearchFilterClauseToJPQLWherePredicate(final F filter) {
-		return _translatesFilterClauseToJpqlPredicateFactory != null
-						? _translatesFilterClauseToJpqlPredicateFactory.from(filter)
-						: new SearchFilterClauseToJPQLWherePredicate(filter);
+	protected TranslatesIndexableFieldIDToDBEntityField _createTranslatesIndexableFieldIDToDBEntityField(final FactoryFrom<F,TranslatesIndexableFieldIDToDBEntityField> translatesFieldToDBEntityFieldFactory,
+																										 final F filter) {
+		if (translatesFieldToDBEntityFieldFactory == null) throw new IllegalArgumentException();
+		return translatesFieldToDBEntityFieldFactory.from(filter);
 	}
-	private SetsJPQLWherePredicateParamFromSearchFilterClauseValue _createSetsJPQLWherePredicateParamFromSearchFilterClauseValue(final Query qry) {
+	protected TranslatesSearchFilterClauseToJPQLWherePredicate _createTranslatesSearchFilterClauseToJPQLWherePredicate(final F filter) {
+		return _translatesFilterClauseToJpqlPredicateFactory != null 
+					? _createTranslatesSearchFilterClauseToJPQLWherePredicate(_translatesFilterClauseToJpqlPredicateFactory,
+																			  filter)
+					: _createTranslatesSearchFilterClauseToJPQLWherePredicate(new FactoryFrom<F,TranslatesSearchFilterClauseToJPQLWherePredicate>() {	// default clause to jpql where predicate factory
+																					@Override
+																					public SearchFilterClauseToJPQLWherePredicate from(final F filter) {
+																						return new SearchFilterClauseToJPQLWherePredicate(filter);
+																					}
+																		      },
+																			  filter);
+	}
+	protected TranslatesSearchFilterClauseToJPQLWherePredicate _createTranslatesSearchFilterClauseToJPQLWherePredicate(final FactoryFrom<F,TranslatesSearchFilterClauseToJPQLWherePredicate> translatesFilterClauseToJpqlPredicateFactory,
+																													   final F filter) {
+		if (translatesFilterClauseToJpqlPredicateFactory == null) throw new IllegalArgumentException();
+		return translatesFilterClauseToJpqlPredicateFactory.from(filter);
+	}
+	protected SetsJPQLWherePredicateParamFromSearchFilterClauseValue _createSetsJPQLWherePredicateParamFromSearchFilterClauseValue(final Query qry) {
 		return _setsJpqlWherePredicateParamsFromFilterClauseValueFactory != null
-						? _setsJpqlWherePredicateParamsFromFilterClauseValueFactory.from(qry)
-						: new SearchFilterClauseValueToJPQLWherePredicateParam(qry);				// default
+						? _createSetsJPQLWherePredicateParamFromSearchFilterClauseValue(_setsJpqlWherePredicateParamsFromFilterClauseValueFactory,
+																						qry)
+						: _createSetsJPQLWherePredicateParamFromSearchFilterClauseValue(new FactoryFrom<Query,SetsJPQLWherePredicateParamFromSearchFilterClauseValue>() {
+																								@Override
+																								public SetsJPQLWherePredicateParamFromSearchFilterClauseValue from(final Query query) {
+																									return new SearchFilterClauseValueToJPQLWherePredicateParam(query);
+																								}
+																						},	// default
+																						qry);
+	}
+	protected SetsJPQLWherePredicateParamFromSearchFilterClauseValue _createSetsJPQLWherePredicateParamFromSearchFilterClauseValue(final FactoryFrom<Query,SetsJPQLWherePredicateParamFromSearchFilterClauseValue> setsJpqlWherePredicateParamsFromFilterClauseValueFactory,
+																																   final Query qry) {
+		if (setsJpqlWherePredicateParamsFromFilterClauseValueFactory == null) throw new IllegalArgumentException();
+		return setsJpqlWherePredicateParamsFromFilterClauseValueFactory.from(qry);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  META-DATA TO DB COLUMN TRANSLATION
