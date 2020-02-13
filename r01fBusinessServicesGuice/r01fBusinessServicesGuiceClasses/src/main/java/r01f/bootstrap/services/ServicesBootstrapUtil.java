@@ -88,7 +88,9 @@ public class ServicesBootstrapUtil {
 			// all bootsrap modules shares the same client api app code
 			ClientApiAppCode clientApiAppCode = null;
 			for (ServicesBootstrapConfig bootCfg : _servicesBootstrapCfg) {
-				if (clientApiAppCode == null) {
+				if (bootCfg.getCoreModulesConfig() == null) {
+					continue;
+				} else if (clientApiAppCode == null) {
 					clientApiAppCode = bootCfg.getClientApiAppCode();
 				} else if (clientApiAppCode.isNOT(bootCfg.getClientApiAppCode())) {
 					throw new IllegalArgumentException("In order to use a common events executor, all services bootstrap MUST belong to the SAME clienta api appCode!");
