@@ -10,7 +10,6 @@ import javax.persistence.Query;
 import com.google.common.collect.Lists;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import r01f.guids.OID;
@@ -24,6 +23,7 @@ import r01f.model.search.query.BooleanQueryClause.QueryClauseOccur;
 import r01f.model.search.query.ContainedInQueryClause;
 import r01f.model.search.query.ContainsTextQueryClause;
 import r01f.model.search.query.EqualsQueryClause;
+import r01f.model.search.query.NullQueryClause;
 import r01f.model.search.query.QueryClause;
 import r01f.model.search.query.RangeQueryClause;
 import r01f.model.search.query.SearchResultsOrdering;
@@ -54,7 +54,7 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 	protected FactoryFrom<F,TranslatesSearchFilterClauseToJPQLWherePredicate> _translatesFilterClauseToJpqlPredicateFactory;
 	protected FactoryFrom<Query,SetsJPQLWherePredicateParamFromSearchFilterClauseValue> _setsJpqlWherePredicateParamsFromFilterClauseValueFactory;
 	
-	@Setter protected String _entityAlias = "entity";
+	protected String _entityAlias = "entity";
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -351,6 +351,9 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 			else if (clause instanceof EqualsQueryClause<?>) {
 				outJPQL = this.wherePredicateFrom((EqualsQueryClause<?>)clause);
 			} 
+			else if (clause instanceof NullQueryClause) {
+				outJPQL = this.wherePredicateFrom((NullQueryClause)clause);
+			} 
 			else if (clause instanceof ContainsTextQueryClause) {
 				outJPQL = this.wherePredicateFrom((ContainsTextQueryClause)clause);
 			} 
@@ -462,13 +465,13 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 			// TODO mind the bound types... now only CLOSED (inclusive) bounds are being having into account 
 			if (rangeQry.getRange().hasLowerBound() && rangeQry.getRange().hasUpperBound()) {
 				outJPQL = Strings.customized(_entityAlias+".{} BETWEEN :{}Start AND :{}End",		// SQL between is INCLUSIVE (>= lower and <= lower)
-								 			 dbFieldId, rangeQry.getFieldId(),rangeQry.getFieldId());
+											 dbFieldId, rangeQry.getFieldId(),rangeQry.getFieldId());
 			} else if (rangeQry.getRange().hasLowerBound()) {
 				outJPQL = Strings.customized(_entityAlias+".{} >= :{}",
-								 			 dbFieldId, rangeQry.getFieldId());
+											 dbFieldId, rangeQry.getFieldId());
 			} else if (rangeQry.getRange().hasUpperBound()) {
 				outJPQL = Strings.customized(_entityAlias+".{} <= :{}",
-								 			 dbFieldId, rangeQry.getFieldId());
+											 dbFieldId, rangeQry.getFieldId());
 			}
 			return outJPQL;
 		}
@@ -476,7 +479,19 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 		public String wherePredicateFrom(final ContainedInQueryClause<?> containedInQry) {
 			String dbFieldId = _translatesFieldToDBEntityField.dbEntityFieldNameFor(containedInQry.getFieldId());
 			String outJPQL = Strings.customized(_entityAlias+".{} IN :{}",
-								    			dbFieldId,containedInQry.getFieldId());
+												dbFieldId,containedInQry.getFieldId());
+			return outJPQL;
+		}
+
+		@Override
+		public String wherePredicateFrom(final NullQueryClause nullQry) {
+			String dbFieldId = _translatesFieldToDBEntityField.dbEntityFieldNameFor(nullQry.getFieldId());
+			String nullStr = "";
+			if (!nullQry.isNull()) {
+				nullStr = "NOT";
+			}
+			String outJPQL = Strings.customized(_entityAlias+".{} IS {} NULL",
+												dbFieldId,nullStr);
 			return outJPQL;
 		}
 	}
@@ -565,6 +580,7 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 		
 		protected final Query _qry;
 		
+		@SuppressWarnings("rawtypes")
 		@Override
 		public void setWherePredicateParamFor(final EqualsQueryClause<?> eqClause,
 											  final String dbFieldId) {
