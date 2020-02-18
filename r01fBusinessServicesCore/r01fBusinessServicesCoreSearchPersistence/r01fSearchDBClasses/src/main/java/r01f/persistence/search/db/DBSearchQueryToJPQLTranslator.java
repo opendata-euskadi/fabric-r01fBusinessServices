@@ -580,7 +580,6 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 		
 		protected final Query _qry;
 		
-		@SuppressWarnings("rawtypes")
 		@Override
 		public void setWherePredicateParamFor(final EqualsQueryClause<?> eqClause,
 											  final String dbFieldId) {
