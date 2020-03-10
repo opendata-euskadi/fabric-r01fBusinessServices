@@ -1,9 +1,12 @@
 package r01f.services.interfaces;
 
+import java.util.Date;
+
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable;
 import r01f.model.persistence.CRUDResult;
+import r01f.model.persistence.PersistenceOperationResult;
 import r01f.securitycontext.SecurityContext;
 import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 
@@ -24,6 +27,14 @@ public interface CRUDServicesForModelObject<O extends PersistableObjectOID,M ext
 /////////////////////////////////////////////////////////////////////////////////////////
 //	CRUD
 /////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Returns the last update date of the given object
+	 * @param securityContext
+	 * @param oid
+	 * @return
+	 */
+	public PersistenceOperationResult<Date> getLastUpdateDate(final SecurityContext securityContext,
+														   	  final O oid);
 	/**
 	 * Returns a entity from its identifier.
 	 * If the entity is a {@link Versionable} {@link PersistableModelObject}, this method returns the 

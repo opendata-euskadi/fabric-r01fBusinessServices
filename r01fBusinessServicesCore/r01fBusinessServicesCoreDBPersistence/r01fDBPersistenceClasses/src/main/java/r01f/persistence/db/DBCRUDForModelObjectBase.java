@@ -3,6 +3,7 @@ package r01f.persistence.db;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.persistence.EntityManager;
@@ -30,6 +31,7 @@ import r01f.model.facets.HasEntityVersion;
 import r01f.model.persistence.CRUDError;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.CRUDResultBuilder;
+import r01f.model.persistence.PersistenceOperationResult;
 import r01f.model.persistence.PersistencePerformedOperation;
 import r01f.model.persistence.PersistenceRequestedOperation;
 import r01f.objectstreamer.Marshaller;
@@ -214,6 +216,14 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CRUD
 /////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public PersistenceOperationResult<Date> getLastUpdateDate(final SecurityContext securityContext,
+														   	  final O oid) {
+		// Compose the pk
+		PK pk = this.dbEntityPrimaryKeyFor(oid);
+		return this.doGetLastUpdateDate(securityContext,
+										oid,pk);
+	}
 	@Override
 	public CRUDResult<M> load(final SecurityContext securityContext,
 							  final O oid) {

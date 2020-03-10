@@ -1,6 +1,8 @@
 package r01f.services.delegates.persistence;
 
 
+import java.util.Date;
+
 import com.google.common.eventbus.EventBus;
 
 import lombok.Getter;
@@ -14,11 +16,15 @@ import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.CRUDResultBuilder;
+import r01f.model.persistence.PersistenceOperationExecError;
+import r01f.model.persistence.PersistenceOperationResult;
 import r01f.model.persistence.PersistenceRequestedOperation;
+import r01f.model.services.COREServiceMethod;
 import r01f.reflection.ReflectionUtils;
 import r01f.securitycontext.SecurityContext;
 import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
 import r01f.services.interfaces.CRUDServicesForModelObject;
+import r01f.util.types.Strings;
 import r01f.validation.ObjectValidationResult;
 import r01f.validation.SelfValidates;
 import r01f.validation.Validates;
@@ -75,6 +81,24 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 					  		    .getPersistenceException().getMessage());
 		}
 		return outExists;
+	}
+	@Override @SuppressWarnings("unchecked")
+	public PersistenceOperationResult<Date> getLastUpdateDate(final SecurityContext securityContext,
+														   	  final O oid) {
+		PersistenceOperationResult<Date> outDate = null;
+		
+		// [0] - check the oid
+		if (oid == null) {
+			return new PersistenceOperationExecError<Date>(COREServiceMethod.named("lastUpdateDate"),
+														   Strings.customized("The {} entity's oid cannot be null in order to get the last update date",
+																   			  _modelObjectType));
+		}
+		// [1] - Load
+		outDate = this.getServiceImplAs(CRUDServicesForModelObject.class)
+						.getLastUpdateDate(securityContext,
+										   oid);
+		// [2] - Return
+		return outDate;
 	}
 	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> load(final SecurityContext securityContext,
