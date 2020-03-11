@@ -201,7 +201,7 @@ public class DBManager {
             if (sql == null) throw new SQLException("La sentencia SQL no puede ser nula");
 
             try {
-                // Obtener una nueva conexion solo si no hay una ya creada (transacci�n)
+                // Obtener una nueva conexion solo si no hay una ya creada (transaccion)
                 conx = (_conx == null ? DBConnectionHelpper.getConnection(_conxProps) : _conx);
 
                 // Obtener un Statement y sustituir los parametros si los hay
@@ -219,7 +219,7 @@ public class DBManager {
                 ps = null;
                 if (rs != null) rs.close();
                 rs = null;
-                // Solo cerrar la conexi�n si esta se ha creado para la transacci�n actual
+                // Solo cerrar la conexi�n si esta se ha creado para la transaccion actual
                 if (_conx == null && conx != null) {
                     DBConnectionHelpper.closeConnection(conx);
                     conx = null;
@@ -320,7 +320,7 @@ public class DBManager {
          * @param sql La query a ejecutar
          * @param params Los parametros de la query
          * @return El numero de filas afectadas por la operacion
-         * @throws SQLException si hay alg�n error en la base de datos
+         * @throws SQLException si hay algun error en la base de datos
          */
 		@SuppressWarnings("resource")
 		public int executeStatement(final String sql,final List<String> params) throws SQLException {
@@ -328,7 +328,7 @@ public class DBManager {
             PreparedStatement ps = null;
             if (sql == null) throw new SQLException("La sentencia SQL no puede ser nula");
             try {
-    	        // Obtener una nueva conexion solo si no hay una ya creada (transacci�n)
+    	        // Obtener una nueva conexion solo si no hay una ya creada (transaccion)
     	        conx = (_conx == null ? DBConnectionHelpper.getConnection(_conxProps) : _conx);
 
     	        // Obtener un Statement y sustituir los parametros si los hay
@@ -342,7 +342,7 @@ public class DBManager {
             } finally {
                 if (ps != null) ps.close();
                 ps = null;
-                // Solo cerrar la conexi�n si esta se ha creado para la transacci�n actual
+                // Solo cerrar la conexion si esta se ha creado para la transaccion actual
                 if (_conx == null && conx != null) {
                     DBConnectionHelpper.closeConnection(conx);
                     conx = null;
@@ -370,14 +370,14 @@ public class DBManager {
         try {
             strSql = "CREATE SEQUENCE " + seqName + " " +
                                "START WITH " + startValue;
-            // Obtener una nueva conexion solo si no hay una ya creada (transacci�n)
+            // Obtener una nueva conexion solo si no hay una ya creada (transaccion)
 			conx = (_conx == null ? DBConnectionHelpper.getConnection(_conxProps) : _conx);
             stmt = conx.prepareStatement(strSql);
             return stmt.execute();
         } finally {
             // Cerrar todo
         	if (stmt != null) stmt.close();
-        	// Solo cerrar la conexi�n si esta se ha creado para la transacci�n actual
+        	// Solo cerrar la conexion si esta se ha creado para la transaccion actual
             if (_conx == null && conx != null) {
                 DBConnectionHelpper.closeConnection(conx);
     	        conx = null;
@@ -407,7 +407,7 @@ public class DBManager {
         } finally {
             if (rs != null) rs.close();
             if (ps != null) ps.close();
-            // Solo cerrar la conexi�n si esta se ha creado para la transacci�n actual
+            // Solo cerrar la conexion si esta se ha creado para la transaccion actual
             if (_conx == null && conx != null) {
                 DBConnectionHelpper.closeConnection(conx);
     	        conx = null;

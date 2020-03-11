@@ -113,7 +113,7 @@ public abstract class DBCRUDForVersionableModelObjectBase<O extends OIDForVersio
 		throw new IllegalStateException(Throwables.message("Implemented at service level (see {}",
 														   CRUDServicesForVersionableModelObjectDelegateBase.class));
 	}
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> loadActiveVersionAt(final SecurityContext securityContext,
 						   			   		 final VersionIndependentOID oid,final Date date) {
 
@@ -150,8 +150,7 @@ public abstract class DBCRUDForVersionableModelObjectBase<O extends OIDForVersio
 		}
 		return outLoadResult;
 	}
-
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> loadWorkVersion(final SecurityContext securityContext,
 							 			 final VersionIndependentOID oid) {
 		log.debug("> loading a {} entity with oid={} work version",_DBEntityType,oid);
@@ -187,7 +186,7 @@ public abstract class DBCRUDForVersionableModelObjectBase<O extends OIDForVersio
 		}
 		return outLoadResult;
 	}
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public CRUDOnMultipleResult<M> deleteAllVersions(final SecurityContext securityContext,
 													 final VersionIndependentOID oid) {
 		log.debug("> deleting all versions for a {} entity with oid={}",_DBEntityType,oid);

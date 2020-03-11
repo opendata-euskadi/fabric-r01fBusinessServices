@@ -1,5 +1,7 @@
 package r01f.services.client.api.delegates;
 
+import java.util.Date;
+
 import javax.inject.Provider;
 
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +12,7 @@ import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.PersistenceException;
+import r01f.model.persistence.PersistenceOperationResult;
 import r01f.objectstreamer.Marshaller;
 import r01f.securitycontext.SecurityContext;
 import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
@@ -37,7 +40,18 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  LOAD
-/////////////////////////////////////////////////////////////////////////////////////////	
+/////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Returns the last update date of the given object oid
+	 * @param oid
+	 * @return
+	 */
+	public Date getLastUpdateDateOf(final O oid) {
+		PersistenceOperationResult<Date> lastUpdateExec = this.getServiceProxy()
+																	.getLastUpdateDate(this.getSecurityContext(),
+																					   oid);
+		return lastUpdateExec.getOrThrow();
+	}
 	/**
 	 * Loads a record
 	 * @param oid
@@ -274,7 +288,7 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 * @param record
 	 * @param outRecord
 	 */
-	private void _postCreateOrUpdate(final M record,final M outRecord) {
+	protected void _postCreateOrUpdate(final M record,final M outRecord) {
 		if (outRecord != null && outRecord instanceof DirtyStateTrackable) { 
 			ClientAPIModelObjectChangesTrack.startTrackingChangesOnSaved(outRecord);
 		}
