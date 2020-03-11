@@ -33,10 +33,9 @@ public abstract class ClientAPIDelegateForModelObjectCountServices<O extends Per
 //  FIND
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * Conuts all entities
+	 * Counts all entities
 	 * @return 
 	 */
-	@SuppressWarnings("unchecked")
 	public long countAll() {
 		CountResult<M> countResult = this.getServiceProxy()
 											.countAll(this.getSecurityContext());

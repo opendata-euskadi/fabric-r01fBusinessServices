@@ -288,7 +288,7 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 * @param record
 	 * @param outRecord
 	 */
-	private void _postCreateOrUpdate(final M record,final M outRecord) {
+	protected void _postCreateOrUpdate(final M record,final M outRecord) {
 		if (outRecord != null && outRecord instanceof DirtyStateTrackable) { 
 			ClientAPIModelObjectChangesTrack.startTrackingChangesOnSaved(outRecord);
 		}
