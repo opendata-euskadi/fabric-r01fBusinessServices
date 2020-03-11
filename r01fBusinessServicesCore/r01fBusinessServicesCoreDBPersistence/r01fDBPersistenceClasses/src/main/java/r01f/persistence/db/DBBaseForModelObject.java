@@ -68,7 +68,7 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 	 * Transforms a db entity into a model object
 	 */
 	@Getter protected final TransformsDBEntityIntoModelObject<DB,M> _dbEntityIntoModelObjectTransformer;
-	
+
 	@Deprecated 	// use dbEntity -> _dbEntityIntoModelObjectTransformer.dbEntityToModelObject(securityContext,
 					//																			 dbEntity);
 	protected final Function<DB,M> _dbEntityToModelObjTransformUsingDescriptor = new Function<DB,M>() {
@@ -115,7 +115,7 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 			  marshaller);
 		_modelObjectType = modelObjectType;
 		_DBEntityType = dbEntityType;
-		
+
 		// create a default transformer using the marshaller
 		_dbEntityIntoModelObjectTransformer = DBBase.createTransFromsDBEntityIntoModelObjectUsing(_modelObjectsMarshaller,
 																						   		  modelObjectType);
@@ -180,16 +180,12 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 //  LOAD
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected PersistenceOperationResult<Date> doGetLastUpdateDate(final SecurityContext securityContext,
-								   								   final O oid,final PK pk) {
-		// check the oid
-		if (pk == null) return new PersistenceOperationExecError<Date>(COREServiceMethod.named("lastUpdateDate"),
-																	   Strings.customized("The {} entity's oid cannot be null in order to get the last update date",
-																			   			  _modelObjectType));
+								   								   final O oid) {
 		// Load the [last update date]
 		CriteriaBuilder _criteriaBuilder = _entityManager.getCriteriaBuilder();
 		CriteriaQuery<Tuple> _criteriaQuery = _criteriaBuilder.createTupleQuery();
 		Root<? extends DB> _root = _criteriaQuery.from(_DBEntityType);
-		
+
 		_criteriaQuery.multiselect(_root.get("_lastUpdateDate"));
 		Predicate oidPredicate = _criteriaBuilder.equal(_root.<String>get("_oid"),
 									 					oid.asString());
@@ -197,7 +193,7 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 		List<Tuple> tupleResult = _entityManager.createQuery(_criteriaQuery)
 													.setHint(QueryHints.READ_ONLY,HintValues.TRUE)
 											    .getResultList();
-		
+
 		// Compose the PersistenceOperationResult object
 		PersistenceOperationResult<Date> outResult = null;
 		if (CollectionUtils.isNullOrEmpty(tupleResult)) {

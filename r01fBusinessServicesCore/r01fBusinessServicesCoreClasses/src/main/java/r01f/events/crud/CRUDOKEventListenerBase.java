@@ -27,14 +27,14 @@ import r01f.util.types.Strings;
  */
 @Slf4j
 @Accessors(prefix="_")
-public abstract class CRUDOKEventListenerBase 
+public abstract class CRUDOKEventListenerBase
            implements COREServiceMethodExecOKEventListener {
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * The type is needed because guava's event bus does NOT supports generic event types
-	 * 	- {@link CRUDOperationEvent} is a generic type parameterized with the persistable model object type, 
+	 * 	- {@link CRUDOperationEvent} is a generic type parameterized with the persistable model object type,
 	 *  - Subscriptions to the event bus are done by event type, that's by {@link CRUDOperationEvent} type
 	 *  - BUT since guava {@link EventBus} does NOT supports generics, the subscriptions are done to the raw {@link CRUDOperationEvent}
 	 *  - ... so ALL listeners will be attached to the SAME event type: {@link CRUDOperationEvent}
@@ -71,19 +71,19 @@ public abstract class CRUDOKEventListenerBase
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	DEFAULT DEAD EVENT LISTENER
-/////////////////////////////////////////////////////////////////////////////////////////	
+/////////////////////////////////////////////////////////////////////////////////////////
 	@Subscribe
 	public void handleDeadEvent(final DeadEvent deadEvent) {
 		log.warn("> Not handled event:  {}",
 				 deadEvent.getEvent());
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Returns true if:
 	 * 	1.- the event refers to an object of the type handled by this listener
-	 *  2.- the event refers to a successful create or update operation 
+	 *  2.- the event refers to a successful create or update operation
 	 * @param opEvent
 	 * @return
 	 */
@@ -91,21 +91,21 @@ public abstract class CRUDOKEventListenerBase
 	protected boolean _isEventForSuccessfulCreateUpdateOrDelete(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
-		
+
 		CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
 									    					  .as(CRUDResult.class);
-		return (crudResult.hasSucceeded() 
+		return (crudResult.hasSucceeded()
 				// it's a create, update or delete event
-			 && (crudResult.asCRUDOK().hasBeenCreated() 
-				 || 
-				 crudResult.asCRUDOK().hasBeenUpdated() 
+			 && (crudResult.asCRUDOK().hasBeenCreated()
 				 ||
-				 crudResult.asCRUDOK().hasBeenDeleted()));	
+				 crudResult.asCRUDOK().hasBeenUpdated()
+				 ||
+				 crudResult.asCRUDOK().hasBeenDeleted()));
 	}
 	/**
 	 * Returns true if:
 	 * 	1.- the event refers to an object of the type handled by this listener
-	 *  2.- the event refers to a successful create or update operation 
+	 *  2.- the event refers to a successful create or update operation
 	 * @param opEvent
 	 * @return
 	 */
@@ -113,19 +113,19 @@ public abstract class CRUDOKEventListenerBase
 	protected boolean _isEventForSuccessfulCreateOrUpdate(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
-		
+
 		CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
 									    					  .as(CRUDResult.class);
-		return (crudResult.hasSucceeded() 
+		return (crudResult.hasSucceeded()
 				// it's a create or update event
-			 && (crudResult.asCRUDOK().hasBeenCreated() 
-				 || 
-				 crudResult.asCRUDOK().hasBeenUpdated()));	
+			 && (crudResult.asCRUDOK().hasBeenCreated()
+				 ||
+				 crudResult.asCRUDOK().hasBeenUpdated()));
 	}
 	/**
 	 * Returns true if:
 	 * 	1.- the event refers to an object of the type handled by this listener
-	 *  2.- the event refers to a successful create 
+	 *  2.- the event refers to a successful create
 	 * @param opEvent
 	 * @return
 	 */
@@ -133,16 +133,16 @@ public abstract class CRUDOKEventListenerBase
 	protected boolean _isEventForSuccessfulCreate(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
-		
+
 		CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
 									    					  .as(CRUDResult.class);
-		return (crudResult.hasSucceeded() 
+		return (crudResult.hasSucceeded()
 			 && (crudResult.asCRUDOK().hasBeenCreated()));												// it's a create event
 	}
 	/**
 	 * Returns true if:
 	 * 	1.- the event refers to an object of the type handled by this listener
-	 *  2.- the event refers to a successful update operation 
+	 *  2.- the event refers to a successful update operation
 	 * @param opEvent
 	 * @return
 	 */
@@ -150,16 +150,16 @@ public abstract class CRUDOKEventListenerBase
 	protected boolean _isEventForSuccessfulUpdate(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
-		
+
 		CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
-									    					  .as(CRUDResult.class);		
+									    					  .as(CRUDResult.class);
 		return (crudResult.hasSucceeded()
 			 && (crudResult.asCRUDOK().hasBeenUpdated()));								// it's an update event
 	}
 	/**
 	 * Returns true if:
 	 * 	1.- the event refers to an object of the type handled by this listener
-	 *  2.- the event refers to a successful delete operation 
+	 *  2.- the event refers to a successful delete operation
 	 * @param opEvent
 	 * @return
 	 */
@@ -167,7 +167,7 @@ public abstract class CRUDOKEventListenerBase
 	protected boolean _isEventForSuccessfulDelete(final COREServiceMethodExecOKEvent opEvent) {
 		boolean handle = _crudOperationOKEventFilter.hasTobeHandled(opEvent);
 		if (!handle) return false;
-		
+
 		CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
 									    					  .as(CRUDResult.class);
 		return (crudResult.hasSucceeded()
@@ -177,19 +177,19 @@ public abstract class CRUDOKEventListenerBase
 // 	CALLBACK SEND
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * Sends a callback 
+	 * Sends a callback
 	 * @param securityContext
 	 * @param event
 	 */
 	public void sendCallbackFor(final SecurityContext securityContext,
 								final COREServiceMethodExecEvent event) {
-		if (event.getCallbackSpec() != null) {			
+		if (event.getCallbackSpec() != null) {
 			COREMethodCallback callback = _createCallbackInstance(event.getCallbackSpec());
 			if (event.isForCOREMethodCallOK()) {
 				callback.onCOREMethodCallOK(securityContext,
 										    event.getCOREServiceMethodExecResult()
 											     .asCOREServiceMethodExecOK());
-			} 
+			}
 			else if (event.isForCOREMethodCallError()) {
 				callback.onCOREMethodCallError(securityContext,
 											   event.getCOREServiceMethodExecResult()
@@ -205,7 +205,7 @@ public abstract class CRUDOKEventListenerBase
 			COREServiceMethodBeanCallbackSpec beanCallbackSpec = (COREServiceMethodBeanCallbackSpec)callbackSpec;
 			Class<? extends COREMethodCallback> callbackType = beanCallbackSpec.getImplType();
 			callback = ReflectionUtils.createInstanceOf(callbackType);
-		} 
+		}
 		else {
 			throw new UnsupportedOperationException();
 		}
@@ -226,8 +226,8 @@ public abstract class CRUDOKEventListenerBase
 	}
 	protected String _debugEvent(final COREServiceMethodExecOKEvent opOKEvent,
 							   	 final boolean hasToBeHandled) {
-		return Strings.customized("EventListener registered for events of [{}] entities\n" + 
-						  		  "{}\n" + 
+		return Strings.customized("EventListener registered for events of [{}] entities\n" +
+						  		  "{}\n" +
 						  		  "Handle the event: {}",
 					  			  _type,
 							  	  opOKEvent.debugInfo(),

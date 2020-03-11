@@ -86,7 +86,7 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 	public PersistenceOperationResult<Date> getLastUpdateDate(final SecurityContext securityContext,
 														   	  final O oid) {
 		PersistenceOperationResult<Date> outDate = null;
-		
+
 		// [0] - check the oid
 		if (oid == null) {
 			return new PersistenceOperationExecError<Date>(COREServiceMethod.named("lastUpdateDate"),
@@ -118,8 +118,8 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 										.load(securityContext,
 										 	  oid);
 		// [2] - Throw CRUD event
-		_fireEvent(securityContext,
-				   outEntityLoadResult);
+//		_fireEvent(securityContext,
+//				   outEntityLoadResult);
 		// [3] - Return
 		return outEntityLoadResult;
 	}
