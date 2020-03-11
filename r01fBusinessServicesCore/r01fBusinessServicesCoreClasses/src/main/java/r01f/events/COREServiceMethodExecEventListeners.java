@@ -1,5 +1,7 @@
 package r01f.events;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecErrorEvent;
 import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecOKEvent;
 
@@ -8,7 +10,8 @@ import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecOKEvent;
 /**
  * Event listeners
  */
-public class COREServiceMethodExecEventListeners {
+@NoArgsConstructor(access=AccessLevel.PRIVATE)
+public abstract class COREServiceMethodExecEventListeners {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  Listens to OK PersistenceOperationOKEvent
 /////////////////////////////////////////////////////////////////////////////////////////

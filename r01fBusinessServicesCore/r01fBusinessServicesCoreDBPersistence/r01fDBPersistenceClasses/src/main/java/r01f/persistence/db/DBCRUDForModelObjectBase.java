@@ -3,6 +3,7 @@ package r01f.persistence.db;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.persistence.EntityManager;
@@ -30,6 +31,7 @@ import r01f.model.facets.HasEntityVersion;
 import r01f.model.persistence.CRUDError;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.CRUDResultBuilder;
+import r01f.model.persistence.PersistenceOperationResult;
 import r01f.model.persistence.PersistencePerformedOperation;
 import r01f.model.persistence.PersistenceRequestedOperation;
 import r01f.objectstreamer.Marshaller;
@@ -184,17 +186,17 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 		// BEWARE!! do NOT move
 		if (dbEntity instanceof HasTrackingInfo) {
 			if (modelObj.getTrackingInfo() == null) modelObj.setTrackingInfo(new ModelObjectTracking());
-			
+
 			// compute the dbentity tracking info
 			HasTrackingInfo dbEntityHasTrackingInfo = (HasTrackingInfo)dbEntity;
 			ModelObjectTracking dbEntityTracking = dbEntityHasTrackingInfo.getTrackingInfo();		// always return a tracking info obj
 			dbEntityTracking.mergeWith(modelObj.getTrackingInfo())	// modelObj.getTrackingInfo() can be null; if so, nothing is done
 							.when(persistenceOp)
 						    .by(securityContext);
-			
+
 			// update back the model object tracking info since this info is persisted in the xml descriptor
 			modelObj.setTrackingInfo(dbEntityTracking);
-			
+
 			// set the dbentity data
 			if (persistenceOp == PersistencePerformedOperation.CREATED) {
 				if (dbEntityTracking.getCreatorUserCode() != null) 	dbEntityHasTrackingInfo.setCreatorUserCode(dbEntityTracking.getCreatorUserCode());
@@ -214,6 +216,12 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CRUD
 /////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public PersistenceOperationResult<Date> getLastUpdateDate(final SecurityContext securityContext,
+														   	  final O oid) {
+		return this.doGetLastUpdateDate(securityContext,
+										oid);
+	}
 	@Override
 	public CRUDResult<M> load(final SecurityContext securityContext,
 							  final O oid) {
@@ -368,8 +376,8 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 		_setDBEntityFieldsFromModelObject(securityContext,
 							   			  modelObj,dbEntityToPersist,
 							   			  performedOp);
-		
-		
+
+
 
 		// [4]: call the persistence event listeners
 		if (CollectionUtils.hasData(_dbEntityPersistenceEventsListeners)) {

@@ -23,7 +23,7 @@ public abstract class COREServiceMethodExecEvents {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  Base type
 /////////////////////////////////////////////////////////////////////////////////////////
-	public interface COREServiceMethodExecEvent 
+	public interface COREServiceMethodExecEvent
 			 extends HasSecurityContext,
 			   	     HasCOREServiceMethodExecResult,
 			   	     HasCOREServiceMethodCallbackSpec,
@@ -32,8 +32,8 @@ public abstract class COREServiceMethodExecEvents {
 		public boolean isForCOREMethodCallError();
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//	                                                                          
-/////////////////////////////////////////////////////////////////////////////////////////	
+//
+/////////////////////////////////////////////////////////////////////////////////////////
 	@Accessors(prefix="_")
 	@RequiredArgsConstructor
 	static abstract class COREServiceMethodExecEventBase
@@ -43,14 +43,14 @@ public abstract class COREServiceMethodExecEvents {
 		 */
 		@Getter private final SecurityContext _securityContext;
 		/**
-		 * The operation result 
+		 * The operation result
 		 */
 		@Getter protected final COREServiceMethodExecResult<?> _COREServiceMethodExecResult;
 		/**
 		 * The async callback
 		 */
 		@Getter protected final COREServiceMethodCallbackSpec _callbackSpec;
-		
+
 		@Override
 		public boolean hasSucceeded() {
 			return _COREServiceMethodExecResult.hasSucceeded();
@@ -62,14 +62,14 @@ public abstract class COREServiceMethodExecEvents {
 		@Override
 		public CharSequence debugInfo() {
 			return _COREServiceMethodExecResult != null ? _COREServiceMethodExecResult.debugInfo()
-												 : "no debug info: no method call exec result";
+												 		: "no debug info: no method call exec result";
 		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  Operation OK
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Accessors(prefix="_")
-	public static class COREServiceMethodExecOKEvent 
+	public static class COREServiceMethodExecOKEvent
 		        extends COREServiceMethodExecEventBase {
 		public COREServiceMethodExecOKEvent(final SecurityContext securityContext,
 									 		final COREServiceMethodExecOK<?> opOK,
@@ -98,7 +98,7 @@ public abstract class COREServiceMethodExecEvents {
 //  Operation NOK
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Accessors(prefix="_")
-	public static class COREServiceMethodExecErrorEvent 
+	public static class COREServiceMethodExecErrorEvent
 		 		extends COREServiceMethodExecEventBase {
 		public COREServiceMethodExecErrorEvent(final SecurityContext securityContext,
 									    	   final COREServiceMethodExecError<?> opNOK,

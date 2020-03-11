@@ -1,5 +1,7 @@
 package r01f.services.persistence;
 
+import java.util.Date;
+
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -13,6 +15,7 @@ import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanEx
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDResult;
+import r01f.model.persistence.PersistenceOperationResult;
 import r01f.objectstreamer.Marshaller;
 import r01f.securitycontext.SecurityContext;
 import r01f.services.callback.spec.COREServiceMethodCallbackSpec;
@@ -78,6 +81,15 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CRUD
 /////////////////////////////////////////////////////////////////////////////////////////
+	@Transactional
+	@Override @SuppressWarnings("unchecked")
+	public PersistenceOperationResult<Date> getLastUpdateDate(final SecurityContext securityContext,
+														   	  final O oid) {
+		return this.forSecurityContext(securityContext)
+						.createDelegateAs(CRUDServicesForModelObject.class)
+							.getLastUpdateDate(securityContext,
+											   oid);
+	}
 	@Transactional
 	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> load(final SecurityContext securityContext,
