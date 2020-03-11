@@ -94,7 +94,7 @@ public class DBManager {
 //  ESTADO
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Getter @Setter protected Properties _conxProps;  	// Propiedades para obtener la conexion a BD
-    				protected Connection _conx = null;	// Conexi�n a base de datos
+    				protected Connection _conx = null;	// Conexion a base de datos
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR/DESTRUCTOR
@@ -127,11 +127,11 @@ public class DBManager {
     	 * @throws SQLException
     	 */
     	public void beginTransaction() throws SQLException {
-    		if (_conxProps == null) throw new SQLException( "No se han establecido las propiedades para obtener la conexi�n (null)" );
+    		if (_conxProps == null) throw new SQLException( "No se han establecido las propiedades para obtener la conexion (null)" );
     		if (_conx == null) _conx = DBConnectionHelpper.getConnection(_conxProps);
     	}
     	/**
-    	 * Finaliza la transacci�n haciendo un commit implicitamente
+    	 * Finaliza la transaccion haciendo un commit implicitamente
     	 * @throws SQLException
     	 */
     	public void endTransaction() throws SQLException {
@@ -143,7 +143,7 @@ public class DBManager {
 
     	}
     	/**
-    	 * Cancela los cambios en la transacci�n
+    	 * Cancela los cambios en la transaccion
     	 * @throws SQLException
     	 */
     	public void rollBackTransaction() throws SQLException {
@@ -181,11 +181,11 @@ public class DBManager {
             return executeQuery(sql,params);
         }
         /**
-         * M�todo que permite ejecutar una query con parametros en la base de datos
+         * Metodo que permite ejecutar una query con parametros en la base de datos
          * Primero se prepara la query sustituyendo los simbolos "?" del String (primer parametro)
          * por los parametros pasados en la lista (segudo parametro) y a continuacion se recuperan los datos
          * de la BD devolviendo una lista con las filas en la que cada elemento es otra lista con las columnas.
-         * En el caso de que la lista de parametros (segundo parametro) sea nulo, NO ser� necesario
+         * En el caso de que la lista de parametros (segundo parametro) sea nulo, NO sera necesario
          * realizar el paso previo de montar la query final.
          * @param sql Query SQL que quiere ser ejecutada.
          * @param params Lista de parametros que completan la query final que va a ser ejecutada.
