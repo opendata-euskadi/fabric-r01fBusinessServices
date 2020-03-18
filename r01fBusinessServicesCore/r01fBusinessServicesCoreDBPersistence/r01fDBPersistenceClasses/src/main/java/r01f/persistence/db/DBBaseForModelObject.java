@@ -210,7 +210,7 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 			Tuple tuple = CollectionUtils.pickOneAndOnlyElement(tupleResult);
 			GregorianCalendar lastUpdateDate = (GregorianCalendar)tuple.get(0);
 			outResult = new PersistenceOperationExecOK<Date>(COREServiceMethod.named("lastUpdateDate"),
-															 lastUpdateDate.getTime());
+															 lastUpdateDate != null ? lastUpdateDate.getTime() : new Date());
 		}
 		return outResult;
 	}
