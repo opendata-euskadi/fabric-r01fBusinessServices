@@ -168,11 +168,6 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 			HasEntityVersion hasEntityVersion = (HasEntityVersion)dbEntity;
 			hasEntityVersion.setEntityVersion(modelObj.getEntityVersion());
 		}
-		if (persistenceOp == PersistencePerformedOperation.CREATED) {
-			if (Strings.isNullOrEmpty(dbEntity.getOid())) {
-				dbEntity.setOid(modelObj.getOid().asString());
-			}
-		}
 		if (dbEntity instanceof DBEntityHasID
 		 && modelObj instanceof HasID) {
 			HasID<?> hasId = (HasID<?>)modelObj;
@@ -183,6 +178,13 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 		// set the db entity fields from the model object data
 		this.setDBEntityFieldsFromModelObject(securityContext,
 						     	  			  modelObj,dbEntity);
+		// DO NOT MOVE! sometimes the oid is computed by combining 
+		//				some model object's fields
+		if (persistenceOp == PersistencePerformedOperation.CREATED
+		 && Strings.isNullOrEmpty(dbEntity.getOid())) {
+			dbEntity.setOid(modelObj.getOid().asString());
+		}
+		
 		// BEWARE!! do NOT move
 		if (dbEntity instanceof HasTrackingInfo) {
 			if (modelObj.getTrackingInfo() == null) modelObj.setTrackingInfo(new ModelObjectTracking());
