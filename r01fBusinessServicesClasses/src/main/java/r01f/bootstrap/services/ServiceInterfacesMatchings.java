@@ -253,7 +253,7 @@ public class ServiceInterfacesMatchings
 	 * Checks that exists one and only one matching for every service interface
 	 * @param serviceIfaceTypes
 	 */
-	public void checkMatchingsOrThrowfor(final Collection<Class<? extends ServiceInterface>> serviceIfaceTypes) {
+	public void checkMatchingsOrThrowFor(final Collection<Class<? extends ServiceInterface>> serviceIfaceTypes) {
 		if (CollectionUtils.isNullOrEmpty(serviceIfaceTypes)) return;
 		
 		for (final Class<? extends ServiceInterface> serviceIfaceType : serviceIfaceTypes) {

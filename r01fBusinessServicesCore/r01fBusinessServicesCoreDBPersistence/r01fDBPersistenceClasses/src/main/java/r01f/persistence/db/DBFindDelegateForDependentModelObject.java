@@ -71,7 +71,7 @@ public abstract class DBFindDelegateForDependentModelObject<O extends Persistabl
 	public <PO extends OID> FindSummariesResult<M> findSummariesOfDependentsOf(final SecurityContext securityContext,
 															  				   final PO parentOid) {
 		QueryWrapper qry = _dbFind.new QueryWrapper(_summarizedDBRowCols());
-		qry.addFilterByOidPredicate(parentOid,this._getParentOidDBEntityFieldName());
+		qry.addFilterByOidPredicate(parentOid,_getParentOidDBEntityFieldName());
 		return qry.findSummariesUsing(securityContext)
 				  .convertingTuplesUsing(_dbRowToSummarizedModelObjectTranformFunction(securityContext));
 	}

@@ -161,7 +161,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 		if (_mimeType.is(MimeTypes.APPLICATION_XML)) {
 			outOperationResult = _marshaller.forReading().fromXml(responseStr,typeToken);
 		
-		} else if (_mimeType.is(MimeTypes.APPLICATION_JSON)){
+		} else if (_mimeType.is(MimeTypes.APPLICATION_JSON)) {
 			outOperationResult = _marshaller.forReading().fromJson(responseStr,typeToken);
 			
 		} else {

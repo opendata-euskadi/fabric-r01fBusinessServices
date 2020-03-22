@@ -215,7 +215,7 @@ public class ServiceMatcher {
 		log.warn("\n####################################################################################################\n\n\n\n");
 
 		// [3] - Ensure there's a matching for every service inteface
-		outMatchings.checkMatchingsOrThrowfor(serviceInterfaceTypes);
+		outMatchings.checkMatchingsOrThrowFor(serviceInterfaceTypes);
 
 		return outMatchings;
 	}

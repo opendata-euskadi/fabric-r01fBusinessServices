@@ -90,7 +90,7 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 		if (mimeType.is(MimeTypes.APPLICATION_XML)) {
 			outResult = _marshaller.forReading()
 								   .fromXml(responseStr,typeToken);
-		} else if (mimeType.is(MimeTypes.APPLICATION_JSON)){
+		} else if (mimeType.is(MimeTypes.APPLICATION_JSON)) {
 			outResult = _marshaller.forReading()
 								   .fromJson(responseStr,typeToken);
 		} else {

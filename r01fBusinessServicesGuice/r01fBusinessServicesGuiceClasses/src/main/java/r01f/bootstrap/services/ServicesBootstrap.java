@@ -279,7 +279,7 @@ public class ServicesBootstrap {
 							  							 .in(Singleton.class);
 
 						// [1] - Bind client configs if needed
-						/*if (CollectionUtils.hasData(serviceClientsConfig)){
+						/*if (CollectionUtils.hasData(serviceClientsConfig)) {
 							ServicesCoreModuleExpositionAsBeans servicesCoreModuleExpositionAsBeans
 			 						=  _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsBeans.class, serviceClientsConfig);
 
@@ -334,7 +334,7 @@ public class ServicesBootstrap {
 							}
 
 							/// Module Exposition Config of Proxy Classes (REST / SERVLET)
-							if (CollectionUtils.hasData(serviceClientsConfig)){
+							if (CollectionUtils.hasData(serviceClientsConfig)) {
 								ServicesCoreModuleExpositionAsRESTServices servicesCoreModuleExpositionAsRESTServices
 								 		=  _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsRESTServices.class, serviceClientsConfig);
 								if ( servicesCoreModuleExpositionAsRESTServices != null) {
@@ -395,7 +395,7 @@ public class ServicesBootstrap {
 
 		 Collection<ServicesClientConfigForCoreModule<?,?>> serviceClientsConfigOfType
 				 = FluentIterable.from(serviceClientsConfig)
-				               .filter(new Predicate<ServicesClientConfigForCoreModule<?,?>>(){
+				               .filter(new Predicate<ServicesClientConfigForCoreModule<?,?>>() {
 														@Override
 														public boolean apply(final ServicesClientConfigForCoreModule<?, ?>  config) {
 															ServicesCoreModuleExposition servicesCoreModuleExposition =  config.getCoreExpositionConfig();

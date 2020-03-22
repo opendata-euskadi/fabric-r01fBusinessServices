@@ -18,12 +18,12 @@ public abstract class ResourceConfigBootstrapDataBuilder
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 /////////////////////////////////////////////////////////////////////////////////////////
-	public static ResourceConfigBootstrapDataBuilderCommonEventsConfigStep withServices(final Collection<ServicesBootstrapConfig> servicesBootstrapConfig){
+	public static ResourceConfigBootstrapDataBuilderCommonEventsConfigStep withServices(final Collection<ServicesBootstrapConfig> servicesBootstrapConfig) {
 	
 		return new ResourceConfigBootstrapDataBuilder() { /* nothing */ }
 						.new ResourceConfigBootstrapDataBuilderCommonEventsConfigStep(servicesBootstrapConfig);
 	}
-	public static ResourceConfigBootstrapDataBuilderCommonEventsConfigStep withServices(final ServicesBootstrapConfig... servicesBootstrapConfig){	
+	public static ResourceConfigBootstrapDataBuilderCommonEventsConfigStep withServices(final ServicesBootstrapConfig... servicesBootstrapConfig) {	
 		return new ResourceConfigBootstrapDataBuilder() { /* nothing */ }
 						.new ResourceConfigBootstrapDataBuilderCommonEventsConfigStep(Lists.newArrayList(servicesBootstrapConfig));
 	}
@@ -31,10 +31,10 @@ public abstract class ResourceConfigBootstrapDataBuilder
 	public class ResourceConfigBootstrapDataBuilderCommonEventsConfigStep {
 		final Collection<ServicesBootstrapConfig> _servicesBootstrapConfig;	
 
-		public ResourceConfigBootstrapDataBuilderCommonGuiceModulesStep andCommonEventsConfig(final ServicesCoreModuleEventsConfig commonEventsConfig){	
+		public ResourceConfigBootstrapDataBuilderCommonGuiceModulesStep andCommonEventsConfig(final ServicesCoreModuleEventsConfig commonEventsConfig) {	
 			return new ResourceConfigBootstrapDataBuilderCommonGuiceModulesStep(_servicesBootstrapConfig,commonEventsConfig);
 		}
-		public ResourceConfigBootstrapDataBuilderCommonGuiceModulesStep withoutCommonEventsConfig(){	
+		public ResourceConfigBootstrapDataBuilderCommonGuiceModulesStep withoutCommonEventsConfig() {	
 			return new ResourceConfigBootstrapDataBuilderCommonGuiceModulesStep(_servicesBootstrapConfig,null);
 		}
 	}
@@ -45,11 +45,11 @@ public abstract class ResourceConfigBootstrapDataBuilder
 		final Collection<ServicesBootstrapConfig> _servicesBootstrapConfig;	
 	    final ServicesCoreModuleEventsConfig _commonEventsConfig;
 	    
-	    public ResourceConfigBootstrapDataBuilderBuilderStep usingCommonBindingsModules(final Module... commonGuiceModules ){				
+	    public ResourceConfigBootstrapDataBuilderBuilderStep usingCommonBindingsModules(final Module... commonGuiceModules) {				
 			return usingCommonBindingsModules(Lists.newArrayList(commonGuiceModules));
 		}
 
-		public ResourceConfigBootstrapDataBuilderBuilderStep usingCommonBindingsModules(final Collection<Module> commonGuiceModules ){				
+		public ResourceConfigBootstrapDataBuilderBuilderStep usingCommonBindingsModules(final Collection<Module> commonGuiceModules) {				
 			return new ResourceConfigBootstrapDataBuilderBuilderStep(_servicesBootstrapConfig,_commonEventsConfig,commonGuiceModules);
 		}
 	}
