@@ -120,7 +120,7 @@ public abstract class DBModuleConfigBase
 			// the debugSQL property might contain a Level name
 			try {
 				logLevel = Level.parse(debugSQLValue);
-			} catch(Throwable th) {
+			} catch (Throwable th) {
 				th.printStackTrace(System.out);
 				logLevel = Level.FINEST;
 			}
@@ -309,7 +309,7 @@ public abstract class DBModuleConfigBase
 			qry.setParameter("text","anything...");
 			qry.getResultList();			// this should fail if full text is NOT properly enabled
 			outSupportsFullText = true;		// it it reach this point... full text is enabled	
-		} catch(Throwable dbEx) {
+		} catch (Throwable dbEx) {
 			log.error("It seems the {} DB engine does NOT supports FULL-TEXT queries: testing {} leads to an error: {}",
 					  theDBSpec.getVendor(),jpql,
 					  dbEx.getMessage(),

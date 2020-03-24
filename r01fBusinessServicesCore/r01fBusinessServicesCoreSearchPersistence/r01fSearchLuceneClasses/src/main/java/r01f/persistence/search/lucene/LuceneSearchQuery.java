@@ -224,7 +224,7 @@ public class LuceneSearchQuery<F extends SearchFilter>
 			String luceneTextQry = Strings.customized("{}:{}",
 													  fieldId.asString(),text);
 			outQry = qp.parse(luceneTextQry);
-		} catch(ParseException parseEx) {
+		} catch (ParseException parseEx) {
 			log.error("Error parsing the term text search filter: {}",parseEx.getMessage(),
 																	  parseEx);
 		}
@@ -359,7 +359,7 @@ public class LuceneSearchQuery<F extends SearchFilter>
 		Query outQry = null;
 		try {
 			outQry = qp.parse(keyword);
-		} catch(ParseException parseEx) {
+		} catch (ParseException parseEx) {
 			log.error("Error parsing the keyword search filter: {}",parseEx.getMessage(),
 																    parseEx);
 		} 

@@ -40,9 +40,9 @@ public class DBEntityToModelObjectTransformerBuilder
 																				// transform the dbentity to a model object
 																				return dbEntityToModelObjectTransformer.dbEntityToModelObject(securityContext,
 																																			  dbEntity);
-																			} catch(Exception ex) {
+																			} catch (Exception ex) {
 																				log.error("DBEntityToModelObjectTransformerBuilder error :{}",ex.getMessage(),ex);
-																			} catch(Throwable ex) {
+																			} catch (Throwable ex) {
 																				log.error("DBEntityToModelObjectTransformerBuilder error :{}",ex.getMessage(),ex);
 																			}																	
 																			return null;//Return null if any exception happens, so must be applied a no null filtering!
@@ -73,9 +73,9 @@ public class DBEntityToModelObjectTransformerBuilder
 									}
 								}
 								return outModelObj;
-							}catch(Exception ex) {
+							}catch (Exception ex) {
 								log.error("DBEntityToModelObjectTransformerBuilder error :{}",ex.getMessage(),ex);
-							}catch(Throwable ex) {
+							}catch (Throwable ex) {
 								log.error("DBEntityToModelObjectTransformerBuilder error :{}",ex.getMessage(),ex);
 							}																	
 							return null;//Return null if any exception happens, so must be applied a not null filtering!

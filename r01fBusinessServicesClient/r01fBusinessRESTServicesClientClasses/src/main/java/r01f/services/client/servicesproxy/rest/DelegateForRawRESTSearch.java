@@ -52,7 +52,7 @@ public class DelegateForRawRESTSearch<F extends SearchFilter,I extends SearchRes
 									 .GET()
 									 	.getResponse()
 									 		.directNoAuthConnected();
-		} catch(IOException ioEx) {
+		} catch (IOException ioEx) {
 			log.error("Error connecting to {}",restResourceUrl,ioEx);
 			throw new COREServiceProxyException(ioEx);
 		}		

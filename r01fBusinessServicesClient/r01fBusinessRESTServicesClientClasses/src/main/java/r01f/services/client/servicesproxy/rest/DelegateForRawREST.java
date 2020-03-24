@@ -62,7 +62,7 @@ public abstract class DelegateForRawREST {
 									     .GET()
 									  	 .getResponse()
 									  		.directNoAuthConnected();
-		} catch(final IOException ioEx) {
+		} catch (final IOException ioEx) {
 			ioEx.getLocalizedMessage();
 			log.error("Error while GETing {}: {}",restResourceUrl,ioEx.getMessage());
 			throw new COREServiceProxyException(ioEx);
@@ -111,7 +111,7 @@ public abstract class DelegateForRawREST {
 										    .getResponse()
 										    	.directNoAuthConnected();
 			}
-		} catch(final IOException ioEx) {
+		} catch (final IOException ioEx) {
 			ioEx.getLocalizedMessage();
 			log.error("Error while POSTing to {}: {}",restResourceUrl,ioEx.getMessage());
 			throw new COREServiceProxyException(ioEx);
@@ -161,7 +161,7 @@ public abstract class DelegateForRawREST {
 											.getResponse()
 												.directNoAuthConnected();
 			}
-		} catch(final IOException ioEx) {
+		} catch (final IOException ioEx) {
 			log.error("Error while PUTing to {}: {}",restResourceUrl,ioEx.getMessage());
 			throw new COREServiceProxyException(ioEx);
 		}		
@@ -187,7 +187,7 @@ public abstract class DelegateForRawREST {
 										.DELETE()
 										.getResponse()	
 											.directNoAuthConnected();
-		} catch(final IOException ioEx) {
+		} catch (final IOException ioEx) {
 			log.error("Error while DELETEing {}: {}",restResourceUrl,ioEx.getMessage());
 			throw new COREServiceProxyException(ioEx);
 		}

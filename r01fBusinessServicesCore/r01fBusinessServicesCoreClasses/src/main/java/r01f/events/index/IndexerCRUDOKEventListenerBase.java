@@ -95,7 +95,7 @@ abstract class IndexerCRUDOKEventListenerBase<O extends OID,M extends IndexableM
 				log.info("{} operation OK for type {} : job is NULL!!!",
 						 indexOp,entity.getClass());
 			}
-		} catch(Throwable th) {
+		} catch (Throwable th) {
 			log.error("{} operation NOK for type {}",
 					  indexOp,entity.getClass(),
 					  th);

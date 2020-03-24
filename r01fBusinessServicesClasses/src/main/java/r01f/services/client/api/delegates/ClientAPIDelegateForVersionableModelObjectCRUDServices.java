@@ -79,7 +79,7 @@ public abstract class ClientAPIDelegateForVersionableModelObjectCRUDServices<O e
 		M outRecord = null;
 		try {
 			outRecord = this.loadActiveVersionAt(oid,date);
-		} catch(PersistenceException persistEx) {
+		} catch (PersistenceException persistEx) {
 			if (!persistEx.isEntityNotFound()) throw persistEx;  
 		}
 		return outRecord;
@@ -107,7 +107,7 @@ public abstract class ClientAPIDelegateForVersionableModelObjectCRUDServices<O e
 		M outRecord = null;
 		try {
 			outRecord = this.loadActiveVersion(oid);
-		} catch(PersistenceException persistEx) {
+		} catch (PersistenceException persistEx) {
 			if (!persistEx.isEntityNotFound()) throw persistEx;  
 		}
 		return outRecord;

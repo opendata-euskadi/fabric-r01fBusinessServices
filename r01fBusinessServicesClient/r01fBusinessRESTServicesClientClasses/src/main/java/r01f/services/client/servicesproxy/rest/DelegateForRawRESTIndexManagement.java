@@ -62,7 +62,7 @@ public class DelegateForRawRESTIndexManagement
 			else {
 				throw new IllegalArgumentException(Throwables.message("The index resource {} is NOT valid",restResourceUrl));
 			}
-		} catch(IOException ioEx) {
+		} catch (IOException ioEx) {
 			throw new COREServiceProxyException(ioEx);
 		}
 		

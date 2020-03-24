@@ -109,7 +109,7 @@ public abstract class TestAPIBase {
 			
 			System.out.println("\n\n\n\n******* ELAPSED TIME: " + NumberFormat.getNumberInstance(Locale.getDefault()).format(stopWatch.elapsed(TimeUnit.SECONDS)) + " seconds");
 			stopWatch.stop();
-		} catch(Throwable th) {
+		} catch (Throwable th) {
 			th.printStackTrace(System.out);
 			
 		} 

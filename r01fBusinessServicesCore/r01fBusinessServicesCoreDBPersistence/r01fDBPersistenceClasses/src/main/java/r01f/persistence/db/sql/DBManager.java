@@ -114,7 +114,7 @@ public class DBManager {
 	            DBConnectionHelpper.closeConnection(_conx);
 		        _conx = null;
 		    }
-	    } catch(SQLException sqlEx) {
+	    } catch (SQLException sqlEx) {
 	    	sqlEx.printStackTrace(System.out);
 	        /* Ignorar ya que no se puede hacer nada */
 	    }

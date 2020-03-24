@@ -179,7 +179,7 @@ public class ServicesBootstrapUtil {
 				log.warn("\t--START SERVICE using {} type: {}",ServiceHandler.class.getSimpleName(),key);
 				try {
 					serviceHandler.start();
-				} catch(Throwable th) {
+				} catch (Throwable th) {
 					log.error("Error starting service with ServiceHandler key={}: {}",key,th.getMessage(),th);
 				}
 			}
@@ -206,7 +206,7 @@ public class ServicesBootstrapUtil {
 					log.warn("\t--END SERVICE {} type: {}",ServiceHandler.class.getSimpleName(),key);
 					try {
 						serviceHandler.stop();
-					} catch(Throwable th) {
+					} catch (Throwable th) {
 						log.error("Error stopping service with ServiceHandler key={}: {}",key,th.getMessage(),th);
 					}
 				}

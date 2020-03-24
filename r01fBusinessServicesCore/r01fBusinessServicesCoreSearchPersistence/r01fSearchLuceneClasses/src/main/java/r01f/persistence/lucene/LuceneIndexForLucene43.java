@@ -75,7 +75,7 @@ public class LuceneIndexForLucene43 {
 //			_indexWriter.commit();
 //			_indexWriter.close();
 //			
-//		} catch(IOException ioEx) {
+//		} catch (IOException ioEx) {
 //			log.error("Error while closing lucene index: {}",ioEx.getMessage(),
 //											 		   	     ioEx);
 //		}
@@ -123,7 +123,7 @@ public class LuceneIndexForLucene43 {
 //		try {
 //			_reopenToken = _trackingIndexWriter.addDocument(doc);
 //			log.debug("document indexed in lucene");
-//		} catch(IOException ioEx) {
+//		} catch (IOException ioEx) {
 //			log.error("Error while in Lucene index operation: {}",ioEx.getMessage(),
 //											   		              ioEx);
 //		} finally {
@@ -146,7 +146,7 @@ public class LuceneIndexForLucene43 {
 //			_reopenToken = _trackingIndexWriter.updateDocument(recordIdTerm, 
 //													   		   doc);
 //			log.debug("{} document re-indexed in lucene",recordIdTerm.text());
-//		} catch(IOException ioEx) {
+//		} catch (IOException ioEx) {
 //			log.error("Error in lucene re-indexing operation: {}",ioEx.getMessage(),
 //											 		              ioEx);
 //		} finally {
@@ -169,7 +169,7 @@ public class LuceneIndexForLucene43 {
 //			_reopenToken = _trackingIndexWriter.deleteDocuments(idTerm);
 //			log.debug("{}={} term matching records un-indexed from lucene",idTerm.field(),
 //																		   idTerm.text());
-//		} catch(IOException ioEx) {
+//		} catch (IOException ioEx) {
 //			log.error("Error in un-index lucene operation: {}",ioEx.getMessage(),
 //											 		   		   ioEx);			
 //		} finally {
@@ -188,7 +188,7 @@ public class LuceneIndexForLucene43 {
 //		try {
 //			_reopenToken = _trackingIndexWriter.deleteAll();
 //			log.warn("lucene index truncated");
-//		} catch(IOException ioEx) {
+//		} catch (IOException ioEx) {
 //			log.error("Error truncating lucene index: {}",ioEx.getMessage(),
 //											 		   	  ioEx);			
 //		} finally {

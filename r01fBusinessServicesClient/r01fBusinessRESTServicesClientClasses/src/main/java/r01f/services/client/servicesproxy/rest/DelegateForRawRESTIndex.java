@@ -57,7 +57,7 @@ public class DelegateForRawRESTIndex
 										 .getResponse()
 										 	.directNoAuthConnected();
 			}
-		} catch(IOException ioEx) {
+		} catch (IOException ioEx) {
 			throw new COREServiceProxyException(ioEx);
 		}
 		
@@ -98,7 +98,7 @@ public class DelegateForRawRESTIndex
 										 .getResponse()
 										 	.directNoAuthConnected();
 			}
-		} catch(IOException ioEx) {
+		} catch (IOException ioEx) {
 			throw new COREServiceProxyException(ioEx);
 		}
 		
@@ -143,7 +143,7 @@ public class DelegateForRawRESTIndex
 										 .getResponse()
 										 	.directNoAuthConnected();
 			}
-		} catch(IOException ioEx) {
+		} catch (IOException ioEx) {
 			throw new COREServiceProxyException(ioEx);
 		}
 		

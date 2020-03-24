@@ -119,7 +119,7 @@ public class LuceneIndex
 			_indexWriter.commit();
 			_indexWriter.close();
 			
-		} catch(IOException ioEx) {
+		} catch (IOException ioEx) {
 			log.error("Error while closing lucene index: {}",ioEx.getMessage(),
 											 		   	     ioEx);
 		}
@@ -148,7 +148,7 @@ public class LuceneIndex
 		try {
 			_reopenToken = _trackingIndexWriter.addDocument(doc);
 			log.debug("document indexed in lucene");
-		} catch(IOException ioEx) {
+		} catch (IOException ioEx) {
 			log.error("Error while in Lucene index operation: {}",ioEx.getMessage(),
 											   		              ioEx);
 		} finally {
@@ -170,7 +170,7 @@ public class LuceneIndex
 			_reopenToken = _trackingIndexWriter.updateDocument(recordIdTerm, 
 													   		   doc);
 			log.debug("{} document re-indexed in lucene",recordIdTerm.text());
-		} catch(IOException ioEx) {
+		} catch (IOException ioEx) {
 			log.error("Error in lucene re-indexing operation: {}",ioEx.getMessage(),
 											 		              ioEx);
 		} finally {
@@ -193,7 +193,7 @@ public class LuceneIndex
 			_reopenToken = _trackingIndexWriter.deleteDocuments(idTerm);
 			log.debug("{}={} term matching records un-indexed from lucene",idTerm.field(),
 																		   idTerm.text());
-		} catch(IOException ioEx) {
+		} catch (IOException ioEx) {
 			log.error("Error in un-index lucene operation: {}",ioEx.getMessage(),
 											 		   		   ioEx);			
 		} finally {
@@ -212,7 +212,7 @@ public class LuceneIndex
 		try {
 			_reopenToken = _trackingIndexWriter.deleteAll();
 			log.warn("lucene index truncated");
-		} catch(IOException ioEx) {
+		} catch (IOException ioEx) {
 			log.error("Error truncating lucene index: {}",ioEx.getMessage(),
 											 		   	  ioEx);			
 		} finally {
@@ -344,7 +344,7 @@ public class LuceneIndex
 			} finally {
 				_indexSearcherReferenceManager.release(searcher);
 			}
-		} catch(IOException ioEx) {
+		} catch (IOException ioEx) {
 			log.error("Error freeing the searcher {}",ioEx.getMessage(),
 													  ioEx);
 		} catch (InterruptedException intEx) {

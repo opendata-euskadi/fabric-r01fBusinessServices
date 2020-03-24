@@ -136,7 +136,7 @@ public class TestPersistableModelObjectCRUD<O extends PersistableObjectOID,M ext
 //		loadedModelObj.setEntityVersion(100);		// setting the entityVersion at the client would BREAK the persisted version sequence so an exception should be raised
 //		try {
 //			_crudAPI.save(loadedModelObj);
-//		} catch(Exception ex) {
+//		} catch (Exception ex) {
 //			System.out.println("\tFAILED!! the db's version is NOT the same as the client-provided one!");
 //		}
 

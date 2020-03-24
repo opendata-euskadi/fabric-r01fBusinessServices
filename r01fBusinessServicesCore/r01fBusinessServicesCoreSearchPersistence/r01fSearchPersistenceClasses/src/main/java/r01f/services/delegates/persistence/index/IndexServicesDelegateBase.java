@@ -160,7 +160,7 @@ public abstract class IndexServicesDelegateBase<O extends PersistableObjectOID,M
 				// Index
 				_indexer.updateIndex(securityContext,
 						       		 modelObject);
-			} catch(PersistenceException persistEx) {
+			} catch (PersistenceException persistEx) {
 				outJob = new EnqueuedJob(this.supplyJobOID(),
 		     	 						 EnqueuedJobStatus.FINALIZED_ERROR,
 		     	 						 Throwables.getStackTraceAsString(persistEx));
@@ -200,7 +200,7 @@ public abstract class IndexServicesDelegateBase<O extends PersistableObjectOID,M
 			default:
 				throw new IllegalStateException();
 			}
-		} catch(PersistenceException persistEx) {
+		} catch (PersistenceException persistEx) {
 			outJob = new EnqueuedJob(this.supplyJobOID(),
 	     	 						 EnqueuedJobStatus.FINALIZED_ERROR,
 	     	 						 Throwables.getStackTraceAsString(persistEx));

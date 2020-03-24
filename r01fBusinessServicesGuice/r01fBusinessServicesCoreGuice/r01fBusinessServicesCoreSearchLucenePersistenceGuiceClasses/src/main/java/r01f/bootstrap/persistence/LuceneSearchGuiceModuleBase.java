@@ -82,7 +82,7 @@ public abstract class LuceneSearchGuiceModuleBase
 			}
 			// Create the lucene's FSDDirectory 
 			return FSDirectory.open(new File(indexFilesPath.asAbsoluteString()));
-		} catch(IOException ioEx) {
+		} catch (IOException ioEx) {
 			throw new ProvisionException("Could not provide an instance of Lucene Directory at directory " + indexFilesPath + ": " + ioEx.getMessage(),
 										 ioEx);
 		}
