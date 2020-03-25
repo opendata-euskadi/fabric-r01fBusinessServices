@@ -273,7 +273,12 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 			// If it's a BooleanQueryClause: recurse!
 			if (clause.getClause() instanceof BooleanQueryClause) {
 				String jpqlJoin = _jpqlJoinFor(clause.getOccur());
-				if (prevClauseOccur != null) outJPQL.append(jpqlJoin);
+				if (prevClauseOccur != null) {
+					outJPQL.append(jpqlJoin);
+				} else {
+					String jpqlPrevOp = _jpqlPrevOpFor(clause.getOccur());
+					outJPQL.append(jpqlPrevOp);
+				}
 				if (clauseIt.hasNext()) prevClauseOccur = clause.getOccur();
 				outJPQL.append("(");
 				
@@ -300,8 +305,12 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 			}
 			
 			String jpqlJoin = _jpqlJoinFor(clause.getOccur());
-			
-			if (prevClauseOccur != null) outJPQL.append(jpqlJoin);
+			if (prevClauseOccur != null) {
+				outJPQL.append(jpqlJoin);
+			} else {
+				String jpqlPrevOp = _jpqlPrevOpFor(clause.getOccur());
+				outJPQL.append(jpqlPrevOp);
+			}
 			if (clauseIt.hasNext()) prevClauseOccur = clause.getOccur();
 			
 			outJPQL.append("(");
@@ -320,6 +329,23 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 			break;
 		case SHOULD:
 			outJPQL = " OR ";
+			break;
+		default:
+			throw new IllegalArgumentException();
+		}
+		return outJPQL;
+	}
+	protected String _jpqlPrevOpFor(final QueryClauseOccur occur) {
+		String outJPQL = null;
+		switch(occur) {
+		case MUST:
+			outJPQL = "";
+			break;
+		case MUST_NOT:
+			outJPQL = " NOT ";
+			break;
+		case SHOULD:
+			outJPQL = "";
 			break;
 		default:
 			throw new IllegalArgumentException();
