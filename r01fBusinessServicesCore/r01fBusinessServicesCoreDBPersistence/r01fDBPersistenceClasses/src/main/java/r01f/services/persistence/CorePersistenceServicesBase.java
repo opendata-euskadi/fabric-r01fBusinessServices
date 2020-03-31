@@ -156,14 +156,16 @@ public abstract class CorePersistenceServicesBase
 			if (tenantIdShouldNOTBeNull) log.warn("A call to get an entity manager for a tenant BUT no tenant id was provided; if no tenancy is used, do NOT call {}.getFreshNewEntityManager(tenantId) method, call {}.getFreshNewEntityManager() instead!",
 					 							  callerType.getName(),callerType.getName());
 			if (entityManagerProvider == null) {			
-				throw new IllegalArgumentException(Strings.customized("EntityManager Provider is null for services of {} , check any error in logs at bootstraping....",callerType)) ;
-			} else {	
-				try {
-					outEntityManager = entityManagerProvider.get();
-				} catch (final ProvisionException provex) {
-					throw new IllegalArgumentException(Strings.customized("\n\n Internal Provision Exception for services of {} ,"
-																			+ " check any error in logs at bootstraping !! (at begining of log ) . This could be caused by a configuration error of DB, so check db.persitence ",callerType)) ;
-				}
+				throw new IllegalArgumentException(Strings.customized("EntityManager Provider is null for services of {} , check any error in logs at bootstraping....",
+																	  callerType)) ;
+			} 
+			try {
+				outEntityManager = entityManagerProvider.get();
+			} catch (final ProvisionException provex) {
+				throw new IllegalArgumentException(Strings.customized("Internal Provision Exception for services of {}, " +
+																	  "check any error in logs at bootstraping!! (at begining of log)." + 
+																	  "This might be caused by a configuration error of DB, so check db.persitence",
+																	  callerType)) ;
 			}
 		}
 
