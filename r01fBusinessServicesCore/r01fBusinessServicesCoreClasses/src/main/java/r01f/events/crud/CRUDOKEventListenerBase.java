@@ -33,41 +33,59 @@ public abstract class CRUDOKEventListenerBase
 //
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * The type is needed because guava's event bus does NOT supports generic event types
+	 * A filter is needed because guava's event bus does NOT supports generic event types
 	 * 	- {@link CRUDOperationEvent} is a generic type parameterized with the persistable model object type,
 	 *  - Subscriptions to the event bus are done by event type, that's by {@link CRUDOperationEvent} type
 	 *  - BUT since guava {@link EventBus} does NOT supports generics, the subscriptions are done to the raw {@link CRUDOperationEvent}
 	 *  - ... so ALL listeners will be attached to the SAME event type: {@link CRUDOperationEvent}
 	 *  - ... and ALL listeners will receive {@link CRUDOperationEvent} events
 	 *  - ... but ONLY one should handle it.
-	 * In order for the event handler (listener) to discriminate events to handle, the model object's type
-	 * is used (see {@link #_hasToBeHandled(CRUDOperationEvent)} method)
-	 */
-	protected final Class<? extends ModelObject> _type;
-	/**
-	 * Filters the events using the afected model object
+	 * In order for the event handler (listener) to discriminate events to handle an EventFilter is used
+	 * 
+	 * (see {@link #_hasToBeHandled(COREServiceMethodExecOKEvent)} method)
 	 */
 	protected final transient CRUDOKEventFilter _crudOperationOKEventFilter;
+	
+	@Deprecated
+	protected final Class<? extends ModelObject> _type;
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
+	public CRUDOKEventListenerBase(final CRUDOKEventFilter crudOperationOKEventFilter) {
+		_crudOperationOKEventFilter = crudOperationOKEventFilter;
+		_type = null;
+	}
 	public CRUDOKEventListenerBase(final Class<? extends ModelObject> type) {
+		_crudOperationOKEventFilter = _createCRUDOKEventFilterByModelObjectType(type);
 		_type = type;
-		_crudOperationOKEventFilter = new CRUDOKEventFilter() {
-												@Override @SuppressWarnings("unchecked")
-												public boolean hasTobeHandled(final COREServiceMethodExecOKEvent opEvent) {
-													CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
-																				    					  .as(CRUDResult.class);
-													// the event refers to the same model object type THIS event handler handles;
-													return ReflectionUtils.isSubClassOf(crudResult.as(CRUDOK.class).getObjectType(),
-																						_type);
-												}
-									  };
 	}
 	public CRUDOKEventListenerBase(final Class<? extends ModelObject> type,
 								   final CRUDOKEventFilter crudOperationOKEventFilter) {
-		_type = type;
-		_crudOperationOKEventFilter = crudOperationOKEventFilter;
+		this(new CRUDOKEventFilter() {
+						CRUDOKEventFilter byTypeFilter = _createCRUDOKEventFilterByModelObjectType(type);
+						
+						@Override 
+						public boolean hasTobeHandled(final COREServiceMethodExecOKEvent opEvent) {
+							// a) check if the type matches
+							boolean matchesType = byTypeFilter.hasTobeHandled(opEvent);
+							if (!matchesType) return false;
+							
+							// b) try the given filter
+							return crudOperationOKEventFilter.hasTobeHandled(opEvent);			
+						}
+			 });
+	}
+	private static CRUDOKEventFilter _createCRUDOKEventFilterByModelObjectType(final Class<? extends ModelObject> type) {
+		return new CRUDOKEventFilter() {
+						@Override @SuppressWarnings("unchecked")
+						public boolean hasTobeHandled(final COREServiceMethodExecOKEvent opEvent) {
+							CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
+														    					  .as(CRUDResult.class);
+							// the event refers to the same model object type THIS event handler handles;
+							return ReflectionUtils.isSubClassOf(crudResult.as(CRUDOK.class).getObjectType(),
+																type);
+						}
+			  };
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	DEFAULT DEAD EVENT LISTENER
@@ -181,8 +199,8 @@ public abstract class CRUDOKEventListenerBase
 	 * @param securityContext
 	 * @param event
 	 */
-	public void sendCallbackFor(final SecurityContext securityContext,
-								final COREServiceMethodExecEvent event) {
+	public static void sendCallbackFor(final SecurityContext securityContext,
+									   final COREServiceMethodExecEvent event) {
 		if (event.getCallbackSpec() != null) {
 			COREMethodCallback callback = _createCallbackInstance(event.getCallbackSpec());
 			if (event.isForCOREMethodCallOK()) {
@@ -199,7 +217,7 @@ public abstract class CRUDOKEventListenerBase
 			System.out.println("NO CALLBACK!!!!!!");
 		}
 	}
-	private COREMethodCallback _createCallbackInstance(final COREServiceMethodCallbackSpec callbackSpec) {
+	private static COREMethodCallback _createCallbackInstance(final COREServiceMethodCallbackSpec callbackSpec) {
 		COREMethodCallback callback = null;
 		if (callbackSpec instanceof COREServiceMethodBeanCallbackSpec) {
 			COREServiceMethodBeanCallbackSpec beanCallbackSpec = (COREServiceMethodBeanCallbackSpec)callbackSpec;
@@ -214,22 +232,19 @@ public abstract class CRUDOKEventListenerBase
 /////////////////////////////////////////////////////////////////////////////////////////
 //  DEBUG
 /////////////////////////////////////////////////////////////////////////////////////////
-	protected void _debugEvent(final Logger log,
-						  	   final COREServiceMethodExecOKEvent opOKEvent,final boolean hasToBeHandled) {
-		if (log.isTraceEnabled()) {
-			log.trace(_debugEvent(opOKEvent,
+	protected static void _debugEvent(final Logger logger,
+						  	   		  final COREServiceMethodExecOKEvent opOKEvent,final boolean hasToBeHandled) {
+		if (logger.isTraceEnabled()) {
+			logger.trace(_debugEvent(opOKEvent,
 						  		  hasToBeHandled));
-		} else if (log.isDebugEnabled() && hasToBeHandled) {
-			log.debug(_debugEvent(opOKEvent,
+		} else if (logger.isDebugEnabled() && hasToBeHandled) {
+			logger.debug(_debugEvent(opOKEvent,
 						  		  hasToBeHandled));
 		}
 	}
-	protected String _debugEvent(final COREServiceMethodExecOKEvent opOKEvent,
-							   	 final boolean hasToBeHandled) {
-		return Strings.customized("EventListener registered for events of [{}] entities\n" +
-						  		  "{}\n" +
-						  		  "Handle the event: {}",
-					  			  _type,
+	protected static String _debugEvent(final COREServiceMethodExecOKEvent opOKEvent,
+							   	 		final boolean hasToBeHandled) {
+		return Strings.customized("CRUDOKEventListener: handle the event of {}: {}",
 							  	  opOKEvent.debugInfo(),
 							  	  hasToBeHandled);
 	}

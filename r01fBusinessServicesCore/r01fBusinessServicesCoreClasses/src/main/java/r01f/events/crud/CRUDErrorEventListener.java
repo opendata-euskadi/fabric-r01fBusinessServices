@@ -23,7 +23,7 @@ public class CRUDErrorEventListener
 		// Persistence CRUD operation error
 		COREServiceMethodExecError<?> opError = opErrorEvent.getAsCOREServiceMethodExecError();
 		if (opError.wasBecauseAClientError()) {
-			// do not polute log with client errors ;-)
+			// do not pollute log with client errors ;-)
 			log.info("Client Error: {}",opError.getDetailedMessage());
 		} else {
 			log.error("======================= [{}] OperationNOK event=====================\n{}",
