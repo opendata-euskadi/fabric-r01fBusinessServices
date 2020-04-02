@@ -8,6 +8,7 @@ import com.google.common.eventbus.Subscribe;
 
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import r01f.bootstrap.services.config.ServicesBootstrapConfig;
 import r01f.events.COREServiceMethodExecEventListeners.COREServiceMethodExecOKEventListener;
 import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecEvent;
 import r01f.events.COREServiceMethodExecEvents.COREServiceMethodExecOKEvent;
@@ -23,6 +24,30 @@ import r01f.util.types.Strings;
 
 /**
  * Listener to {@link COREServiceMethodExecOKEvent}s thrown by the persistence layer through the {@link EventBus}
+ * 
+ * ========================================================
+ * BEWARE!!!!!
+ * ========================================================
+ * If no event is handled ensure that:
+ * [1] - The CRUDOKEventListener is binded at a bootstrap module extending CoreServicesBootstrapGuiceModuleBindsEventListeners
+ * 		 <pre class='brush:java'>
+ * 	            @Override
+ *	            public void bindEventListeners(final Binder binder) {
+ *	            	binder.bind(MyCRUDOKEventListener.class)
+ *	            		  .asEagerSingleton();	
+ *	            }
+ * 		 </pre>
+ * [2] - The {@link ServicesBootstrapConfig} specifies how to handle events:
+ * 		 <pre class='brush:java'>
+ *		        ServicesBootstrapConfig bootCfg = ServicesBootstrapConfigBuilder.forClient(clientBootstrapCfg)
+ *		        																.ofCoreModules(// core DB persistence
+ *		        																			   dbPersistenceCoreBootstrapCfg,
+ *		        																			   // UI
+ *		        																			   uiBootstrapCfg)
+ *		        																// event handling
+ *		        																.coreEventsHandledSynchronously()
+ *		        																.build();
+ * 		 </pre>
  * @param <M>
  */
 @Slf4j
@@ -79,17 +104,45 @@ public abstract class CRUDOKEventListenerBase
 		return new CRUDOKEventFilter() {
 						@Override @SuppressWarnings("unchecked")
 						public boolean hasTobeHandled(final COREServiceMethodExecOKEvent opEvent) {
+							// the event refers to the same model object type THIS event handler handles;
 							CRUDResult<? extends ModelObject> crudResult = opEvent.getAsCOREServiceMethodExecOK()
 														    					  .as(CRUDResult.class);
-							// the event refers to the same model object type THIS event handler handles;
-							return ReflectionUtils.isSubClassOf(crudResult.as(CRUDOK.class).getObjectType(),
-																type);
+							Class<? extends ModelObject> theObjType = crudResult.as(CRUDOK.class).getObjectType();
+							boolean isSubClassOf = ReflectionUtils.isSubClassOf(theObjType,type);
+							
+							return isSubClassOf;
 						}
 			  };
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	DEFAULT DEAD EVENT LISTENER
 /////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * ========================================================
+	 * BEWARE!!!!!
+	 * ========================================================
+	 * If no event is handled ensure that:
+	 * [1] - The CRUDOKEventListener is binded at a bootstrap module extending CoreServicesBootstrapGuiceModuleBindsEventListeners
+	 * 		 <pre class='brush:java'>
+	 * 	            @Override
+	 *	            public void bindEventListeners(final Binder binder) {
+	 *	            	binder.bind(MyCRUDOKEventListener.class)
+	 *	            		  .asEagerSingleton();	
+	 *	            }
+	 * 		 </pre>
+	 * [2] - The {@link ServicesBootstrapConfig} specifies how to handle events:
+	 * 		 <pre class='brush:java'>
+	 *		        ServicesBootstrapConfig bootCfg = ServicesBootstrapConfigBuilder.forClient(clientBootstrapCfg)
+	 *		        																.ofCoreModules(// core DB persistence
+	 *		        																			   dbPersistenceCoreBootstrapCfg,
+	 *		        																			   // UI
+	 *		        																			   uiBootstrapCfg)
+	 *		        																// event handling
+	 *		        																.coreEventsHandledSynchronously()
+	 *		        																.build();
+	 * 		 </pre>
+	 * @param deadEvent
+	 */
 	@Subscribe
 	public void handleDeadEvent(final DeadEvent deadEvent) {
 		log.warn("> Not handled event:  {}",
