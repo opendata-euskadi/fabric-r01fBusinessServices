@@ -23,8 +23,7 @@ public class RESTMessageConverterForException {
 //
 /////////////////////////////////////////////////////////////////
 	public  static class CoreServiceExceptionConverter
-	          extends RESTMessageConverterBaseForBasicTypes<COREServiceException>{
-
+	          extends RESTMessageConverterBaseForBasicTypes<COREServiceException> {
 		public CoreServiceExceptionConverter() {
 			super(PersistenceException.class);
 		}
