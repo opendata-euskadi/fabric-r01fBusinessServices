@@ -117,8 +117,8 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 																		   filter)
 						: _createTranslatesIndexableFieldIDToDBEntityField(new FactoryFrom<F,TranslatesIndexableFieldIDToDBEntityField>() {
 																					@Override
-																					public TranslatesIndexableFieldIDToDBEntityField from(final F filter) {
-																						return new IndexableFieldIDToDBEntityFieldTranslatorByDefault<F>(filter);	// default translator
+																					public TranslatesIndexableFieldIDToDBEntityField from(final F theFilter) {
+																						return new IndexableFieldIDToDBEntityFieldTranslatorByDefault<F>(theFilter);	// default translator
 																					}
 																			},
 																		    filter);
@@ -134,8 +134,8 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 																			  filter)
 					: _createTranslatesSearchFilterClauseToJPQLWherePredicate(new FactoryFrom<F,TranslatesSearchFilterClauseToJPQLWherePredicate>() {	// default clause to jpql where predicate factory
 																					@Override
-																					public SearchFilterClauseToJPQLWherePredicate from(final F filter) {
-																						return new SearchFilterClauseToJPQLWherePredicate(filter);
+																					public SearchFilterClauseToJPQLWherePredicate from(final F theFilter) {
+																						return new SearchFilterClauseToJPQLWherePredicate(theFilter);
 																					}
 																		      },
 																			  filter);
@@ -157,15 +157,15 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 																						},	// default
 																						qry);
 	}
-	protected SetsJPQLWherePredicateParamFromSearchFilterClauseValue _createSetsJPQLWherePredicateParamFromSearchFilterClauseValue(final FactoryFrom<Query,SetsJPQLWherePredicateParamFromSearchFilterClauseValue> setsJpqlWherePredicateParamsFromFilterClauseValueFactory,
-																																   final Query qry) {
+	protected static SetsJPQLWherePredicateParamFromSearchFilterClauseValue _createSetsJPQLWherePredicateParamFromSearchFilterClauseValue(final FactoryFrom<Query,SetsJPQLWherePredicateParamFromSearchFilterClauseValue> setsJpqlWherePredicateParamsFromFilterClauseValueFactory,
+																																   		  final Query qry) {
 		if (setsJpqlWherePredicateParamsFromFilterClauseValueFactory == null) throw new IllegalArgumentException();
 		return setsJpqlWherePredicateParamsFromFilterClauseValueFactory.from(qry);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  META-DATA TO DB COLUMN TRANSLATION
 /////////////////////////////////////////////////////////////////////////////////////////
-	protected String _dbEntityFieldNameForOid(final TranslatesIndexableFieldIDToDBEntityField translatesFieldToDBEntityField) {
+	protected static String _dbEntityFieldNameForOid(final TranslatesIndexableFieldIDToDBEntityField translatesFieldToDBEntityField) {
 		FieldID fieldId = FieldID.from(HasMetaDataForHasOIDModelObject.SEARCHABLE_METADATA.OID);
 		return translatesFieldToDBEntityField.dbEntityFieldNameFor(fieldId);
 	}
@@ -174,32 +174,36 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 /////////////////////////////////////////////////////////////////////////////////////////
 	public String composeCountJPQL(final F filter) {
 		TranslatesIndexableFieldIDToDBEntityField translatesFieldToDBEntityField = _createTranslatesIndexableFieldIDToDBEntityField(filter);
-		return _composeJPQL("COUNT("+_entityAlias+")",	// count query
-							filter,null,		// no ordering color
-							translatesFieldToDBEntityField);
+		String jpql = _composeJPQL("COUNT(" + _entityAlias + ")",	// count query
+								   filter,null,		// no ordering color
+								   translatesFieldToDBEntityField);
+		return jpql;
 	}
 	public String composeRetrieveJPQL(final F filter,final Collection<SearchResultsOrdering> ordering) {
 		TranslatesIndexableFieldIDToDBEntityField translatesFieldToDBEntityField = _createTranslatesIndexableFieldIDToDBEntityField(filter);
-		return _composeJPQL(_entityAlias,	// not a count query
-						    filter,ordering,
-						    translatesFieldToDBEntityField);
+		String jpql = _composeJPQL(_entityAlias,	// not a count query
+						    	   filter,ordering,
+						    	   translatesFieldToDBEntityField);
+		return jpql;
 	}
 	public String composeRetrieveOidsJPQL(final F filter) {
 		TranslatesIndexableFieldIDToDBEntityField translatesFieldToDBEntityField = _createTranslatesIndexableFieldIDToDBEntityField(filter);
 		String oidDBEntityField = _dbEntityFieldNameForOid(translatesFieldToDBEntityField);
-		return _composeJPQL(Strings.customized(_entityAlias+".{}",
-											   oidDBEntityField),
-								   			   filter,null,	// no ordering
-								   			   translatesFieldToDBEntityField);
+		String jpql = _composeJPQL(Strings.customized(_entityAlias+".{}",
+											   		  oidDBEntityField),
+								   			   		  filter,null,	// no ordering
+								   			   		  translatesFieldToDBEntityField);
+		return jpql;
 	}
 	protected String _composeJPQL(final String colSpec,
 							      final F filter,
 							      final Collection<SearchResultsOrdering> ordering) {
 		TranslatesIndexableFieldIDToDBEntityField translatesFieldToDBEntityField = _createTranslatesIndexableFieldIDToDBEntityField(filter);
-		return _composeJPQL(colSpec,
-							filter,
-							ordering,
-							translatesFieldToDBEntityField);
+		String jpql = _composeJPQL(colSpec,
+								   filter,
+								   ordering,
+								   translatesFieldToDBEntityField);
+		return jpql;
 	}
 	protected String _composeJPQL(final String colSpec,
 							      final F filter,
@@ -230,6 +234,7 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 		
 		return jpql.toString();
 	}
+	@SuppressWarnings("unused")
 	protected String _dbEntityTypeNameFor(final F filter) {
 		return _dbEntityType.getSimpleName();
 	}
@@ -296,7 +301,7 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 			// is DB based
 			boolean isDBEntitySupportedField = _isSupportedDBEntityField(clause.getClause());
 			if (!isDBEntitySupportedField)  continue;
-			
+
 			String jpqlQuery = filterClauseToJpqlPredicate.wherePredicateFrom(clause.getClause());
 			if (jpqlQuery == null) {
 				log.error("A null query clause was returned for field id={}",
@@ -318,7 +323,7 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 			outJPQL.append(")");
 		}		
     }
-	protected String _jpqlJoinFor(final QueryClauseOccur occur) {
+	protected static String _jpqlJoinFor(final QueryClauseOccur occur) {
 		String outJPQL = null;
 		switch(occur) {
 		case MUST:
@@ -335,7 +340,7 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 		}
 		return outJPQL;
 	}
-	protected String _jpqlPrevOpFor(final QueryClauseOccur occur) {
+	protected static String _jpqlPrevOpFor(final QueryClauseOccur occur) {
 		String outJPQL = null;
 		switch(occur) {
 		case MUST:
@@ -567,13 +572,13 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 	 * @param clause
 	 * @return
 	 */
-	protected boolean _isSupportedDBEntityField(final QueryClause clause) {
+	protected static boolean _isSupportedDBEntityField(final QueryClause clause) {
 		FieldID facetsField = FieldID.from(TypeMetaDataForModelObjectBase.SEARCHABLE_METADATA.TYPE_FACETS);
 		if (clause.getFieldId().is(facetsField)) return false;
 		return true;
 	}
-	protected void _setJPAQueryParameter(final QueryClause clause,
-										 final SetsJPQLWherePredicateParamFromSearchFilterClauseValue clauseValueToJPQLPredicateParam) {
+	protected static void _setJPAQueryParameter(final QueryClause clause,
+										 	    final SetsJPQLWherePredicateParamFromSearchFilterClauseValue clauseValueToJPQLPredicateParam) {
 		String dbFieldId = clause.getFieldId().asString();
 		
 		if (clause instanceof EqualsQueryClause<?>) {
