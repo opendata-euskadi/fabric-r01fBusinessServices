@@ -446,9 +446,8 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 				.persist(dbEntityToPersist);
 
 		// a flush() call is needed to get the jpa's assigned entity version
-		this.getEntityManager()
-				.flush();
-
+		if (this.getEntityManager().isJoinedToTransaction()) this.getEntityManager()
+																 .flush();
 
 		// [2]: build the result
 		M outModelObj = _wrapDBEntityToModelObject(securityContext,
