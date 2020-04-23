@@ -111,31 +111,32 @@ public abstract class DBGuiceModuleBase
 	 */
 	static class JPAPersistenceServiceControl
 	  implements ServiceHandler {
-
-		private final PersistService _service;
+		private final PersistService _persistService;
 
 		@Inject
 		public JPAPersistenceServiceControl(final PersistService service) {
-			_service = service;
+			_persistService = service;
 
 		}
 		@Override
 		public void start() {
-			if (_service == null) throw new IllegalStateException("NO persistence service available!");
+			if (_persistService == null) throw new IllegalStateException("NO persistence service available!");
 			log.warn("######################################################################################");
 			log.warn("Starting PersistService");
 			log.warn("######################################################################################");
-			_service.start();
+			_persistService.start();
+			log.warn("STARTED!!#############################################################################");
 		}
 		@Override
 		public void stop() {
-			if (_service == null) throw new IllegalStateException("NO persistence service available!");
-		log.warn("######################################################################################");
-		log.warn("Stopping PersistService");
-		log.warn("######################################################################################");
+			if (_persistService == null) throw new IllegalStateException("NO persistence service available!");
+			log.warn("######################################################################################");
+			log.warn("Stopping PersistService");
+			log.warn("######################################################################################");
 			try {
-				_service.stop();
+				_persistService.stop();
 			} catch (Throwable th) {/* just in the case where PersistenceService were NOT started */ }
+			log.warn("STOPPED!!#############################################################################");
 		}
 	}
 }
