@@ -418,8 +418,8 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 													.transform(new Function<DB,M>() {
 																		@Override
 																		public M apply(final DB dbEntity) {
-																			return _dbEntityIntoModelObjectTransformer.dbEntityToModelObject(securityContext,
-																																			 dbEntity);
+																			return DBFindForModelObjectBase.this.dbEntityToModelObject(securityContext,
+																																	   dbEntity);
 																		}
 																})
 													.toList();
