@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import r01f.model.services.COREServiceErrorType;
 import r01f.model.services.COREServiceErrorTypes;
 import r01f.model.services.COREServiceMethod;
+import r01f.model.services.COREServiceMethodExecError;
 import r01f.patterns.IsBuilder;
 import r01f.securitycontext.SecurityContext;
 import r01f.util.types.Strings;
@@ -90,6 +91,9 @@ public class PersistenceOperationExecResultBuilder
 		protected final COREServiceMethod _requestedMethod;
 		
 		public <T> PersistenceOperationExecError<T> because(final PersistenceOperationExecError<?> other) {
+			return this.because(other.getError());
+		}
+		public <T> PersistenceOperationExecError<T> because(final COREServiceMethodExecError<?> other) {
 			return this.because(other.getError());
 		}
 		public <T> PersistenceOperationExecError<T> because(final Throwable th) {
