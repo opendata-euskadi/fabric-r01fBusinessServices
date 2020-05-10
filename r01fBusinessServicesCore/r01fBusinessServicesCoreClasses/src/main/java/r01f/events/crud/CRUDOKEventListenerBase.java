@@ -109,7 +109,6 @@ public abstract class CRUDOKEventListenerBase
 														    					  .as(CRUDResult.class);
 							Class<? extends ModelObject> theObjType = crudResult.as(CRUDOK.class).getObjectType();
 							boolean isSubClassOf = ReflectionUtils.isSubClassOf(theObjType,type);
-							
 							return isSubClassOf;
 						}
 			  };
