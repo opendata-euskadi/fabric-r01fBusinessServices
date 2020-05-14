@@ -43,7 +43,7 @@ import r01f.xmlproperties.annotations.XMLPropertiesComponentImpl;
  * Utility type that encapsulates the services life cycle operations
  * <ul>
  * 	<li>Guice injector creation</li>
- * 	<li>Start / Stop of services that needs an explicit starting (ie Persistence services, thread pools, indexexers, etc)</li>
+ * 	<li>Start / Stop of services that needs an explicit starting (ie Persistence services, thread pools, indexers, etc)</li>
  * </ul>
  *
  * This type is mainly used at:
