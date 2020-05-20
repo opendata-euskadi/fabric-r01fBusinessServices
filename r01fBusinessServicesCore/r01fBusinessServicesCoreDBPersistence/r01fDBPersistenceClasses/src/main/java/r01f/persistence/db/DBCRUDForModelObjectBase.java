@@ -401,7 +401,6 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 								   		dbEntityToPersist,
 								   		requestedOp,performedOp,
 								   		singleUseDBEntityPersistenceEventListener);
-
 		} catch (PersistenceException persistEx) {
 			log.error("Error while persisting a db entity of type {}: {}",
 					  _DBEntityType,
@@ -591,15 +590,16 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 												   				               	   final M modelObj,
 												   				               	   final PersistenceRequestedOperation requestedOp,
 												   				               	   final  PersistenceException persistEx) {
-		  log.warn(">>>_buildCRUDResultErrorIfEntityExistsOnConcurrencyOrThrow....");
+		log.warn(">>>_buildCRUDResultErrorIfEntityExistsOnConcurrencyOrThrow....");
 
-		  if (persistEx.getCause() instanceof org.eclipse.persistence.exceptions.DatabaseException
+		if (persistEx.getCause() instanceof org.eclipse.persistence.exceptions.DatabaseException
 			 && persistEx.getCause().getCause() instanceof SQLException) {
 
-			  	SQLException sqlEx = (SQLException)persistEx.getCause().getCause();
+				SQLException sqlEx = (SQLException)persistEx.getCause().getCause();
 
-			  	if (1 == sqlEx.getErrorCode()) {
-					log.warn(">> CRUD Error ORA-00001 because Entity {} already exists! ",modelObj.getOid().asString());
+				if (1 == sqlEx.getErrorCode()
+					|| 1062 == sqlEx.getErrorCode()) {
+					log.warn(">> CRUD Error ORA-00001/MySQL-01062 because Entity {} already exists! ",modelObj.getOid().asString());
 					return CRUDResultBuilder.using(securityContext)
 							.on(_modelObjectType)
 							.notCreated()
@@ -632,8 +632,9 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 
 				SQLIntegrityConstraintViolationException sqlEx = (SQLIntegrityConstraintViolationException)persistEx.getCause().getCause();
 
-				if (1 == sqlEx.getErrorCode()) {
-					log.warn(">> CRUD Error ORA-00001 because Entity {} already exists! ",modelObj.getOid().asString());
+				if (1 == sqlEx.getErrorCode()
+					|| 1062 == sqlEx.getErrorCode()) {
+					log.warn(">> CRUD Error ORA-00001/MySQL-01062 because Entity {} already exists! ",modelObj.getOid().asString());
 					return CRUDResultBuilder.using(securityContext)
 							.on(_modelObjectType)
 							.notCreated()
