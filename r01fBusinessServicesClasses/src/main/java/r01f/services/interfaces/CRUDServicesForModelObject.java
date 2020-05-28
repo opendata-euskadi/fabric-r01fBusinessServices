@@ -2,6 +2,7 @@ package r01f.services.interfaces;
 
 import java.util.Date;
 
+import lombok.SneakyThrows;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable;
@@ -117,5 +118,23 @@ public interface CRUDServicesForModelObject<O extends PersistableObjectOID,M ext
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 								final O oid,
 								final COREServiceMethodCallbackSpec callbackSpec);
-	
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////
+	@SneakyThrows
+	public static <O extends PersistableObjectOID,M extends PersistableModelObject<O>> M getOrNullFrom(final CRUDResult<M> crudResult) {
+		M out = null;
+		if (crudResult.hasSucceeded()) {
+			out = crudResult.asCRUDOK()
+							.getMethodExecResult();
+		} else if (crudResult.asCRUDError()
+							 .wasBecauseClientRequestedEntityWasNOTFound()) {
+			out = null;
+		} else {
+			Throwable th = crudResult.asCRUDError()
+									 .getError();
+			throw th;
+		}
+		return out;
+	}
 }
