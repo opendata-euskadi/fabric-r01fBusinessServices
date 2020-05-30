@@ -128,8 +128,8 @@ public abstract class DBCRUDForVersionableModelObjectBase<O extends OIDForVersio
 		M activeVersion = null;
 		if (CollectionUtils.hasData(activeVersionEntities)) {
 			DB activeVersionDBEntity = CollectionUtils.of(activeVersionEntities)
-													  .pickOneAndOnlyElement("The DB is NOT consistent: there's more than a single version of {} active at {}",
-																			 oid,date);
+													  .pickOneAndOnlyElement("The DB is NOT consistent: there's more than a single version of {}={} active at {}",
+																			 _modelObjectType.getSimpleName(),oid,date);
 			activeVersion = this.dbEntityToModelObject(securityContext,
 												   	   activeVersionDBEntity);
 		}
@@ -163,8 +163,8 @@ public abstract class DBCRUDForVersionableModelObjectBase<O extends OIDForVersio
 		M activeVersion = null;
 		if (CollectionUtils.hasData(workVersionEntities)) {
 			DB activeVersionEntity = CollectionUtils.of(workVersionEntities)
-												    .pickOneAndOnlyElement("The DB is NOT consistent: there's more than a single work version of {}",
-																		   oid);
+												    .pickOneAndOnlyElement("The DB is NOT consistent: there's more than a single work version of {}={}",
+																		   _modelObjectType.getSimpleName(),oid);
 			activeVersion = this.dbEntityToModelObject(securityContext,
 												   	   activeVersionEntity);
 		}
