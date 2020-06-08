@@ -45,13 +45,13 @@ public abstract class FindServicesForModelObjectDelegateBase<O extends Persistab
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIND
 /////////////////////////////////////////////////////////////////////////////////////////
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public FindOIDsResult<O> findAll(final SecurityContext securityContext) {
 		FindOIDsResult<O> outResults = this.getServiceImplAs(FindServicesForModelObject.class)
 												.findAll(securityContext);
 		return outResults;
 	}
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public FindOIDsResult<O> findByCreateDate(final SecurityContext securityContext,
 										  	  final Range<Date> createDate) {
 		// [0] - check the date
@@ -67,7 +67,7 @@ public abstract class FindServicesForModelObjectDelegateBase<O extends Persistab
 																  createDate);
 		return outResults;
 	}
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public FindOIDsResult<O> findByLastUpdateDate(final SecurityContext securityContext,
 											  	  final Range<Date> lastUpdateDate) {
 		// [0] - check the date
@@ -83,7 +83,7 @@ public abstract class FindServicesForModelObjectDelegateBase<O extends Persistab
 																   	   	   lastUpdateDate);
 		return outResults;
 	}
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public FindOIDsResult<O> findByCreator(final SecurityContext securityContext,
 									   	   final UserCode creatorUserCode) {
 		// [0] - check the date
@@ -99,7 +99,7 @@ public abstract class FindServicesForModelObjectDelegateBase<O extends Persistab
 															   creatorUserCode);
 		return outResults;
 	}
-	@Override 
+	@Override @SuppressWarnings("unchecked")
 	public FindOIDsResult<O> findByLastUpdator(final SecurityContext securityContext,
 										       final UserCode lastUpdatorUserCode) {
 		// [0] - check the date

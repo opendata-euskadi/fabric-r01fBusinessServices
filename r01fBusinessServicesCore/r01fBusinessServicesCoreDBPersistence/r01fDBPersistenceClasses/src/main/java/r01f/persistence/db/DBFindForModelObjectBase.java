@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
@@ -238,7 +239,7 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 																dateRange.getLowerBound());
 				} else if (dateRange.hasUpperBound()) {
 					outPredicate = builder.lessThanOrEqualTo(root.<Date>get(dbColName),
-															 dateRange.getLowerBound());
+															 dateRange.getUpperBound());
 				}
 			}
 			return outPredicate;
@@ -277,6 +278,42 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 			}
 			return outPredicate;
 		}
+		@SuppressWarnings("unchecked")
+		public SELF_TYPE setAscendingOrderBy(final String... dbCols) {
+			if (CollectionUtils.isNullOrEmpty(dbCols)) return (SELF_TYPE)this;
+			
+			CriteriaBuilder builder = this.getCriteriaBuilder();
+			Root<? extends DB> root = this.getRoot();
+			List<Order> listOrder = FluentIterable.from(dbCols)
+												  .transform(new Function<String,Order>() {
+																	@Override
+																	public Order apply(final String dbCol) {
+																		return builder.asc(root.get(dbCol));
+																	}
+												  			 })
+												  .toList();
+			this.getCriteriaQuery()
+				.orderBy(listOrder);
+			return (SELF_TYPE)this;
+		}
+		@SuppressWarnings("unchecked")
+		public SELF_TYPE setDescendingOrderBy(final String... dbCols) {
+			if (CollectionUtils.isNullOrEmpty(dbCols)) return (SELF_TYPE)this;
+			
+			CriteriaBuilder builder = this.getCriteriaBuilder();
+			Root<? extends DB> root = this.getRoot();
+			List<Order> listOrder = FluentIterable.from(dbCols)
+												  .transform(new Function<String,Order>() {
+																	@Override
+																	public Order apply(final String dbCol) {
+																		return builder.desc(root.get(dbCol));
+																	}
+												  			 })
+												  .toList();
+			this.getCriteriaQuery()
+				.orderBy(listOrder);
+			return (SELF_TYPE)this;
+		}
 	}
 	@Accessors(prefix="_")
 	protected class QueryDBEntityWrapper
@@ -305,6 +342,18 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 			this.composeCriteriaQuery();
 			Collection<? extends DB> dbEntities = _entityManager.createQuery(_criteriaQuery)
 																	.setHint(QueryHints.READ_ONLY,HintValues.TRUE)
+																.getResultList();
+			FindResult<M> outObjs = _buildResultsFromDBEntities(securityContext,
+															    dbEntities);
+			return outObjs;
+		}
+		public FindResult<M> findUsing(final SecurityContext securityContext,
+									   final int numResults) {
+			if (numResults <= 0) throw new IllegalArgumentException("The number of db entities to be returnes MUST be > 0");
+			this.composeCriteriaQuery();
+			Collection<? extends DB> dbEntities = _entityManager.createQuery(_criteriaQuery)
+																	.setHint(QueryHints.READ_ONLY,HintValues.TRUE)
+																	.setMaxResults(numResults)
 																.getResultList();
 			FindResult<M> outObjs = _buildResultsFromDBEntities(securityContext,
 															    dbEntities);

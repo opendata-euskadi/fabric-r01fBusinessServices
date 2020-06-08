@@ -79,15 +79,13 @@ public abstract class CoreFindServicesForModelObjectBase<O extends PersistableOb
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIND
 /////////////////////////////////////////////////////////////////////////////////////////
-	@SuppressWarnings("unchecked")
-	@Override 
+	@Override @SuppressWarnings("unchecked")
 	public FindOIDsResult<O> findAll(final SecurityContext securityContext) {
 		return this.forSecurityContext(securityContext)
 						.createDelegateAs(FindServicesForModelObject.class)
 							.findAll(securityContext);
 	}
-	@SuppressWarnings("unchecked")
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public FindOIDsResult<O> findByCreateDate(final SecurityContext securityContext,
 											  final Range<Date> createDate) {
 		return this.forSecurityContext(securityContext)
@@ -95,8 +93,7 @@ public abstract class CoreFindServicesForModelObjectBase<O extends PersistableOb
 							.findByCreateDate(securityContext,
 											  createDate);
 	}
-	@SuppressWarnings("unchecked")
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public FindOIDsResult<O> findByLastUpdateDate(final SecurityContext securityContext,
 												  final Range<Date> lastUpdateDate) {
 		return this.forSecurityContext(securityContext)
@@ -104,7 +101,7 @@ public abstract class CoreFindServicesForModelObjectBase<O extends PersistableOb
 							.findByLastUpdateDate(securityContext,
 												  lastUpdateDate);
 	}
-	@Override 
+	@Override @SuppressWarnings("unchecked")
 	public FindOIDsResult<O> findByCreator(final SecurityContext securityContext,
 										   final UserCode creatorUserCode) {
 		return this.forSecurityContext(securityContext)
@@ -112,7 +109,7 @@ public abstract class CoreFindServicesForModelObjectBase<O extends PersistableOb
 							.findByCreator(securityContext,
 										   creatorUserCode);
 	}
-	@Override 
+	@Override @SuppressWarnings("unchecked")
 	public FindOIDsResult<O> findByLastUpdator(final SecurityContext securityContext,
 											   final UserCode lastUpdtorUserCode) {
 		return this.forSecurityContext(securityContext)
