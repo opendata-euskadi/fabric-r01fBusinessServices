@@ -84,7 +84,6 @@ public abstract class DBSearcherBase<F extends SearchFilter,I extends SearchResu
 				  countQry.toString());
 		log.debug("search-count: total number of results: {}",
 				  totalItems);
-		
 		return totalItems;
 	}
 	@Override
@@ -128,7 +127,8 @@ public abstract class DBSearcherBase<F extends SearchFilter,I extends SearchResu
 		}
 
 		// [3] - Compose the search results
-		final Language uiLang = filter != null ? filter.getUILanguage() : Language.DEFAULT;
+		final Language uiLang = filter != null ? filter.getUILanguage() 
+											   : Language.DEFAULT;
 		SearchResults<F,I> outResults = new SearchResults<F,I>(filter,
 					  										   totalItems,firstRowNum,
 					  										   numberOfRows,
