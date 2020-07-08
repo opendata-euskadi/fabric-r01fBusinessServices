@@ -498,8 +498,13 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 								  	  	  		   pk);
 		// [2]: Delete the entity
 		if (dbEntity != null) {
-			this.getEntityManager().refresh(dbEntity);		// refresh the dbentity since it could be modified (ie by setting a bi-directional relation)
-			this.getEntityManager().remove(dbEntity);
+			this.getEntityManager()
+				.refresh(dbEntity);		// refresh the dbentity since it could be modified (ie by setting a bi-directional relation)
+			this.getEntityManager()
+				.remove(dbEntity);
+			this.getEntityManager()
+			 	.flush();
+			
 			M outModelObj =  _wrapDBEntityToModelObject(securityContext,
 												  		dbEntity);
 			outResult = CRUDResultBuilder.using(securityContext)
