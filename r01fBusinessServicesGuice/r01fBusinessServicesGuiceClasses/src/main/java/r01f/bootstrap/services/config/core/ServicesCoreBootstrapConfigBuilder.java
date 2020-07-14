@@ -75,7 +75,12 @@ public abstract class ServicesCoreBootstrapConfigBuilder
 		public ServicesConfigBuilderBeanCOREBootstapSubModuleStep findServicesExtending(final Class<? extends CoreService> servicesImplIfaceType) {
 			return new ServicesConfigBuilderBeanCOREBootstapSubModuleStep(_coreAppCode,_coreModule,
 																		  _coreBootstrapGuiceModuleType,
-																		   servicesImplIfaceType);
+																		  servicesImplIfaceType);
+		}
+		public ServicesConfigBuilderBeanCOREBootstapSubModuleStep doNOTFindServices() {
+			return new ServicesConfigBuilderBeanCOREBootstapSubModuleStep(_coreAppCode,_coreModule,
+																		  _coreBootstrapGuiceModuleType,
+																		  null);
 		}
 	}
 	public final class ServicesConfigBuilderBeanCOREBootstapSubModuleStep 
