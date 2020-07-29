@@ -1,5 +1,6 @@
 package r01f.persistence.db;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -37,6 +38,7 @@ import r01f.persistence.db.entities.DBEntityForModelObject;
 import r01f.persistence.db.entities.primarykeys.DBPrimaryKeyForModelObject;
 import r01f.persistence.db.entities.primarykeys.DBPrimaryKeyForModelObjectImpl;
 import r01f.securitycontext.SecurityContext;
+import r01f.util.types.Dates;
 import r01f.util.types.Strings;
 import r01f.util.types.collections.CollectionUtils;
 
@@ -328,4 +330,20 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 		}
 		return outResult;
 	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////
+	protected Date _lastEntityUpdateDate() {
+		String jpql = Strings.customized("SELECT MAX(e._lastUpdateDate) " +
+										   "FROM {} e " + 
+										  "GROUP BY e._lastUpdateDate",
+										 _DBEntityType.getSimpleName());
+		Tuple tuple = _entityManager.createQuery(jpql,
+												 Tuple.class)
+								    .getSingleResult();
+		Calendar cal = tuple != null ? tuple.get(0,Calendar.class)
+									 : null;
+		return cal != null ? Dates.fromCalendar(cal)
+						   : new Date();
+	}	
 }
