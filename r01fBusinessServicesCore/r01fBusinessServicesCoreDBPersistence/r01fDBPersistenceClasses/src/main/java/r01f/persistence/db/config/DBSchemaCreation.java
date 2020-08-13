@@ -88,7 +88,7 @@ public class DBSchemaCreation {
 		// [2] == Schema generation from DDL scripts
 		// specify the file system directory in which EclipseLink writes (outputs) DDL files. - See more at: http://www.eclipse.org/eclipselink/documentation/2.5/jpa/extensions/p_application_location.htm#CACHGDEJ
 		String ddlScriptPath = xmlProps.propertyAt("persistence/schema/writeDDLScriptTo")
-								 			.asString();	// Path.from(Strings.customized("d:/develop/temp_dev/{}",appCode))
+								 			.asString();	// Path.from(Strings.customized("c:/develop/temp_dev/{}",appCode))
 		if (Strings.isNOTNullOrEmpty(ddlScriptPath)) {
 			String theDDLScriptPath = ddlScriptPath		// the properties specified path can have placeholders for the appCode or the home location
 											 .replaceAll("\\{APPCODE\\}",appCode.asString())
