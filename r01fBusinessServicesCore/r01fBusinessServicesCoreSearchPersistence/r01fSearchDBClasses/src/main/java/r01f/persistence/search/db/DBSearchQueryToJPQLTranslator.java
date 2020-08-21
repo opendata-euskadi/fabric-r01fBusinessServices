@@ -409,14 +409,13 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 		public String wherePredicateFrom(final ContainsTextQueryClause containsTextQry) {
 			if (Strings.isNullOrEmpty(containsTextQry.getText())) return null;
 			
-			
 			String template = null;
 			if (containsTextQry.isBegining()) {
-				template = "upper("+_entityAlias+".{}) LIKE '%{}'";
+				template = "upper(" + _entityAlias + ".{}) LIKE '{}%'";
 			} else if (containsTextQry.isEnding()) {
-				template = "upper("+_entityAlias+".{}) LIKE '{}%'";			
+				template = "upper(" + _entityAlias + ".{}) LIKE '%{}'";			
 			} else if (containsTextQry.isContaining()) {
-				template = "upper("+_entityAlias+".{}) LIKE '%{}%'";
+				template = "upper(" + _entityAlias + ".{}) LIKE '%{}%'";
 			} else if (containsTextQry.isFullText()) {
 				boolean fullTextSearchEnabled = _dbModuleConfig.isFullTextSearchSupported(_entityManager); 
 				log.info("FullText search enabled: {}",
@@ -449,13 +448,13 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 						// IMPORTANT!! see: http://docs.oracle.com/cd/B28359_01/text.111/b28304/csql.htm#i997503
 						// 		Oracle Text MUST be enabled
 						
-						// Generate: SQL(  'CONTAINS(?,?,1) > 0,colXX,:text)
-						template = "SQL(  'CONTAINS(?,?,1) > 0',{},'{}')";
+						// Generate: SQL('CONTAINS(?,?,1) > 0,colXX,:text)
+						template = "SQL('CONTAINS(?,?,1) > 0',{},'{}')";
 					}
 				}
 				else {
 					// simulate full text
-					template = "upper("+_entityAlias+".{}) LIKE '%{}%'";
+					template = "upper(" + _entityAlias + ".{}) LIKE '%{}%'";
 				}
 			}
 			String dbFieldId = _translatesFieldToDBEntityField.dbEntityFieldNameFor(containsTextQry.getFieldId());
@@ -473,16 +472,18 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 				filteringText = text.split(" ")[0];			// use only the FIRST word (no multiple word is allowed)
 			}
 			// a minimal sanitization of the filtering text
-			filteringText = new StringBuilder(filteringText					
-					   				  .replaceAll("%","")		// remove all %
-									  .replaceAll("'","")		// remove all '
-									  .replaceAll("\"","")		// remove all "
-									  .replaceAll("ALTER","")	
-									  .replaceAll("DROP","")	
-									  .replaceAll("DELETE","")
-									  .replaceAll("INSERT","")
-									  .replaceAll("UPDATE","")
-									  .replaceAll("SELECT",""))
+			filteringText = new StringBuilder(filteringText		// it's already in UPPERCASE					
+								   				  .replaceAll("%","")		// remove all %
+												  .replaceAll("'","")		// remove all '
+												  .replaceAll("\"","")		// remove all "
+												  .replaceAll("SELECT","")
+												  .replaceAll("ALTER","")	
+												  .replaceAll("DROP","")	
+												  .replaceAll("DELETE","")
+												  .replaceAll("INSERT","")
+												  .replaceAll("UPDATE","")
+												  .replaceAll("EXPORT","")
+												  .replaceAll("IMPORT",""))
 								  .toString();
 			String outPredStr = Strings.customized(template,
 				          			  			   dbFieldId,filteringText);		// the field and the value!!!
