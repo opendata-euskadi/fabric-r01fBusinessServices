@@ -21,13 +21,13 @@ import r01f.model.ModelObject;
  * </ul>
  * 
  * Create a model object type (implement an interface extending {@link r01mo.model.interfaces.R01MModelObject})
- * This type MUST contain a field annotated with @Inject y @R01MModelObjectExtension that will be injected automatically
+ * This type MUST contain a field annotated with @ModelObjectExtension that will be injected automatically
  * by the infrastructure.
  * 	<pre class='brush:java'>
  * 		public class R01MContent 
  * 		  implements R01MModelObject {
  * 			...
- * 			@Inject @R01MModelObjectExtension
+ * 			@ModelObjectExtension
  *  		private transient R01MContentExtension _extension;	// this object encapsulates the server-interaction logic 
  *  		...
  * 		} 
