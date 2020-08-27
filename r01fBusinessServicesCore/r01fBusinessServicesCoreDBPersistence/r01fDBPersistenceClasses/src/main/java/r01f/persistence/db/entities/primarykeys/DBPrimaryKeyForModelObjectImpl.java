@@ -21,20 +21,20 @@ public class DBPrimaryKeyForModelObjectImpl
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
-    /**
-     * Oid
-     */
-    @Getter @Setter private String _oid;
-    
+	/**
+	 * Oid
+	 */
+	@Getter @Setter private String _oid;
+	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
-    public static <O extends OID> DBPrimaryKeyForModelObjectImpl from(final O oid) {
-    	return new DBPrimaryKeyForModelObjectImpl(oid.asString());
-    }
-    public static DBPrimaryKeyForModelObjectImpl from(final String oid) {
-    	return new DBPrimaryKeyForModelObjectImpl(oid);
-    }
+	public static <O extends OID> DBPrimaryKeyForModelObjectImpl from(final O oid) {
+		return new DBPrimaryKeyForModelObjectImpl(oid.asString());
+	}
+	public static DBPrimaryKeyForModelObjectImpl from(final String oid) {
+		return new DBPrimaryKeyForModelObjectImpl(oid);
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
