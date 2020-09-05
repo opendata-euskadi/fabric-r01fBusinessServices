@@ -15,7 +15,7 @@ import r01f.services.interfaces.CountServicesForModelObject;
  * Service layer delegated type for COUNT operations
  */
 public abstract class CountServicesForModelObjectDelegateBase<O extends PersistableObjectOID,M extends PersistableModelObject<O>>
-		      extends PersistenceServicesForModelObjectDelegateBase<O,M>
+		      extends PersistenceServicesDelegateForModelObjectBase<O,M>
 		   implements CountServicesForModelObject<O,M> {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	CONSTRUCTOR

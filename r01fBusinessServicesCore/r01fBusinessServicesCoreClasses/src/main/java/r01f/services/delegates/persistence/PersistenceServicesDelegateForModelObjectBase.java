@@ -19,7 +19,7 @@ import r01f.services.interfaces.ServiceInterfaceForModelObject;
 
 @Slf4j
 @Accessors(prefix="_")
-public abstract class PersistenceServicesForModelObjectDelegateBase<O extends PersistableObjectOID,M extends PersistableModelObject<O>>
+public abstract class PersistenceServicesDelegateForModelObjectBase<O extends PersistableObjectOID,M extends PersistableModelObject<O>>
 			  extends PersistenceServicesDelegateBase {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  NOT INJECTED STATUS
@@ -31,7 +31,7 @@ public abstract class PersistenceServicesForModelObjectDelegateBase<O extends Pe
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
-	public PersistenceServicesForModelObjectDelegateBase(final ServicesCoreBootstrapConfigWhenBeanExposed coreCfg,
+	public PersistenceServicesDelegateForModelObjectBase(final ServicesCoreBootstrapConfigWhenBeanExposed coreCfg,
 														 final Class<M> modelObjectType,
 														 final ServiceInterfaceForModelObject<O,M> serviceImpl,
 														 final EventBus eventBus) {
@@ -40,7 +40,7 @@ public abstract class PersistenceServicesForModelObjectDelegateBase<O extends Pe
 			  eventBus);
 		_modelObjectType = modelObjectType;
 	}
-	public PersistenceServicesForModelObjectDelegateBase(final ServicesCoreBootstrapConfigWhenBeanExposed coreCfg,
+	public PersistenceServicesDelegateForModelObjectBase(final ServicesCoreBootstrapConfigWhenBeanExposed coreCfg,
 														 final Class<M> modelObjectType,
 														 final ServiceInterfaceForModelObject<O,M> serviceImpl) {
 		this(coreCfg,

@@ -35,7 +35,7 @@ import r01f.validation.Validates;
 @Slf4j
 @Accessors(prefix="_")
 public abstract class CRUDServicesForModelObjectDelegateBase<O extends PersistableObjectOID,M extends PersistableModelObject<O>>
-		      extends PersistenceServicesForModelObjectDelegateBase<O,M>
+		      extends PersistenceServicesDelegateForModelObjectBase<O,M>
 		   implements CRUDServicesForModelObject<O,M> {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIELDS
@@ -95,8 +95,8 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 		}
 		// [1] - Load
 		outDate = this.getServiceImplAs(CRUDServicesForModelObject.class)
-						.getLastUpdateDate(securityContext,
-										   oid);
+					  .getLastUpdateDate(securityContext,
+										 oid);
 		// [2] - Return
 		return outDate;
 	}

@@ -20,7 +20,7 @@ import r01f.types.Range;
  * Service layer delegated type for CRUD find operations
  */
 public abstract class FindServicesForModelObjectDelegateBase<O extends PersistableObjectOID,M extends PersistableModelObject<O>>
-			  extends PersistenceServicesForModelObjectDelegateBase<O,M>
+			  extends PersistenceServicesDelegateForModelObjectBase<O,M>
 		   implements FindServicesForModelObject<O,M> {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	CONSTRUCTOR  

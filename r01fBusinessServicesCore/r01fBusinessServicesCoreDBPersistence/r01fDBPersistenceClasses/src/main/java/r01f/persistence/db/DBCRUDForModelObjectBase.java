@@ -379,8 +379,6 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 							   			  modelObj,dbEntityToPersist,
 							   			  performedOp);
 
-
-
 		// [4]: call the persistence event listeners
 		if (CollectionUtils.hasData(_dbEntityPersistenceEventsListeners)) {
 			for (ListensToDBEntityPersistenceEvents<M,DB> listener : _dbEntityPersistenceEventsListeners) {
@@ -442,7 +440,7 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 
 		// Using persist
 		this.getEntityManager()
-				.persist(dbEntityToPersist);
+			.persist(dbEntityToPersist);
 
 		// a flush() call is needed to get the jpa's assigned entity version
 		if (this.getEntityManager().isJoinedToTransaction()) this.getEntityManager()
@@ -494,8 +492,9 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 		CRUDResult<M> outResult = null;
 
 		// [1]: Check the existence of the entity to be deleted
-		DB dbEntity = this.getEntityManager().find(_DBEntityType,
-								  	  	  		   pk);
+		DB dbEntity = this.getEntityManager()
+						  .find(_DBEntityType,
+							    pk);
 		// [2]: Delete the entity
 		if (dbEntity != null) {
 			this.getEntityManager()
@@ -554,7 +553,8 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 			}
 		}
 		// [2]... if no name was retrieved, try to use the model object's name
-		if (Strings.isNullOrEmpty(outName) && modelObject.hasFacet(HasName.class)) {
+		if (Strings.isNullOrEmpty(outName) 
+		 && modelObject.hasFacet(HasName.class)) {
 			if (modelObject.hasFacet(HasLangDependentNamedFacet.class)) {
 				LangDependentNamed langNames = modelObject.asFacet(HasLangDependentNamedFacet.class)
 												   		  .asLangDependentNamed();
