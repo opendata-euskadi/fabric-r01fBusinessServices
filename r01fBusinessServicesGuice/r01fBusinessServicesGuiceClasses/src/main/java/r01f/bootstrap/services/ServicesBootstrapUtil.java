@@ -18,7 +18,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import r01f.bootstarp.services.ServiceHandlerLifecycle;
+import r01f.bootstrap.services.ServiceHandlerLifecycle;
 import r01f.bootstrap.services.config.ServicesBootstrapConfig;
 import r01f.bootstrap.services.config.core.ServicesCoreModuleEventsConfig;
 import r01f.concurrent.ExecutorServiceManager;
