@@ -10,7 +10,7 @@ import r01f.securitycontext.SecurityContext;
  * @param <M>
  * @param <DB>
  */
-public interface TransfersModelObjectStateToDBEntity<M extends PersistableObject,
+public interface TransfersModelObjectStateToDBEntity<M extends ModelObject,
 													 DB extends DBEntity> {
 	public void setDBEntityFieldsFromModelObject(final SecurityContext securityContext,
 												 final M modelObj,final DB dbEntity);
