@@ -11,7 +11,7 @@ import r01f.services.interfaces.CRUDServicesForModelObject;
  * @param <M>
  */
 public interface DBCRUDForDependentModelObject<O extends PersistableObjectOID,M extends PersistableModelObject<O>,
-											   P extends PersistableModelObject<?>> 
-	     extends CRUDServicesForDependentModelObject<O,M,P> {
+											   PO extends PersistableObjectOID,P extends PersistableModelObject<PO>>
+	     extends CRUDServicesForDependentModelObject<O,M,PO,P> {
 	// nothing
 }

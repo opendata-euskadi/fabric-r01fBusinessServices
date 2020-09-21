@@ -19,22 +19,22 @@ import r01f.services.interfaces.CRUDServicesForDependentModelObject;
  * @param <M>
  */
 public class ClientAPIDelegateForDependentModelObjectCRUDServices<O extends PersistableObjectOID,M extends PersistableModelObject<O>,
-																  P extends PersistableModelObject<?>> 
-	 extends ClientAPIServiceDelegateBase<CRUDServicesForDependentModelObject<O,M,P>> {
+																  PO extends PersistableObjectOID,P extends PersistableModelObject<PO>>
+	 extends ClientAPIServiceDelegateBase<CRUDServicesForDependentModelObject<O,M,PO,P>> {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR & BUILDER
 /////////////////////////////////////////////////////////////////////////////////////////
 	public ClientAPIDelegateForDependentModelObjectCRUDServices(final Provider<SecurityContext> securityContextProvider,
 													   			final Marshaller modelObjectsMarshaller,
-													   			final CRUDServicesForDependentModelObject<O,M,P> services) {
+													   			final CRUDServicesForDependentModelObject<O,M,PO,P> services) {
 		super(securityContextProvider,
 			  modelObjectsMarshaller,
 			  services);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CRUD
-/////////////////////////////////////////////////////////////////////////////////////////	
+/////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Changes a record's parent
 	 * @param oid
@@ -49,10 +49,10 @@ public class ClientAPIDelegateForDependentModelObjectCRUDServices<O extends Pers
 											.changeParent(this.getSecurityContext(),
 						 				   		  		  oid,newParentRef);
 		M outRecord = saveOpResult.getOrThrow();
-		
+
 		// Adapt the returned object
 		if (outRecord != null && outRecord instanceof DirtyStateTrackable) {
-			// [2.1]- Update the returned object dirty status 
+			// [2.1]- Update the returned object dirty status
 			ClientAPIModelObjectChangesTrack.startTrackingChangesOnSaved(outRecord);
 		}
 		return outRecord;
@@ -83,7 +83,7 @@ public class ClientAPIDelegateForDependentModelObjectCRUDServices<O extends Pers
 		M outRecord = saveOpResult.getOrThrow();
 		// Adapt the returned object
 		if (outRecord != null && outRecord instanceof DirtyStateTrackable && record instanceof DirtyStateTrackable) {
-			// [2.1]- Update the returned object dirty status AND the received object dirty status just for the case the caller continues using this instance instead of 
+			// [2.1]- Update the returned object dirty status AND the received object dirty status just for the case the caller continues using this instance instead of
 			//		  the received by the server
 			ClientAPIModelObjectChangesTrack.startTrackingChangesOnSaved(outRecord);
 			ClientAPIModelObjectChangesTrack.startTrackingChangesOnSaved(record);

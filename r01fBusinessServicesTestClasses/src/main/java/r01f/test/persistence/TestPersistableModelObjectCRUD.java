@@ -84,17 +84,21 @@ public class TestPersistableModelObjectCRUD<O extends PersistableObjectOID,M ext
 				  createdModelObj.getOid(),createdModelObj.getEntityVersion());
 
 		// if it's a dependent object, test the parent reference
+		this.testDependentObjParentRef(createdModelObjOid);
+
+		Assert.assertNotNull(createdModelObj);
+
+		return createdModelObj;
+	}
+	protected void testDependentObjParentRef(final O createdModelObjOid) {
+		// if it's a dependent object, test the parent reference
 		if (_crudAPI instanceof ClientAPIHasDelegateForDependentModelObjectCRUD) {
-			ClientAPIDelegateForDependentModelObjectCRUDServices<O,M,?> apiForDependent = (ClientAPIDelegateForDependentModelObjectCRUDServices<O, M, ?>)((ClientAPIHasDelegateForDependentModelObjectCRUD<?>)_crudAPI).getClientApiForDependentDelegate();
+			ClientAPIDelegateForDependentModelObjectCRUDServices<O,M,?,?> apiForDependent = (ClientAPIDelegateForDependentModelObjectCRUDServices<O, M,?,?>)((ClientAPIHasDelegateForDependentModelObjectCRUD<?>)_crudAPI).getClientApiForDependentDelegate();
 			Object parentRefAsObject = apiForDependent.parentReferenceOf(createdModelObjOid);
 			ModelObjectRef<?> parentRef =  (ModelObjectRef<?>) parentRefAsObject;//apiForDependent.parentReferenceOf(createdModelObjOid);
 			Assert.assertNotNull(parentRef);
 			log.warn("\t\tIt's a dependent object of: {}",parentRef.asString());
 		}
-
-		Assert.assertNotNull(createdModelObj);
-
-		return createdModelObj;
 	}
 	public M testUpdate(final M modelObjToUpdate,
 						final CommandOn<M> modelObjectStateUpdateCommand) {
@@ -148,7 +152,7 @@ public class TestPersistableModelObjectCRUD<O extends PersistableObjectOID,M ext
 		log.warn("\tDELETE THE ENTITY OF TYPE {} WITH oid={}",
 				 _modelObjFactory.getModelObjType(),modelObjectToDelete.getOid());
 		_modelObjFactory.tearDownCreatedMockObjs();
-		
+
 		// try to load the deleted object... it must NOT exist
 		M shouldNotExists = _crudAPI.loadOrNull(modelObjectToDelete.getOid());
 		Assert.assertNull(shouldNotExists);

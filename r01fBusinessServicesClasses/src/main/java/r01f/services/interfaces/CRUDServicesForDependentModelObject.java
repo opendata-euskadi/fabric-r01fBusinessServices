@@ -1,6 +1,5 @@
 package r01f.services.interfaces;
 
-import r01f.guids.OID;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.ModelObjectRef;
 import r01f.model.PersistableModelObject;
@@ -16,7 +15,7 @@ import r01f.securitycontext.SecurityContext;
  * @param <M>
  */
 public interface CRUDServicesForDependentModelObject<O extends PersistableObjectOID,M extends PersistableModelObject<O>,
-													 P extends PersistableModelObject<?>>
+													 PO extends PersistableObjectOID,P extends PersistableModelObject<PO>>
 		 extends ServiceInterfaceForModelObject<O,M> {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	CRUD
@@ -32,14 +31,14 @@ public interface CRUDServicesForDependentModelObject<O extends PersistableObject
 				  										       final PR parentRef,
 				  										       final M modelObj);
 	/**
-	 * Changes an entity's parent 
+	 * Changes an entity's parent
 	 * @param securityContext the user auth data & context info
 	 * @param oid the entity's oid to be changed
 	 * @param newParentRef the net parent reference
 	 * @return a {@link CRUDResult} that encapsulates the updated entity
 	 */
 	public <PR extends ModelObjectRef<P>> CRUDResult<M> changeParent(final SecurityContext securityContext,
-				  					  								 final O oid,final PR newParentRef);
+				  					  						  		 final O oid,final PR newParentRef);
 	/**
 	 * Returns the parent object reference of a given entity
 	 * @param securityContext
@@ -54,6 +53,6 @@ public interface CRUDServicesForDependentModelObject<O extends PersistableObject
 	 * @param parentOid
 	 * @return
 	 */
-	public <PO extends OID> CRUDOnMultipleResult<M> deleteChildsOf(final SecurityContext securityContext,
-												  				   final PO parentOid);
+	public CRUDOnMultipleResult<M> deleteChildsOf(final SecurityContext securityContext,
+										   		  final PO parentOid);
 }

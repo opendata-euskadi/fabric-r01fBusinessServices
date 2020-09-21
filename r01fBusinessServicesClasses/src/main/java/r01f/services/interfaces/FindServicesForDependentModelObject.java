@@ -1,7 +1,7 @@
 package r01f.services.interfaces;
 
-import r01f.guids.OID;
 import r01f.guids.PersistableObjectOID;
+import r01f.locale.Language;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.FindOIDsResult;
 import r01f.model.persistence.FindResult;
@@ -14,7 +14,7 @@ import r01f.securitycontext.SecurityContext;
  * @param <M>
  */
 public interface FindServicesForDependentModelObject<O extends PersistableObjectOID,M extends PersistableModelObject<O>,
-													 P extends PersistableModelObject<?>>
+													 PO extends PersistableObjectOID>
 		 extends ServiceInterfaceForModelObject<O,M> {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	FINDING
@@ -25,22 +25,23 @@ public interface FindServicesForDependentModelObject<O extends PersistableObject
 	 * @param parentOid
 	 * @return
 	 */
-	public <PO extends OID> FindOIDsResult<O> findOidsOfDependentsOf(final SecurityContext securityContext,
-											  	    				 final PO parentOid);
+	FindOIDsResult<O> findOidsOfDependentsOf(final SecurityContext securityContext,
+						      				 final PO parentOid);
 	/**
 	 * Finds all child objects of the given parent returning the full child object
 	 * @param securityContext
 	 * @param parentOid
 	 * @return
 	 */
-	public <PO extends OID> FindResult<M> findDependentsOf(final SecurityContext securityContext,
-										  				   final PO parentOid);
+	FindResult<M> findDependentsOf(final SecurityContext securityContext,
+								   final PO parentOid);
 	/**
 	 * Finds all child objects of the given parent
 	 * @param securityContext
 	 * @param parentOid
 	 * @return
 	 */
-	public <PO extends OID> FindSummariesResult<M> findSummariesOfDependentsOf(final SecurityContext securityContext,
-															  				   final PO parentOid);
+	FindSummariesResult<M> findSummariesOfDependentsOf(final SecurityContext securityContext,
+													   final PO parentOid,
+													   final Language lang);
 }

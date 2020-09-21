@@ -17,8 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import r01f.guids.CommonOIDs.UserCode;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
-import r01f.model.SummarizedModelObject;
-import r01f.services.client.api.delegates.ClientAPIDelegateForDependentModelObjectFindServices;
 import r01f.services.client.api.delegates.ClientAPIDelegateForModelObjectFindServices;
 import r01f.services.client.api.delegates.ClientAPIHasDelegateForDependentModelObjectFind;
 import r01f.test.api.TestAPIBase;
@@ -93,34 +91,20 @@ public class TestPersistableModelObjectFind<O extends PersistableObjectOID,M ext
 		log.warn("\t\t>> {}",oidsByLastUpdator);
 		Assert.assertTrue(CollectionUtils.isNullOrEmpty(oidsByLastUpdator));
 
-		// [5] - If it's a dependent model object, test the specific methods
-		if (_findAPI instanceof ClientAPIHasDelegateForDependentModelObjectFind) {
-			log.warn("\tFIND DEPENDENT ENTITIES");
-
-			ClientAPIDelegateForDependentModelObjectFindServices<O,M,?> depFindAPI = (ClientAPIDelegateForDependentModelObjectFindServices<O,M,?>)((ClientAPIHasDelegateForDependentModelObjectFind<?>)_findAPI).getClientApiForDependentDelegate();
-			ManagesTestMockDependentModelObjsLifeCycle<O,M,?> depObjFactory = (ManagesTestMockDependentModelObjsLifeCycle<O,M,?>)_managesTestMockObjs;
-
-			// find child oids
-			Collection<O> depOids = depFindAPI.findOidsOfDependentsOf(depObjFactory.getParentModelObject().getOid());
-			Assert.assertTrue(CollectionUtils.hasData(depOids));
-			log.warn("\t\t>> {} dependent objects of {}",depOids.size(),depObjFactory.getParentModelObject().getClass());
-			for (O depOid : depOids) {
-				log.warn("\t\t\t> {}",depOid);
-			}
-			// find child summaries
-			Object depsSummarizedAsObject = depFindAPI.findSummariesOfDependentsOf(depObjFactory.getParentModelObject().getOid());
-			Collection<? extends SummarizedModelObject<?>> depsSummarized = (Collection<? extends SummarizedModelObject<?>>)depsSummarizedAsObject;//depFindAPI.findSummariesOfDependentsOf(depObjFactory.getParentModelObject().getOid());
-			Assert.assertTrue(CollectionUtils.hasData(depsSummarized) && depsSummarized.size() == depOids.size());
-
-			// find chils
-			Collection<M> deps = depFindAPI.findDependentsOf(depObjFactory.getParentModelObject().getOid());
-			Assert.assertTrue(CollectionUtils.hasData(deps) && deps.size() == depOids.size());
-		}
-
 		log.warn("[end ][TEST BASIC FIND {}] (elapsed time: {} milis)-------------------------",
 				 _managesTestMockObjs.getModelObjType(),NumberFormat.getNumberInstance(Locale.getDefault()).format(stopWatch.elapsed(TimeUnit.MILLISECONDS)));
 
 		// [99]: Delete previously created test objects to restore DB state
 		_managesTestMockObjs.tearDownCreatedMockObjs();
+	}
+	protected void testDependentObjectsFind() {
+		// [5] - If it's a dependent model object, test the specific methods
+		if (_findAPI instanceof ClientAPIHasDelegateForDependentModelObjectFind) {
+			log.warn("\tFIND DEPENDENT ENTITIES");
+
+			TestPersistableDependentModelObjectFind<O,M,?,?> depTest = TestPersistableDependentModelObjectFind.create(_findAPI,
+																												   	  _managesTestMockObjs);
+			depTest.testFindDependent();
+		}
 	}
 }

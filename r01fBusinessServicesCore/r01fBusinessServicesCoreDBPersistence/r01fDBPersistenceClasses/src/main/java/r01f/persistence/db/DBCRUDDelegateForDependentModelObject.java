@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import r01f.exceptions.Throwables;
-import r01f.guids.OID;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.HasParentModelObjectRef;
 import r01f.model.ModelObjectRef;
@@ -20,7 +19,7 @@ import r01f.model.persistence.PersistenceOperationExecResultBuilder;
 import r01f.model.persistence.PersistenceOperationResult;
 import r01f.model.persistence.PersistencePerformedOperation;
 import r01f.model.persistence.PersistenceRequestedOperation;
-import r01f.model.persistence.PersistenceServiceErrorTypes;
+import r01f.model.services.COREServiceErrorTypes;
 import r01f.model.services.COREServiceMethod;
 import r01f.persistence.db.entities.DBEntityForModelObject;
 import r01f.persistence.db.entities.primarykeys.DBPrimaryKeyForModelObject;
@@ -35,16 +34,17 @@ import r01f.util.types.Strings;
  * @param <DB>
  */
 @Accessors(prefix="_")
-public abstract class DBCRUDDelegateForDependentModelObject<O extends PersistableObjectOID,M extends PersistableModelObject<O>,P extends PersistableModelObject<?>,
+public abstract class DBCRUDDelegateForDependentModelObject<O extends PersistableObjectOID,M extends PersistableModelObject<O>,
+															PO extends PersistableObjectOID,P extends PersistableModelObject<PO>,
 							     			   	   			PK extends DBPrimaryKeyForModelObject,DB extends DBEntityForModelObject<PK>>
-           implements DBCRUDForDependentModelObject<O,M,P>,
+           implements DBCRUDForDependentModelObject<O,M,PO,P>,
    			 		  TransfersParentModelObjectRefToDBEntity<P,DB> {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Getter protected final Class<P> _parentObjType;
 	@Getter protected final DBCRUDForModelObjectBase<O,M,PK,DB> _dbCRUD;
-	@Getter protected final DBFindDelegateForDependentModelObject<O,M,P,PK,DB> _dbFindDelegateForDependent;
+	@Getter protected final DBFindDelegateForDependentModelObject<O,M,PO,PK,DB> _dbFindDelegateForDependent;
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -56,15 +56,15 @@ public abstract class DBCRUDDelegateForDependentModelObject<O extends Persistabl
 	}
 	public DBCRUDDelegateForDependentModelObject(final Class<P> parentObjType,
 												 final DBCRUDForModelObjectBase<O,M,PK,DB> dbCRUD,
-												 final DBFindDelegateForDependentModelObject<O,M,P,PK,DB> dbFindDelegateForDependent) {
+												 final DBFindDelegateForDependentModelObject<O,M,PO,PK,DB> dbFindDelegateForDependent) {
 		_parentObjType = parentObjType;
 		_dbCRUD = dbCRUD;
 		_dbFindDelegateForDependent = dbFindDelegateForDependent;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  CRUD  
-/////////////////////////////////////////////////////////////////////////////////////////	
-	@Override 
+//  CRUD
+/////////////////////////////////////////////////////////////////////////////////////////
+	@Override
 	public <PR extends ModelObjectRef<P>> CRUDResult<M> create(final SecurityContext securityContext,
 															   final PR parentRef,final M modelObj) {
 		if (modelObj.getEntityVersion() > 0) throw new IllegalStateException(Throwables.message("Cannot create a {} entity because the model object received at the persistence layer does have the entityVersion attribute with a NON ZERO value. This is a developer's fault; please check that when persisting the model object, the entityVersion is NOT set",
@@ -77,7 +77,7 @@ public abstract class DBCRUDDelegateForDependentModelObject<O extends Persistabl
 	private <PR extends ModelObjectRef<P>> ListensToDBEntityPersistenceEvents<M,DB> _createDBEntityCreateEventListener(final PR parentRef) {
 		return new ListensToDBEntityPersistenceEvents<M,DB>() {
 						@Override
-						public void onBeforDBEntityPersistenceOperation(final SecurityContext securityContext, 
+						public void onBeforDBEntityPersistenceOperation(final SecurityContext securityContext,
 																		final PersistencePerformedOperation op,
 																		final M modelObj,final DB dbEntity) {
 							// if it's a DEPENDENT db entity, check that the parent oid is received
@@ -85,7 +85,7 @@ public abstract class DBCRUDDelegateForDependentModelObject<O extends Persistabl
 							DBCRUDDelegateForDependentModelObject.this.setDBEntityFieldsForParentModelObjectRef(securityContext,
 																												parentRef,dbEntity);
 						}
-			
+
 						@Override
 						public void onAfterDBEntityPersistenceOperation(final SecurityContext securityContext,
 																		final PersistencePerformedOperation op,
@@ -135,14 +135,14 @@ public abstract class DBCRUDDelegateForDependentModelObject<O extends Persistabl
 														.notExecuted(COREServiceMethod.named("parentReferenceOf"))
 														.because(Strings.customized("The {} type is a DEPENDENT object BUT does NOT implements {}; the parent obj reference cannot be known",
 																 					modelObj.getClass(),HasParentModelObjectRef.class),
-																 PersistenceServiceErrorTypes.SERVER_ERROR);
+																 COREServiceErrorTypes.SERVER_ERROR);
 	}
 	@Override
-	public <PO extends OID> CRUDOnMultipleResult<M> deleteChildsOf(final SecurityContext securityContext,
-												  				   final PO parentOid) {
+	public CRUDOnMultipleResult<M> deleteChildsOf(final SecurityContext securityContext,
+												  final PO parentOid) {
 		if (_dbFindDelegateForDependent == null) throw new IllegalStateException();
-		
-		FindResult<M> modelObjsToBeDeletedFindResult = _dbFindDelegateForDependent.findDependentsOf(securityContext, 
+
+		FindResult<M> modelObjsToBeDeletedFindResult = _dbFindDelegateForDependent.findDependentsOf(securityContext,
 																						  			parentOid);
 		if (modelObjsToBeDeletedFindResult.hasFailed()) {
 			// TODO finish!!
@@ -163,6 +163,6 @@ public abstract class DBCRUDDelegateForDependentModelObject<O extends Persistabl
 		return null;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 }

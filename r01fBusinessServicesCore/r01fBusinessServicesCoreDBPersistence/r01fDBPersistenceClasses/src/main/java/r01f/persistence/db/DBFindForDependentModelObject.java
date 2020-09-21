@@ -11,7 +11,7 @@ import r01f.services.interfaces.FindServicesForModelObject;
  * @param <M>
  */
 public interface DBFindForDependentModelObject<O extends PersistableObjectOID,M extends PersistableModelObject<O>,
-											   P extends PersistableModelObject<?>> 
-	     extends FindServicesForDependentModelObject<O,M,P> {
+											   PO extends PersistableObjectOID>
+	     extends FindServicesForDependentModelObject<O,M,PO> {
 	// nothing
 }
