@@ -84,7 +84,10 @@ abstract class TestPersistableModelObjectManagerBase<O extends PersistableObject
 	}
 	@Override
 	public O getAnyCreatedMockObjOid() {
-		if (CollectionUtils.isNullOrEmpty(_createdMockObjsOids)) throw new IllegalStateException("There's NO created model object available at the factory");
+		if (CollectionUtils.isNullOrEmpty(_createdMockObjsOids)) {
+			this.setUpSingleMockObj();
+			//throw new IllegalStateException("There's NO created model object available at the factory");
+		}
 
 		return CollectionUtils.of(_createdMockObjsOids).pickOneElement();
 	}
