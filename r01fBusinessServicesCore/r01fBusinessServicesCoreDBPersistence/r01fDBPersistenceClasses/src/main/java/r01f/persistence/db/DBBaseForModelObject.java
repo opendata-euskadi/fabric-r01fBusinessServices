@@ -279,6 +279,14 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 /////////////////////////////////////////////////////////////////////////////////////////
+	@Deprecated
+	protected CRUDResult<M> _crudResultForSingleEntity(final SecurityContext securityContext,
+													   final OID id,
+													   final Collection<DB> dbEntities) {
+		return _crudResultForSingleEntity(securityContext,
+										  dbEntities,
+										  id);
+	}
 	/**
 	 * Composes a {@link CRUDResult} for a load operation where there should be
 	 * only one result
@@ -287,9 +295,10 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 	 * @param dbEntities
 	 * @return
 	 */
+	@Deprecated
 	protected CRUDResult<M> _crudResultForSingleEntity(final SecurityContext securityContext,
-													   final OID id,
-													   final Collection<DB> dbEntities) {
+													   final Collection<DB> dbEntities,
+													   final OID id) {
 		if (CollectionUtils.hasData(dbEntities)
 		 && dbEntities.size() > 1) return CRUDResultBuilder.using(securityContext)
 											 .on(_modelObjectType)
@@ -302,12 +311,20 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 	}
 	protected CRUDResult<M> _crudResultForSingleEntity(final SecurityContext securityContext,
 													   final Collection<DB> dbEntities) {
+		return _crudResultForSingleEntity(securityContext,
+										  dbEntities,
+										  null,null);	// no meta & value
+	}
+	protected CRUDResult<M> _crudResultForSingleEntity(final SecurityContext securityContext,
+													   final Collection<DB> dbEntities,
+													   final String meta,final String value) {
 		if (CollectionUtils.hasData(dbEntities)
 		 && dbEntities.size() > 1) return CRUDResultBuilder.using(securityContext)
 											 .on(_modelObjectType)
 											 .notLoaded()
 											 	.becauseServerError("The DB is in an illegal status: there MUST exist a single db entity of {} but {} exists",
 											 				    	_DBEntityType,dbEntities.size())
+											 	.about(meta,value)
 											 	.build();
 		// Return
 		CRUDResult<M> outResult = null;
@@ -326,16 +343,17 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 										 .on(_modelObjectType)
 										 .notLoaded()
 										 	.becauseClientRequestedEntityWasNOTFound()
+										 	.about(meta,value)
 										 	.build();
 		}
 		return outResult;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//	
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected Date _lastEntityUpdateDate() {
 		String jpql = Strings.customized("SELECT MAX(e._lastUpdateDate) " +
-										   "FROM {} e " + 
+										   "FROM {} e " +
 										  "GROUP BY e._lastUpdateDate",
 										 _DBEntityType.getSimpleName());
 		Tuple tuple = _entityManager.createQuery(jpql,
@@ -345,5 +363,5 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 									 : null;
 		return cal != null ? Dates.fromCalendar(cal)
 						   : new Date();
-	}	
+	}
 }
