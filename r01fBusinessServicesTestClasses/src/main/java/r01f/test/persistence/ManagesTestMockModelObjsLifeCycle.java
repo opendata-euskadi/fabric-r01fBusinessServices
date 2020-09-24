@@ -8,7 +8,7 @@ import r01f.model.PersistableModelObject;
 import r01f.patterns.Factory;
 import r01f.services.client.api.delegates.ClientAPIDelegateForModelObjectCRUDServices;
 
-public interface ManagesTestMockModelObjsLifeCycle<O extends PersistableObjectOID,M extends PersistableModelObject<O>> 
+public interface ManagesTestMockModelObjsLifeCycle<O extends PersistableObjectOID,M extends PersistableModelObject<O>>
 		 extends Debuggable {
 	/**
 	 * @return the managed model object type
@@ -49,15 +49,24 @@ public interface ManagesTestMockModelObjsLifeCycle<O extends PersistableObjectOI
 	 */
 	public O getAnyCreatedMockObjOid();
 	/**
+	 * Returns {@link Collection} of the oids of the created model objects after calling {@link #setUpMockObjs(int)}
+	 * @return
+	 */
+	public O getAnyCreatedMockObjOidOrCreateNew();
+	/**
 	 * @return a {@link Collection} of the created model objects after calling {@link #setUpMockObjs(int)}
 	 */
 	public M getAnyCreatedMockObj();
+	/**
+	 * @return a {@link Collection} of the created model objects after calling {@link #setUpMockObjs(int)}
+	 */
+	public M getAnyCreatedMockObjOrCreateNew();
 	/**
 	 * @return the created model objects after calling after calling {@link #setUpMockObjs(int)}
 	 */
 	public Collection<M> getCreatedMockObjs();
 	/**
-	 * @return the oids of the created model objects 
+	 * @return the oids of the created model objects
 	 */
 	public Collection<O> getCreatedMockObjsOids();
 }

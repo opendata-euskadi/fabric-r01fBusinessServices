@@ -84,16 +84,24 @@ abstract class TestPersistableModelObjectManagerBase<O extends PersistableObject
 	}
 	@Override
 	public O getAnyCreatedMockObjOid() {
-		if (CollectionUtils.isNullOrEmpty(_createdMockObjsOids)) {
-			this.setUpSingleMockObj();
-			//throw new IllegalStateException("There's NO created model object available at the factory");
-		}
+		if (CollectionUtils.isNullOrEmpty(_createdMockObjsOids)) throw new IllegalStateException("There's NO created model object available at the factory");
+		return CollectionUtils.of(_createdMockObjsOids).pickOneElement();
+	}
+	@Override
+	public O getAnyCreatedMockObjOidOrCreateNew() {
+		if (CollectionUtils.isNullOrEmpty(_createdMockObjsOids)) this.setUpSingleMockObj();
 
 		return CollectionUtils.of(_createdMockObjsOids).pickOneElement();
 	}
 	@Override
 	public M getAnyCreatedMockObj() {
 		O oid = this.getAnyCreatedMockObjOid();
+		M outModelObj = _CRUDApi.load(oid);
+		return outModelObj;
+	}
+	@Override
+	public M getAnyCreatedMockObjOrCreateNew() {
+		O oid = this.getAnyCreatedMockObjOidOrCreateNew();
 		M outModelObj = _CRUDApi.load(oid);
 		return outModelObj;
 	}
