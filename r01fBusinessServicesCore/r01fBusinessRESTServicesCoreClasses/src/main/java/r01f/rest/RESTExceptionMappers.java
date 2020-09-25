@@ -16,7 +16,7 @@ import r01f.model.services.COREServiceException;
 
 /**
  * {@link ExceptionMapper}(s) used to map {@link Exception}s to {@link Response}s
- * 
+ *
  * <pre>
  * IMPORTANT!	Do NOT forget to include this types at the getClasses() method of {@link {AppCode}RESTApp} type
  * </pre>
@@ -27,20 +27,20 @@ public class RESTExceptionMappers {
 //  RESTPersistenceExceptionMapper
 /////////////////////////////////////////////////////////////////////////////////////////
 
-	public abstract static class RESTPersistenceExceptionMapper 
-			extends RESTExceptionMapperBase<PersistenceException>		
-	     implements ExceptionMapper<PersistenceException> {
-		
+	public abstract static class RESTPersistenceExceptionMapper
+						 extends RESTExceptionMapperBase<PersistenceException>
+	     			  implements ExceptionMapper<PersistenceException> {
+
 		public RESTPersistenceExceptionMapper() {
 			super();
 		}
-		
+
 		public RESTPersistenceExceptionMapper(final MediaType mediaType, final ExceptionToReponseEntity<PersistenceException> transformer) {
 			super(mediaType,transformer);
 		 }
-	
+
 		@Override
-		public Response toResponse(final PersistenceException persistenceException) {			
+		public Response toResponse(final PersistenceException persistenceException) {
 			Response outResponse = _handleThrowable(persistenceException);
 			return outResponse;
 		}
@@ -48,45 +48,45 @@ public class RESTExceptionMappers {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  RESTUncaughtExceptionMapper
 /////////////////////////////////////////////////////////////////////////////////////////
-	public static abstract class RESTUncaughtExceptionMapper 
-			extends RESTExceptionMapperBase<Throwable>
-	       implements ExceptionMapper<Throwable> {
-		
+	public static abstract class RESTUncaughtExceptionMapper
+						 extends RESTExceptionMapperBase<Throwable>
+	       			  implements ExceptionMapper<Throwable> {
+
 		public RESTUncaughtExceptionMapper() {
 			super();
-		}		
+		}
 		public RESTUncaughtExceptionMapper(final MediaType mediaType, final ExceptionToReponseEntity<Throwable> transformer) {
 			super(mediaType,transformer);
 		 }
-		
+
 		@Override
 		public Response toResponse(final Throwable th) {
 			return _handleThrowable(th);
 		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  Exception to Response 
+//  Exception to Response
 /////////////////////////////////////////////////////////////////////////////////////////
 	@FunctionalInterface
-	public static interface ExceptionToReponseEntity<T extends Throwable> {	
+	public static interface ExceptionToReponseEntity<T extends Throwable> {
 		Object from( int errorCode, final T th); // Entity of rest requires 'Object'
-	}	
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  RESTExceptionMapperBase
-/////////////////////////////////////////////////////////////////////////////////////////	
+/////////////////////////////////////////////////////////////////////////////////////////
 	 abstract static class RESTExceptionMapperBase<T extends Throwable>  {
-		 
+
 		 protected final MediaType _mediaType;
 		 protected final ExceptionToReponseEntity<T> _transformer;
 
 		 public RESTExceptionMapperBase() {// This has been the default behaviour for many years...
 			_mediaType = MediaType.TEXT_HTML_TYPE;
 			_transformer =  ( error, th )  -> { return  Throwables.getStackTraceAsString(th); };
-		}		 
+		}
 		 public RESTExceptionMapperBase(final MediaType mediaType, final ExceptionToReponseEntity<T> transformer) {
 			_mediaType = mediaType;
 			_transformer = transformer;
-		} 		 
+		}
 		/**
 		 * Maps an exception to an {@link HttpResponse}
 		 * The exception is built back at client side type: r01f.services.client.servicesproxy.rest.RESTResponseToCRUDResultMapperForModelObject
@@ -95,13 +95,13 @@ public class RESTExceptionMappers {
 		 */
 		@SuppressWarnings("unchecked")
 		protected  Response _handleThrowable(final Throwable th) {
-			// Print stack trace before any treatment (cause this could fail and mask the original Exception!!!!!) 
+			// Print stack trace before any treatment (cause this could fail and mask the original Exception!!!!!)
 			//th.printStackTrace();
 			log.warn( " Error: {}", Throwables.getStackTraceAsString(th));
-			// serialize 
+			// serialize
 			Response outResponse = null;
 			// Persistence exceptions
-			if (th instanceof COREServiceException) {				
+			if (th instanceof COREServiceException) {
 				COREServiceException coreEx = (COREServiceException)th;
 				COREServiceErrorType coreErrorType = coreEx.getType();
 				 log.error(" COREServiceException, coreErrorType {} ", coreErrorType);
@@ -119,13 +119,13 @@ public class RESTExceptionMappers {
 											  .entity(_transformer.from(COREServiceErrorTypes.SERVER_ERROR.getCode(), (T) th))
 											  .type(_mediaType)
 										  .build();
-				} 
+				}
 				// client errors
-				else if (coreEx.isClientError()) {	
-					
+				else if (coreEx.isClientError()) {
+
 					// record not found
-					if (coreErrorType.is(PersistenceServiceErrorTypes.ENTITY_NOT_FOUND)) {		
-						outResponse = Response.status(Status.NOT_FOUND)						
+					if (coreErrorType.is(PersistenceServiceErrorTypes.ENTITY_NOT_FOUND)) {
+						outResponse = Response.status(Status.NOT_FOUND)
 											  .header("x-r01-errorCode",coreErrorType.encodeAsString())
 											  .header("x-r01-extErrorCode",coreEx.getExtendedCode())
 											  .header("x-r01-errorMessage",coreEx.getMessage())
@@ -133,8 +133,8 @@ public class RESTExceptionMappers {
 											  .header("x-r01-errorType",coreEx.getClass().getName())
 											  .entity(_transformer.from(Status.NOT_FOUND.getStatusCode(), (T) th))
 											  .type(_mediaType)
-											  .build();		
-					} 
+											  .build();
+					}
 					// update requested but record existed OR the server version is different (optimistic locking)
 					else if (coreEx.getCalledMethod().isIn(PersistenceRequestedOperation.UPDATE.getCOREServiceMethod(),
 														   PersistenceRequestedOperation.CREATE.getCOREServiceMethod())
@@ -148,10 +148,10 @@ public class RESTExceptionMappers {
 											  .header("x-r01-errorType",coreEx.getClass().getName())
 											  .entity(_transformer.from(Status.CONFLICT.getStatusCode(), (T) th))
 											  .type(_mediaType)
-											  .build();						
+											  .build();
 					}
 					// another bad client request
-					else {				
+					else {
 						outResponse = Response.status(Status.BAD_REQUEST)
 											  .header("x-r01-errorCode",coreErrorType.encodeAsString())
 											  .header("x-r01-extErrorCode",coreEx.getExtendedCode())
@@ -178,7 +178,7 @@ public class RESTExceptionMappers {
 			// any other exception type
 			else {
 				//th.printStackTrace();
-				log.error(" Error {}", th.getLocalizedMessage());;
+				log.error(" Error {}", th.getLocalizedMessage());
 				outResponse = Response.status(Status.INTERNAL_SERVER_ERROR)
 									  .header("x-r01-errorCode",COREServiceErrorTypes.SERVER_ERROR.encodeAsString())
 									  .header("x-r01-errorMessage",th.getMessage())

@@ -29,6 +29,7 @@ import r01f.model.persistence.PersistenceOperationOnObjectResult;
 import r01f.model.persistence.PersistenceOperationResult;
 import r01f.model.search.SearchResults;
 import r01f.model.services.COREServiceMethod;
+import r01f.model.services.COREServiceMethodExecOK;
 import r01f.model.services.COREServiceMethodExecResult;
 import r01f.patterns.IsBuilder;
 import r01f.types.jobs.EnqueuedJob;
@@ -39,26 +40,26 @@ import r01f.util.types.collections.CollectionUtils;
  * See {@link RESTServicesProxyBase}
  * Usage:
  * <pre class='brush:java'>
- * 
+ *
  * </pre>
  */
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
-public abstract class RESTOperationsResponseBuilder 
+public abstract class RESTOperationsResponseBuilder
   implements IsBuilder {
-	
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //  A Funtional Interfaces to trasnform a Persistence Operation Result to ...
 //       1. ...  CRUDResult  ( ...default behaviour... )
-//       2. .... Model object included into CRUDResult.	
+//       2. .... Model object included into CRUDResult.
 //       3. .... Whatever you want...
 /////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	//... For CRUD Operations.
 	@FunctionalInterface
-	public static interface PersistenceOperationOnObjectResulToReponseEntity<T> {	
-		
+	public static interface PersistenceOperationOnObjectResulToReponseEntity<T> {
+
 		Object from(final PersistenceOperationOnObjectResult<T>  persistenceOperationResult); // Entity of rest requires 'Object'
-		
+
 		default Object defaultFrom(final PersistenceOperationResult<T> crudResult) { return crudResult; }
 	}
 	//... For Find Operations.
@@ -66,18 +67,18 @@ public abstract class RESTOperationsResponseBuilder
 	public static interface PersistenceOperationOnObjectResulCollectionToReponseEntity<T>
 	               extends  PersistenceOperationOnObjectResulToReponseEntity<Collection<T>> {
 		//
-	}		
+	}
 	//... For Others.
 	@FunctionalInterface
-	public static interface COREServiceMethodExecResulToReponseEntity<T> {	
-		
+	public static interface COREServiceMethodExecResulToReponseEntity<T> {
+
 		Object from(final COREServiceMethodExecResult<T>  persistenceOperationResult); // Entity of rest requires 'Object'
-		
+
 		default Object defaultFrom(final COREServiceMethodExecResult<T> crudResult) { return crudResult; }
 	}
-	
+
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static <M> RESTCRUDOperationResponseBuilderForModelObjectURIStep<M> crudOn(final Class<M> modelObjectType) {
 		return new RESTOperationsResponseBuilder() { /* nothing */ }
@@ -87,14 +88,14 @@ public abstract class RESTOperationsResponseBuilder
 		return new RESTOperationsResponseBuilder() { /* nothing */ }
 						.new RESTFindOperationResponseBuilderForModelObjectURIStep<O,M>(modelObjectType);
 	}
-	
+
 	public static <M extends ModelObject> RESTCoreOperationResponseBuilderForModelObjectURIStep<M> operationOn(final Class<M> modelObjectType) {
 		return new RESTOperationsResponseBuilder() { /* nothing */ }
 						.new RESTCoreOperationResponseBuilderForModelObjectURIStep<M>(modelObjectType);
 	}
-	
-	
-	
+
+
+
 	public static RESTExecOperationResponseBuilderForModelObjectURIStep executed() {
 		return new RESTOperationsResponseBuilder() { /* nothing */ }
 						.new RESTExecOperationResponseBuilderForModelObjectURIStep();
@@ -104,12 +105,12 @@ public abstract class RESTOperationsResponseBuilder
 						.new RESTSearchIndexOperationResponseBuilderForModelObjectURIStep();
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTCRUDOperationResponseBuilderForModelObjectURIStep<M> {
 		private final Class<M> _modelObjectType;
-		
+
 		public RESTCRUDOperationResponseBuilderForModelObjectMediaTypeStep<M> at(final URI resourceURI) {
 			return new RESTCRUDOperationResponseBuilderForModelObjectMediaTypeStep<M>(_modelObjectType,
 																  				      resourceURI);
@@ -118,7 +119,7 @@ public abstract class RESTOperationsResponseBuilder
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTFindOperationResponseBuilderForModelObjectURIStep<O extends PersistableObjectOID,M extends PersistableModelObject<O>> {
 		private final Class<M> _modelObjectType;
-		
+
 		public RESTFindOperationResponseBuilderForModelObjectMediaTypeStep<O,M> at(final URI resourceURI) {
 			return new RESTFindOperationResponseBuilderForModelObjectMediaTypeStep<O,M>(_modelObjectType,
 																  				        resourceURI);
@@ -127,16 +128,16 @@ public abstract class RESTOperationsResponseBuilder
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTCoreOperationResponseBuilderForModelObjectURIStep<M extends ModelObject> {
 		private final Class<M> _modelObjectType;
-		
+
 		public RESTCoreOperationResponseBuilderForModelObjectMediaTypeStep<M> at(final URI resourceURI) {
 			return new RESTCoreOperationResponseBuilderForModelObjectMediaTypeStep<M>(_modelObjectType,
 																  				        resourceURI);
 		}
 	}
-	
+
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTExecOperationResponseBuilderForModelObjectURIStep {
-		
+
 		public RESTEXECOperationResponseBuilderForModelObjectMediaTypeStep at(final URI resourceURI) {
 			return new RESTEXECOperationResponseBuilderForModelObjectMediaTypeStep(resourceURI);
 		}
@@ -148,177 +149,177 @@ public abstract class RESTOperationsResponseBuilder
 		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
-/////////////////////////////////////////////////////////////////////////////////////////	
+//
+/////////////////////////////////////////////////////////////////////////////////////////
     @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTCRUDOperationResponseBuilderForModelObjectMediaTypeStep<M> {
 		private final Class<M> _modelObjectType;
 		private final URI _resourceURI;
-		
+
 		public RESTCRUDOperationResponseBuilderForModelObjectEntityTransformerOrResultStep<M> mediaType(final MediaType mediaType) {
 			return new RESTCRUDOperationResponseBuilderForModelObjectEntityTransformerOrResultStep<M>(_modelObjectType,
 																  				                      _resourceURI,
 																  				                       mediaType);
 		}
 	}
-    
+
     @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTCRUDOperationResponseBuilderForModelObjectEntityTransformerOrResultStep<M> {
 		private final Class<M> _modelObjectType;
 		private final URI _resourceURI;
-		private final MediaType _mediaType;		
+		private final MediaType _mediaType;
 		// Build & Finish
-		public Response build(final CRUDResult<M> crudResult) {	
+		public Response build(final CRUDResult<M> crudResult) {
 				return new RESTCRUDOperationResponseBuilderForModelObjectResultStep<M>(_modelObjectType,
 																					   _resourceURI,
-																	  				   _mediaType,																	  				 
-																	  				   c -> { return c;} )//By default return crud result																	  				   
+																	  				   _mediaType,
+																	  				   c -> { return c;} )//By default return crud result
 					                                                                  .build(crudResult);
-		}		
+		}
 		// Build & Finish
-		public Response build(final CRUDOnMultipleResult<M> crudResultOnMultiple) {			
+		public Response build(final CRUDOnMultipleResult<M> crudResultOnMultiple) {
 			return new RESTCRUDOperationResponseBuilderForModelObjectResultStep<M>(_modelObjectType,
 																  				   _resourceURI,
-																  				   _mediaType,	
+																  				   _mediaType,
 																  				    c -> { return c;}) //By default return crud result
 																				  .build(crudResultOnMultiple);
-		}		
+		}
 		// With Persistence Operation Transformer.
-		public RESTCRUDOperationResponseBuilderForModelObjectResultStep<M> withPersistenceOperationTransformer(final PersistenceOperationOnObjectResulToReponseEntity<M> transformer) {					
+		public RESTCRUDOperationResponseBuilderForModelObjectResultStep<M> withPersistenceOperationTransformer(final PersistenceOperationOnObjectResulToReponseEntity<M> transformer) {
 			return new RESTCRUDOperationResponseBuilderForModelObjectResultStep<M>(_modelObjectType,
 																  				   _resourceURI,
-																  				   _mediaType,	
+																  				   _mediaType,
 																  				   transformer);
 		}
 	}
-    
+
     @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTFindOperationResponseBuilderForModelObjectMediaTypeStep<O extends PersistableObjectOID,M extends PersistableModelObject<O>> {
 		private final Class<M> _modelObjectType;
 		private final URI _resourceURI;
-		
+
 		public RESTFindOperationResponseBuilderForModelObjectEntityTransformerOrResultStep<O,M> mediaType(final MediaType mediaType) {
 			return new RESTFindOperationResponseBuilderForModelObjectEntityTransformerOrResultStep<O,M>(_modelObjectType,
 																									    _resourceURI,
 																  				                         mediaType);
 		}
 	}
-    
+
     @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
   	public final class RESTCoreOperationResponseBuilderForModelObjectMediaTypeStep<M extends ModelObject> {
   		private final Class<M> _modelObjectType;
   		private final URI _resourceURI;
-  		
+
   		public RESTCoreOperationResponseBuilderForModelObjectEntityCoreMethodStep<M> mediaType(final MediaType mediaType) {
   			return new RESTCoreOperationResponseBuilderForModelObjectEntityCoreMethodStep<M>(_modelObjectType,
   																							    _resourceURI,
   																  				                 mediaType);
   		}
   	}
-    
+
     @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
   	public final class RESTCoreOperationResponseBuilderForModelObjectEntityCoreMethodStep<M extends ModelObject> {
   		private final Class<M> _modelObjectType;
   		private final URI _resourceURI;
-  		private final MediaType _mediaType;	
-  		
+  		private final MediaType _mediaType;
+
   		public RESTCoreOperationResponseBuilderForModelObjectEntityTransformerOrResultStep<M> executedMethod(final COREServiceMethod coreMethod) {
   			return new RESTCoreOperationResponseBuilderForModelObjectEntityTransformerOrResultStep<M>(_modelObjectType,
   																									    _resourceURI,
   																  				                         _mediaType,
-  																  				                         coreMethod);  																  				                         
+  																  				                         coreMethod);
   		}
   	}
-    
-    
+
+
     @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTCoreOperationResponseBuilderForModelObjectEntityTransformerOrResultStep<M extends ModelObject> {
 		private final Class<M> _modelObjectType;
 		private final URI _resourceURI;
-		private final MediaType _mediaType;		
-		private final COREServiceMethod _coreMethod;		
-		
+		private final MediaType _mediaType;
+		private final COREServiceMethod _coreMethod;
+
 		// Build & Finish
-		public Response build(final COREServiceMethodExecResult<M> persistenceOpResult) {	
+		public Response build(final COREServiceMethodExecResult<M> persistenceOpResult) {
 				return new RESTCoreMethodOperationResponseBuilderForModelObjectResultStep<M>(_modelObjectType,
 																					           _resourceURI,
-																	  				           _mediaType,	
+																	  				           _mediaType,
 																	  				          _coreMethod,
-																	  				           f -> { return f;} )//By default return find result																	  				   
+																	  				           f -> { return f;} )//By default return find result
 					                                                                   .build(persistenceOpResult);
-		}	
-		
+		}
+
 		// With Persistence Operation Transformer.
-		public RESTCoreMethodOperationResponseBuilderForModelObjectResultStep<M> withCoreServiceMethodExecResulTransformer(final COREServiceMethodExecResulToReponseEntity<M> transformer) {					
+		public RESTCoreMethodOperationResponseBuilderForModelObjectResultStep<M> withCoreServiceMethodExecResulTransformer(final COREServiceMethodExecResulToReponseEntity<M> transformer) {
 			return new RESTCoreMethodOperationResponseBuilderForModelObjectResultStep<M>(_modelObjectType,
 																  				        _resourceURI,
-																  				        _mediaType,	
+																  				        _mediaType,
 																  				        _coreMethod,
 																  				        transformer);
 		}
 }
-    
-    
-    
-    
+
+
+
+
     @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTFindOperationResponseBuilderForModelObjectEntityTransformerOrResultStep<O extends PersistableObjectOID,M extends PersistableModelObject<O>> {
 		private final Class<M> _modelObjectType;
 		private final URI _resourceURI;
-		private final MediaType _mediaType;		
+		private final MediaType _mediaType;
 		// Build & Finish
-		public Response build(final FindResult<M> findResult) {	
+		public Response build(final FindResult<M> findResult) {
 				return new RESTFindOperationResponseBuilderForModelObjectResultStep<O,M>(_modelObjectType,
 																					     _resourceURI,
-																	  				      _mediaType,																	  				 
-																	  				      f -> { return f;} )//By default return find result																	  				   
+																	  				      _mediaType,
+																	  				      f -> { return f;} )//By default return find result
 					                                                                   .build(findResult);
-		}		
+		}
 		// Build & Finish
-		public Response build(final FindOIDsResult<O> findOidsResult) {			
+		public Response build(final FindOIDsResult<O> findOidsResult) {
 			return new RESTFindOperationResponseBuilderForModelObjectResultStep<O,M>(_modelObjectType,
 																  				    _resourceURI,
-																  				    _mediaType,	
+																  				    _mediaType,
 																  				    c -> { return c;}) //By default return find result
 																				  .build(findOidsResult);
-		}	
+		}
 	    // Build & Finish
-		public Response build(final FindSummariesResult<M> findSummResult) {			
+		public Response build(final FindSummariesResult<M> findSummResult) {
 			return new RESTFindOperationResponseBuilderForModelObjectResultStep<O,M>(_modelObjectType,
 																  				    _resourceURI,
-																  				    _mediaType,	
+																  				    _mediaType,
 																  				     c -> { return c;}) //By default return find result
 																				    .build(findSummResult);
-		}	
-		
+		}
+
 		// With Persistence Operation Transformer.
-		public RESTFindOperationResponseBuilderForModelObjectResultStep<O,M> withPersistenceOperationTransformer(final PersistenceOperationOnObjectResulCollectionToReponseEntity<?> transformer) {					
+		public RESTFindOperationResponseBuilderForModelObjectResultStep<O,M> withPersistenceOperationTransformer(final PersistenceOperationOnObjectResulCollectionToReponseEntity<?> transformer) {
 			return new RESTFindOperationResponseBuilderForModelObjectResultStep<O,M>(_modelObjectType,
 																  				     _resourceURI,
-																  				     _mediaType,	
+																  				     _mediaType,
 																  				      transformer);
 		}
 	}
-        
+
     @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
-	public final class RESTSearchIndexOperationResponseBuilderForModelObjectMediaTypeStep {	
-		private final URI _resourceURI;		
-		
+	public final class RESTSearchIndexOperationResponseBuilderForModelObjectMediaTypeStep {
+		private final URI _resourceURI;
+
 		public RESTSearchIndexOperationResponseBuilderResultStep mediaType(final MediaType mediaType) {
 			return new RESTSearchIndexOperationResponseBuilderResultStep(mediaType,
 					                                                    _resourceURI);
 		}
-	}    
+	}
     @RequiredArgsConstructor(access=AccessLevel.PRIVATE)
-	public final class RESTEXECOperationResponseBuilderForModelObjectMediaTypeStep {	
-		private final URI _resourceURI;		
-		
+	public final class RESTEXECOperationResponseBuilderForModelObjectMediaTypeStep {
+		private final URI _resourceURI;
+
 		public RESTEXECOperationResponseBuilderResultStep mediaType(final MediaType mediaType) {
 			return new RESTEXECOperationResponseBuilderResultStep(mediaType,
 					                                              _resourceURI);
 		}
 	}
-    
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CRUD
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -327,27 +328,27 @@ public abstract class RESTOperationsResponseBuilder
 		private final Class<M> _modelObjectType;
 		private final URI _resourceURI;
 		private final MediaType _mediaType;
-		private final PersistenceOperationOnObjectResulToReponseEntity<M> _transformer;		
-		
+		private final PersistenceOperationOnObjectResulToReponseEntity<M> _transformer;
+
 		/**
 		 * Returns a REST {@link Response} for a CRUD operation
-		 * @param crudResult 
+		 * @param crudResult
 		 * @return the response
 		 * @throws PersistenceException
 		 */
-		public Response build(final CRUDResult<M> crudResult) throws PersistenceException {				
-			Response outResponse = null;			
+		public Response build(final CRUDResult<M> crudResult) throws PersistenceException {
+			Response outResponse = null;
 			// Failed operation
 			if (crudResult.hasFailed()) {
 				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
-				crudResult.asCRUDError()		
-						  .throwAsPersistenceException();	
-				
+				crudResult.asCRUDError()
+						  .throwAsPersistenceException();
+
 			}
 			// Successful operation
 			else if (crudResult.hasSucceeded()) {
 				CRUDOK<M> persistCRUDOK = crudResult.asCRUDOK();		//as(CRUDOK.class);
-				
+
 				if (persistCRUDOK.hasBeenLoaded()) {
 					outResponse = Response.ok()
 										  .header("x-r01-modelObjType",_modelObjectType.getName())
@@ -375,10 +376,10 @@ public abstract class RESTOperationsResponseBuilder
 									  	  .type(_mediaType)
 									  	  .build();
 				} else if (persistCRUDOK.hasNotBeenModified()) {
-					outResponse = Response.notModified()	
+					outResponse = Response.notModified()
 										  .contentLocation(_resourceURI)
 										  .header("x-r01-modelObjType",_modelObjectType.getName())
-										  .entity(_transformer.from(crudResult))	
+										  .entity(_transformer.from(crudResult))
 										  .type(_mediaType)
 									  	  .build();
 				} else {
@@ -389,15 +390,15 @@ public abstract class RESTOperationsResponseBuilder
 		}
 		/**
 		 * Returns a REST {@link Response} for a CRUD operation
-		 * @param multipleCRUDResult 
+		 * @param multipleCRUDResult
 		 * @return the response
 		 * @throws PersistenceException
 		 */
 		public Response build(final CRUDOnMultipleResult<M> multipleCRUDResult) throws PersistenceException {
 			Response outResponse = null;
-			
+
 			// Failed operation
-			if (multipleCRUDResult.haveAllFailed() 
+			if (multipleCRUDResult.haveAllFailed()
 			 || multipleCRUDResult.haveSomeFailed()) {
 				Collection<CRUDError<M>> opsNOK = multipleCRUDResult.getOperationsNOK();
 				// Throw the exception for the first error... it'll be mapped by the RESTExceptionMappers REST type mapper
@@ -423,29 +424,29 @@ public abstract class RESTOperationsResponseBuilder
 	public final class RESTFindOperationResponseBuilderForModelObjectResultStep<O extends PersistableObjectOID,M extends PersistableModelObject<O>> {
 		private final Class<M> _modelObjectType;
 		private final URI _resourceURI;
-		private final MediaType _mediaType;		
+		private final MediaType _mediaType;
 		@SuppressWarnings("rawtypes")
-		private final PersistenceOperationOnObjectResulCollectionToReponseEntity _transformer;		
+		private final PersistenceOperationOnObjectResulCollectionToReponseEntity _transformer;
 		/**
 		 * Returns a REST {@link Response} for a FIND operation
-		 * @param findOIDsResult 
+		 * @param findOIDsResult
 		 * @return the response
 		 * @throws PersistenceException
 		 */
 		@SuppressWarnings("unchecked")
 		public Response build(final FindOIDsResult<O> findOIDsResult) throws PersistenceException {
 			Response outResponse = null;
-			
+
 			// Failed operation
 			if (findOIDsResult.hasFailed()) {
 				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
-				findOIDsResult.asFindOIDsError()		
-							  .throwAsPersistenceException();	
-				
+				findOIDsResult.asFindOIDsError()
+							  .throwAsPersistenceException();
+
 			}
 			// Successful operation
 			else {
-				FindOIDsOK<O> findOK = findOIDsResult.asFindOIDsOK();		//as(FindOIDsOK.class);			
+				FindOIDsOK<O> findOK = findOIDsResult.asFindOIDsOK();		//as(FindOIDsOK.class);
 				outResponse = Response.ok()
 									  .contentLocation(_resourceURI)
 									  .header("x-r01-modelObjType",_modelObjectType.getName())
@@ -458,16 +459,16 @@ public abstract class RESTOperationsResponseBuilder
 		@SuppressWarnings("unchecked")
 		public Response build(final FindResult<M> persistenceOpResult) throws PersistenceException {
 			Response outResponse = null;
-			
+
 			// Failed operation
 			if (persistenceOpResult.hasFailed()) {
 				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
 				persistenceOpResult.asFindError()		//as(PersistenceOperationError.class)
 								   .throwAsPersistenceException();	// throw an exception
-				
+
 			}
 			// Successful operation
-			else {			
+			else {
 				FindOK<M> findOK = persistenceOpResult.asFindOK();		// as(FindOK.class);
 				outResponse = Response.ok()
 									  .contentLocation(_resourceURI)
@@ -478,22 +479,22 @@ public abstract class RESTOperationsResponseBuilder
 			}
 			return outResponse;
 		}
-	
-		
+
+
 		@SuppressWarnings("unchecked")
 		public Response build(final FindSummariesResult<M> findSummResult) throws PersistenceException {
 			Response outResponse = null;
-			
+
 			// Failed operation
 			if (findSummResult.hasFailed()) {
 				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
 				findSummResult.asFindSummariesError()
 							  .throwAsPersistenceException();
-				
+
 			}
 			// Successful operation
 			else {
-				FindSummariesOK<M> findOK = findSummResult.asFindSummariesOK();		
+				FindSummariesOK<M> findOK = findSummResult.asFindSummariesOK();
 				outResponse = Response.ok()
 									  .contentLocation(_resourceURI)
 									  .header("x-r01-modelObjType",_modelObjectType.getName())
@@ -506,33 +507,33 @@ public abstract class RESTOperationsResponseBuilder
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 // OTHER ( Not CRUD, Not Find...)
-/////////////////////////////////////////////////////////////////////////////////////////	
+/////////////////////////////////////////////////////////////////////////////////////////
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTCoreMethodOperationResponseBuilderForModelObjectResultStep<M> {
-		private final Class<M> _modelObjectType;		
+		private final Class<M> _modelObjectType;
 		private final URI _resourceURI;
 		private final MediaType _mediaType;
 		private final COREServiceMethod  _coreServiceMethod;
-		private final COREServiceMethodExecResulToReponseEntity<M> _transformer;		
-		
+		private final COREServiceMethodExecResulToReponseEntity<M> _transformer;
+
 		/**
 		 * Returns a REST {@link Response} for a CORE Service Method operation
-		 * @param crudResult 
+		 * @param crudResult
 		 * @return the response
 		 * @throws PersistenceException
 		 */
-		public Response build( final COREServiceMethodExecResult<M> persistenceOpResult) throws PersistenceException {				
-			Response outResponse = null;			
+		public Response build( final COREServiceMethodExecResult<M> persistenceOpResult) throws PersistenceException {
+			Response outResponse = null;
 			// Failed operation.
 			if (persistenceOpResult.hasFailed()) {
 				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
 				persistenceOpResult.asCOREServiceMethodExecError()
-				                    .getCOREServiceException();		
-				
+				                    .getCOREServiceException();
+
 			}
 			// Successful operation
-			else if (persistenceOpResult.hasSucceeded()) {				
-				
+			else if (persistenceOpResult.hasSucceeded()) {
+
 				outResponse = Response.ok()
 						              .contentLocation(_resourceURI)
 									  .header("x-r01-modelObjType",_modelObjectType.getName())
@@ -540,19 +541,46 @@ public abstract class RESTOperationsResponseBuilder
 								  	  .entity(_transformer.from(persistenceOpResult))
 								  	  .type(_mediaType)
 								  	  .build();
-				
-			}			
+
+			}
 			return outResponse;
 		}
-		
+
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  EXEC
 /////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Returns a REST {@link Response} for a core-layer executed operation
+	 * @param coreMethodExecResult
+	 * @return the response
+	 * @throws PersistenceException
+	 */
 	@RequiredArgsConstructor(access=AccessLevel.PRIVATE)
 	public final class RESTEXECOperationResponseBuilderResultStep {
 		private final MediaType _mediaType;
 		private final URI _resourceURI;
+
+		public Response build(final COREServiceMethodExecResult<?> coreMethodExecResult) {
+			Response outResponse = null;
+
+			// Failed operation
+			if (coreMethodExecResult.hasFailed()) {
+				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
+				coreMethodExecResult.asCOREServiceMethodExecError()
+								    .throwAsCOREServiceException();
+			}
+			// Successful operation
+			else if (coreMethodExecResult.hasSucceeded()) {
+				COREServiceMethodExecOK<?> execOK = coreMethodExecResult.asCOREServiceMethodExecOK();
+				outResponse = Response.ok()
+									  .contentLocation(_resourceURI)
+									  .entity(execOK.getMethodExecResult())
+									  .type(_mediaType)
+									  .build();
+			}
+			return outResponse;
+		}
 		/**
 		 * Returns a REST {@link Response} for a core-layer executed persistence operation
 		 * @param persistenceOpResult
@@ -561,13 +589,13 @@ public abstract class RESTOperationsResponseBuilder
 		 */
 		public Response build(final PersistenceOperationResult<?> persistenceOpResult) throws PersistenceException {
 			Response outResponse = null;
-			
+
 			// Failed operation
 			if (persistenceOpResult.hasFailed()) {
 				// Throw the exception... it'll be mapped by the RESTExceptionMappers REST type mapper
 				persistenceOpResult.asPersistenceOperationError()
 								   .throwAsPersistenceException();	// throw an exception
-				
+
 			}
 			// Successful operation
 			else if (persistenceOpResult.hasSucceeded()) {
@@ -602,7 +630,7 @@ public abstract class RESTOperationsResponseBuilder
 	public final class RESTSearchIndexOperationResponseBuilderResultStep {
 		private final MediaType _mediaType;
 		private final URI _resourceURI;
-		
+
 		/**
 		 * Returns a REST {@link Response} for a search operation
 		 * @param persistenceOpResult
@@ -631,6 +659,6 @@ public abstract class RESTOperationsResponseBuilder
 										   .build();
 			return outResponse;
 		}
-		
+
 	}
 }
