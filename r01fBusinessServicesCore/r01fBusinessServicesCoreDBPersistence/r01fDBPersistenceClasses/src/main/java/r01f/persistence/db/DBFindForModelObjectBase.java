@@ -281,7 +281,7 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 		@SuppressWarnings("unchecked")
 		public SELF_TYPE setAscendingOrderBy(final String... dbCols) {
 			if (CollectionUtils.isNullOrEmpty(dbCols)) return (SELF_TYPE)this;
-			
+
 			CriteriaBuilder builder = this.getCriteriaBuilder();
 			Root<? extends DB> root = this.getRoot();
 			List<Order> listOrder = FluentIterable.from(dbCols)
@@ -299,7 +299,7 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 		@SuppressWarnings("unchecked")
 		public SELF_TYPE setDescendingOrderBy(final String... dbCols) {
 			if (CollectionUtils.isNullOrEmpty(dbCols)) return (SELF_TYPE)this;
-			
+
 			CriteriaBuilder builder = this.getCriteriaBuilder();
 			Root<? extends DB> root = this.getRoot();
 			List<Order> listOrder = FluentIterable.from(dbCols)
@@ -401,7 +401,10 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 														.transform(new Function<String,Selection<?>>() {
 																		@Override
 																		public Selection<?> apply(final String colName) {
-																			return _root.get(colName);
+																			Selection<?> outSel = _root.get(colName);
+																			if (outSel == null) throw new IllegalArgumentException(colName + " is NOT a valid selection at [db entity] of type " + _DBEntityType);
+																			outSel.alias(colName);
+																			return outSel;
 																		}
 																   })
 														.toList();
@@ -439,7 +442,7 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 	public class QueryWrapperExecResultTransform {
 		private final SecurityContext _securityContext;
 		private final List<Tuple> _tupleResult;
-		
+
 		public <S extends SummarizedModelObject<M>> FindSummariesResult<M> convertingTupleValuesUsing(final Function<Object[],S> dbTupleToSummaryConverter) {
 			FindSummariesResult<M> outSummaries = _buildSummariesResultFromTupleValues(_securityContext,
 															 					 	   _tupleResult,dbTupleToSummaryConverter);
