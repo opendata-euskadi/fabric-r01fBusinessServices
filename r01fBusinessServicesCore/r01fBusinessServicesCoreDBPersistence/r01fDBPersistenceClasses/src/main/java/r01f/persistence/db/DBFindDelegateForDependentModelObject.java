@@ -34,7 +34,8 @@ import r01f.util.types.collections.CollectionUtils;
  */
 @Slf4j
 @Accessors(prefix="_")
-public abstract class DBFindDelegateForDependentModelObject<O extends PersistableObjectOID,M extends PersistableModelObject<O>,PO extends PersistableObjectOID,
+public abstract class DBFindDelegateForDependentModelObject<O extends PersistableObjectOID,M extends PersistableModelObject<O>,
+															PO extends PersistableObjectOID,P extends PersistableModelObject<PO>,
 							     			   				PK extends DBPrimaryKeyForModelObject,DB extends DBEntity & DBEntityForModelObject<PK>>
 	       implements DBFindForDependentModelObject<O,M,PO> {
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -47,15 +48,15 @@ public abstract class DBFindDelegateForDependentModelObject<O extends Persistabl
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
-	public <P extends PersistableModelObject<PO>> DBFindDelegateForDependentModelObject(final Class<P> parentModelObjType,
-												 										final DBFindForModelObjectBase<O,M,PK,DB> dbFind) {
+	public DBFindDelegateForDependentModelObject(final Class<P> parentModelObjType,
+												 final DBFindForModelObjectBase<O,M,PK,DB> dbFind) {
 		this(parentModelObjType,
 			 dbFind,
 			 null);		// not using db tuple to summarized obj
 	}
-	public <P extends PersistableModelObject<PO>> DBFindDelegateForDependentModelObject(final Class<P> parentModelObjType,
-												 										final DBFindForModelObjectBase<O,M,PK,DB> dbFind,
-												 										final Function<Tuple,? extends SummarizedModelObject<M>> dbTupleToSummarizedObj) {
+	public DBFindDelegateForDependentModelObject(final Class<P> parentModelObjType,
+												 final DBFindForModelObjectBase<O,M,PK,DB> dbFind,
+												 final Function<Tuple,? extends SummarizedModelObject<M>> dbTupleToSummarizedObj) {
 		_parentObjType = parentModelObjType;
 		_dbFind = dbFind;
 		_dbTupleToSummarizedObj = dbTupleToSummarizedObj;

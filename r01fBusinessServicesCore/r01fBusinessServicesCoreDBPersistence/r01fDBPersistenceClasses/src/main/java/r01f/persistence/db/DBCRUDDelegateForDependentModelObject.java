@@ -44,7 +44,7 @@ public abstract class DBCRUDDelegateForDependentModelObject<O extends Persistabl
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Getter protected final Class<P> _parentObjType;
 	@Getter protected final DBCRUDForModelObjectBase<O,M,PK,DB> _dbCRUD;
-	@Getter protected final DBFindDelegateForDependentModelObject<O,M,PO,PK,DB> _dbFindDelegateForDependent;
+	@Getter protected final DBFindDelegateForDependentModelObject<O,M,PO,P,PK,DB> _dbFindDelegateForDependent;
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ public abstract class DBCRUDDelegateForDependentModelObject<O extends Persistabl
 	}
 	public DBCRUDDelegateForDependentModelObject(final Class<P> parentObjType,
 												 final DBCRUDForModelObjectBase<O,M,PK,DB> dbCRUD,
-												 final DBFindDelegateForDependentModelObject<O,M,PO,PK,DB> dbFindDelegateForDependent) {
+												 final DBFindDelegateForDependentModelObject<O,M,PO,P,PK,DB> dbFindDelegateForDependent) {
 		_parentObjType = parentObjType;
 		_dbCRUD = dbCRUD;
 		_dbFindDelegateForDependent = dbFindDelegateForDependent;
