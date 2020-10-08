@@ -33,7 +33,7 @@ import r01f.util.types.Strings;
  * to the bytes returned by the servlet in the {@link OutputStream}
  * ie: if inside a REST module exists a method like
  * <pre class='brush:java'>
- * 		@DELETE @Path("record/{id}") 
+ * 		@DELETE @Path("record/{id}")
  *		@Produces(application/xml)
  *		public Record deleteRecord(@PathParam("id") final String id)  {
  *			....
@@ -73,7 +73,7 @@ import r01f.util.types.Strings;
  * 				<ul>
  * 					<li>Using the type of the object to serialize; this can be useful if the {@link MessageBodyWriter} instance is used for a concrete type</li>
  * 					<li>Using the MIME-TYPE: The method is annotated with @Produces(SOME-MIME-TYPE) and this MIME-TYPE is used to make the decision</li>
- * 					<li>Using some annotation: 
+ * 					<li>Using some annotation:
  * 						<ul>
  * 							<li>if a REST module method return type is to be serialized, the method can be annotated with a custom annotation.</li>
  * 							<li>If a REST module method param is to be serialized, the param can be annotated with a custom annotation</li>
@@ -95,7 +95,7 @@ import r01f.util.types.Strings;
  * 			</td>
  * 		</tr>
  * 	</table>
- * 
+ *
  * (see http://stackoverflow.com/questions/8194408/how-to-access-parameters-in-a-restful-post-method)
  *
  */
@@ -109,20 +109,19 @@ public class RESTResponseTypeMappersForModelObjects {
 	 * MessageBodyWriter for all {@link ModelObject}s
 	 */
 	@Accessors(prefix="_")
-	public static abstract class ModelObjectResponseTypeMapperBase<M extends ModelObject> 
+	public static abstract class ModelObjectResponseTypeMapperBase<M extends ModelObject>
 		        		 extends MarshalledObjectResultTypeMapperBase<M> {
 		public ModelObjectResponseTypeMapperBase(final Marshaller marshaller) {
 			super(ModelObject.class,
-				  MediaType.APPLICATION_XML_TYPE,
-				  marshaller);
+				  marshaller,
+				  MediaType.APPLICATION_XML_TYPE,MediaType.APPLICATION_JSON_TYPE);
 		}
-		
-		public ModelObjectResponseTypeMapperBase(final Marshaller marshaller, final MediaType mediaType) {
+		public ModelObjectResponseTypeMapperBase(final Marshaller marshaller,
+												 final MediaType... mediaTypes) {
 			super(ModelObject.class,
-				  mediaType,
-				  marshaller);
+				  marshaller,
+				  mediaTypes);
 		}
-
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	SearchModelObject
@@ -131,19 +130,19 @@ public class RESTResponseTypeMappersForModelObjects {
 	 * MessageBodyWriter for all {@link SearchModelObject}s
 	 */
 	@Accessors(prefix="_")
-	public static abstract class SearchModelObjectResponseTypeMapperBase 
+	public static abstract class SearchModelObjectResponseTypeMapperBase
 		     			 extends MarshalledObjectResultTypeMapperBase<SearchModelObject> {
-		
+
 		public SearchModelObjectResponseTypeMapperBase(final Marshaller marshaller) {
 			super(SearchModelObject.class,
-				  MediaType.APPLICATION_XML_TYPE,
-				  marshaller);
+				  marshaller,
+				  MediaType.APPLICATION_XML_TYPE,MediaType.APPLICATION_JSON_TYPE);
 		}
-		
-		public SearchModelObjectResponseTypeMapperBase(final Marshaller marshaller, final MediaType mediaType) {
+		public SearchModelObjectResponseTypeMapperBase(final Marshaller marshaller,
+													   final MediaType... mediaTypes) {
 			super(SearchModelObject.class,
-				  mediaType,
-				  marshaller);
+				  marshaller,
+				  mediaTypes);
 		}
 
 	}
@@ -153,19 +152,19 @@ public class RESTResponseTypeMappersForModelObjects {
 	/**
 	 * MessageBodyWriter for all {@link PersistenceOperation}
 	 */
-	public static abstract class PersistenceOperationResultTypeMapperBase 
-		                 extends MarshalledObjectResultTypeMapperBase<PersistenceOperationResult<?>> {		
-		
+	public static abstract class PersistenceOperationResultTypeMapperBase
+		                 extends MarshalledObjectResultTypeMapperBase<PersistenceOperationResult<?>> {
+
 		public PersistenceOperationResultTypeMapperBase(final Marshaller modelObjectsMarshaller) {
 			super(PersistenceOperationResult.class,
-				  MediaType.APPLICATION_XML_TYPE,
-				  modelObjectsMarshaller);
+				  modelObjectsMarshaller,
+				  MediaType.APPLICATION_XML_TYPE,MediaType.APPLICATION_JSON_TYPE);
 		}
-		
-		public PersistenceOperationResultTypeMapperBase(final Marshaller modelObjectsMarshaller, final MediaType mediaType) {
+		public PersistenceOperationResultTypeMapperBase(final Marshaller modelObjectsMarshaller,
+														final MediaType... mediaTypes) {
 			super(PersistenceOperationResult.class,
-				  mediaType,
-				  modelObjectsMarshaller);
+				  modelObjectsMarshaller,
+				  mediaTypes);
 		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -174,15 +173,15 @@ public class RESTResponseTypeMappersForModelObjects {
 	/**
 	 * MessageBodyWriter for all {@link R01MModelObject}s
 	 */
-	public static abstract class OIDResponseTypeMapperBase 
+	public static abstract class OIDResponseTypeMapperBase
 		     		  implements MessageBodyWriter<OID> {
-		
+
 		@Override
 		public boolean isWriteable(final Class<?> type,final Type genericType,
 								   final Annotation[] annotations,
 								   final MediaType mediaType) {
 			boolean outWriteable = false;
-			if (mediaType.equals(MediaType.APPLICATION_XML_TYPE) 
+			if ((mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE) || mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE))
 			 && ReflectionUtils.isImplementingAny(type,OID.class)) {
 			     outWriteable = true;
 			}
@@ -201,57 +200,56 @@ public class RESTResponseTypeMappersForModelObjects {
 		@Override
 		public void writeTo(final OID modelObj,
 							final Class<?> type,final Type genericType,
-							final Annotation[] annotations, 
+							final Annotation[] annotations,
 							final MediaType mediaType,
 							final MultivaluedMap<String,Object> httpHeaders,
 							final OutputStream entityStream) throws IOException,
 																	WebApplicationException {
 			log.trace("writing {} type",type.getName());
-			String oid = modelObj.asString(); 
-			// write 
+			String oid = modelObj.asString();
+			// write
 			if (Strings.isNOTNullOrEmpty(oid)) entityStream.write(oid.getBytes());
 		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	IndexManagementCommand & EnqueuedJob
-/////////////////////////////////////////////////////////////////////////////////////////	
+/////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * MessageBodyWriter for all {@link IndexManagementCommand}s
 	 */
 	@Accessors(prefix="_")
-	public static abstract class IndexManagementCommandResponseTypeMapperBase 
+	public static abstract class IndexManagementCommandResponseTypeMapperBase
 		     			 extends MarshalledObjectResultTypeMapperBase<IndexManagementCommand> {
-		
+
 		public IndexManagementCommandResponseTypeMapperBase(final Marshaller marshaller) {
 			super(IndexManagementCommand.class,
-				  MediaType.APPLICATION_XML_TYPE,
-				  marshaller);
+				  marshaller,
+				  MediaType.APPLICATION_XML_TYPE,MediaType.APPLICATION_JSON_TYPE);
 		}
-		
-		public IndexManagementCommandResponseTypeMapperBase(final Marshaller marshaller, final MediaType mediaType) {
+		public IndexManagementCommandResponseTypeMapperBase(final Marshaller marshaller,
+															final MediaType... mediaTypes) {
 			super(IndexManagementCommand.class,
-				  mediaType,
-				  marshaller);
+				  marshaller,
+				  mediaTypes);
 		}
 	}
 	/**
 	 * MessageBodyWriter for all {@link EnqueuedJob}s
 	 */
 	@Accessors(prefix="_")
-	public static abstract class EnqueuedJobResponseTypeMapperBase 
+	public static abstract class EnqueuedJobResponseTypeMapperBase
 		     			 extends MarshalledObjectResultTypeMapperBase<EnqueuedJob> {
-		
+
 		public EnqueuedJobResponseTypeMapperBase(final Marshaller marshaller) {
 			super(EnqueuedJob.class,
-				  MediaType.APPLICATION_XML_TYPE,
-				  marshaller);
+				  marshaller,
+				  MediaType.APPLICATION_XML_TYPE,MediaType.APPLICATION_JSON_TYPE);
 		}
-		
-		public EnqueuedJobResponseTypeMapperBase(final Marshaller marshaller, final MediaType mediaType) {
+		public EnqueuedJobResponseTypeMapperBase(final Marshaller marshaller,
+												 final MediaType... mediaTypes) {
 			super(EnqueuedJob.class,
-				  mediaType,
-				  marshaller);
+				  marshaller,
+				  mediaTypes);
 		}
 	}
-
 }

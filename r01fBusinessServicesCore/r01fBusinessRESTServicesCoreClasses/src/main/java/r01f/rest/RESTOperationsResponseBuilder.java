@@ -212,8 +212,8 @@ public abstract class RESTOperationsResponseBuilder
 
   		public RESTCoreOperationResponseBuilderForModelObjectEntityCoreMethodStep<M> mediaType(final MediaType mediaType) {
   			return new RESTCoreOperationResponseBuilderForModelObjectEntityCoreMethodStep<M>(_modelObjectType,
-  																							    _resourceURI,
-  																  				                 mediaType);
+  																							 _resourceURI,
+  																  				             mediaType);
   		}
   	}
 
@@ -225,9 +225,9 @@ public abstract class RESTOperationsResponseBuilder
 
   		public RESTCoreOperationResponseBuilderForModelObjectEntityTransformerOrResultStep<M> executedMethod(final COREServiceMethod coreMethod) {
   			return new RESTCoreOperationResponseBuilderForModelObjectEntityTransformerOrResultStep<M>(_modelObjectType,
-  																									    _resourceURI,
-  																  				                         _mediaType,
-  																  				                         coreMethod);
+  																									   _resourceURI,
+  																  				                      _mediaType,
+  																  				                      coreMethod);
   		}
   	}
 
@@ -242,20 +242,20 @@ public abstract class RESTOperationsResponseBuilder
 		// Build & Finish
 		public Response build(final COREServiceMethodExecResult<M> persistenceOpResult) {
 				return new RESTCoreMethodOperationResponseBuilderForModelObjectResultStep<M>(_modelObjectType,
-																					           _resourceURI,
-																	  				           _mediaType,
-																	  				          _coreMethod,
-																	  				           f -> { return f;} )//By default return find result
-					                                                                   .build(persistenceOpResult);
+																					         _resourceURI,
+																	  				         _mediaType,
+																	  				         _coreMethod,
+																	  				         f -> { return f;} )//By default return find result
+					                            .build(persistenceOpResult);
 		}
 
 		// With Persistence Operation Transformer.
 		public RESTCoreMethodOperationResponseBuilderForModelObjectResultStep<M> withCoreServiceMethodExecResulTransformer(final COREServiceMethodExecResulToReponseEntity<M> transformer) {
 			return new RESTCoreMethodOperationResponseBuilderForModelObjectResultStep<M>(_modelObjectType,
-																  				        _resourceURI,
-																  				        _mediaType,
-																  				        _coreMethod,
-																  				        transformer);
+																  				         _resourceURI,
+																  				         _mediaType,
+																  				         _coreMethod,
+																  				         transformer);
 		}
 }
 
@@ -271,17 +271,17 @@ public abstract class RESTOperationsResponseBuilder
 		public Response build(final FindResult<M> findResult) {
 				return new RESTFindOperationResponseBuilderForModelObjectResultStep<O,M>(_modelObjectType,
 																					     _resourceURI,
-																	  				      _mediaType,
-																	  				      f -> { return f;} )//By default return find result
-					                                                                   .build(findResult);
+																	  				     _mediaType,
+																	  				     f -> { return f;} )//By default return find result
+					                        .build(findResult);
 		}
 		// Build & Finish
 		public Response build(final FindOIDsResult<O> findOidsResult) {
 			return new RESTFindOperationResponseBuilderForModelObjectResultStep<O,M>(_modelObjectType,
-																  				    _resourceURI,
-																  				    _mediaType,
-																  				    c -> { return c;}) //By default return find result
-																				  .build(findOidsResult);
+																  				     _resourceURI,
+																  				     _mediaType,
+																  				     c -> { return c;}) //By default return find result
+											.build(findOidsResult);
 		}
 	    // Build & Finish
 		public Response build(final FindSummariesResult<M> findSummResult) {
@@ -289,7 +289,7 @@ public abstract class RESTOperationsResponseBuilder
 																  				    _resourceURI,
 																  				    _mediaType,
 																  				     c -> { return c;}) //By default return find result
-																				    .build(findSummResult);
+											.build(findSummResult);
 		}
 
 		// With Persistence Operation Transformer.
@@ -297,7 +297,7 @@ public abstract class RESTOperationsResponseBuilder
 			return new RESTFindOperationResponseBuilderForModelObjectResultStep<O,M>(_modelObjectType,
 																  				     _resourceURI,
 																  				     _mediaType,
-																  				      transformer);
+																  				     transformer);
 		}
 	}
 
