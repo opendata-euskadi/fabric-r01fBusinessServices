@@ -11,7 +11,7 @@ import r01f.generics.TypeRef;
 import r01f.services.interfaces.ServiceInterface;
 
 @Accessors(prefix="_")
-public abstract class ServicesDelegateBase 
+public abstract class ServicesDelegateBase
            implements HasEventBus {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  NOT INJECTED STATUS
@@ -48,10 +48,10 @@ public abstract class ServicesDelegateBase
 								final EventBus eventBus) {
 		this(coreCfg,
 			 null,			// no service impl
-			 eventBus);			
+			 eventBus);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 	@SuppressWarnings({ "unchecked" })
 	protected <S extends ServiceInterface> S getServiceImplAs(final Class<S> serviceInterfaceType) {
