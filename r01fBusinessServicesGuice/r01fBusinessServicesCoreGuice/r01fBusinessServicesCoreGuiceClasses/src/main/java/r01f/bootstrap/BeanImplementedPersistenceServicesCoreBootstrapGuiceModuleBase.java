@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import r01f.bootstrap.services.ServicesBootstrapUtil;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanExposed;
-import r01f.bootstrap.services.config.core.ServicesCoreGuiceBootstrapConfigWhenBeanExposed;
 import r01f.bootstrap.services.core.BeanImplementedServicesCoreBootstrapGuiceModuleBase;
 import r01f.bootstrap.services.core.DBPersistenceGuiceModule;
 import r01f.bootstrap.services.core.SearchEnginePersistenceGuiceModule;
@@ -50,7 +49,7 @@ public abstract class BeanImplementedPersistenceServicesCoreBootstrapGuiceModule
 			  dbGuiceModule,
 			  null);
 	}
-	public BeanImplementedPersistenceServicesCoreBootstrapGuiceModuleBase(final ServicesCoreGuiceBootstrapConfigWhenBeanExposed coreBootstrapCfg,
+	public BeanImplementedPersistenceServicesCoreBootstrapGuiceModuleBase(final ServicesCoreBootstrapConfigWhenBeanExposed coreBootstrapCfg,
 																		  final DBPersistenceGuiceModule dbGuiceModule,
 														   				  final Module... otherModules) {
 		super(coreBootstrapCfg,
@@ -122,7 +121,7 @@ public abstract class BeanImplementedPersistenceServicesCoreBootstrapGuiceModule
 		 || this instanceof CoreServicesBootstrapGuiceModuleBindsEventListeners) {
 			// Automatic registering of event listeners to the event bus avoiding the manual registering of every listener;
 			// this code simply listen for guice's binding events: when an event listener gets binded, it's is automatically registered at the event bus
-			// 		Listen to injection of COREEventBusEventListener subtypes 
+			// 		Listen to injection of COREEventBusEventListener subtypes
 			Provider<EventBus> eventBusProvider = theBinder.getProvider(EventBus.class);
 			EventBusSubscriberTypeListener typeListener = new EventBusSubscriberTypeListener(eventBusProvider);	// inject an event bus provider !!!
 			theBinder.bindListener(Matchers.subclassesOf(COREEventBusEventListener.class),
