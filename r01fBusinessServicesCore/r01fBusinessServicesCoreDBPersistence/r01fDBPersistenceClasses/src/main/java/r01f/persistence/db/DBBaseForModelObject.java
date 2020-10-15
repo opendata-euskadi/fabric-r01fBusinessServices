@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -184,15 +185,15 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 	protected PersistenceOperationResult<Date> doGetLastUpdateDate(final SecurityContext securityContext,
 								   								   final O oid) {
 		// Load the [last update date]
-		CriteriaBuilder _criteriaBuilder = _entityManager.getCriteriaBuilder();
-		CriteriaQuery<Tuple> _criteriaQuery = _criteriaBuilder.createTupleQuery();
-		Root<? extends DB> _root = _criteriaQuery.from(_DBEntityType);
+		CriteriaBuilder criteriaBuilder = _entityManager.getCriteriaBuilder();
+		CriteriaQuery<Tuple> criteriaQuery = criteriaBuilder.createTupleQuery();
+		Root<? extends DB> root = criteriaQuery.from(_DBEntityType);
 
-		_criteriaQuery.multiselect(_root.get("_lastUpdateDate"));
-		Predicate oidPredicate = _criteriaBuilder.equal(_root.<String>get("_oid"),
+		criteriaQuery.multiselect(root.get("_lastUpdateDate"));
+		Predicate oidPredicate = criteriaBuilder.equal(root.<String>get("_oid"),
 									 					oid.asString());
-		_criteriaQuery.where(oidPredicate);
-		List<Tuple> tupleResult = _entityManager.createQuery(_criteriaQuery)
+		criteriaQuery.where(oidPredicate);
+		List<Tuple> tupleResult = _entityManager.createQuery(criteriaQuery)
 													.setHint(QueryHints.READ_ONLY,HintValues.TRUE)
 											    .getResultList();
 
@@ -213,6 +214,32 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 			GregorianCalendar lastUpdateDate = (GregorianCalendar)tuple.get(0);
 			outResult = new PersistenceOperationExecOK<Date>(COREServiceMethod.named("lastUpdateDate"),
 															 lastUpdateDate != null ? lastUpdateDate.getTime() : new Date());
+		}
+		return outResult;
+	}
+	protected PersistenceOperationResult<Boolean> doTouch(final SecurityContext securityContext,
+								   						  final O oid,final Date date) {
+		// Load the [last update date]
+		CriteriaBuilder criteriaBuilder = _entityManager.getCriteriaBuilder();
+		CriteriaUpdate<DB> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(_DBEntityType);
+		Root<? extends DB> root = criteriaUpdate.from(_DBEntityType);
+		criteriaUpdate.set(root.get("_lastUpdateDate"),Dates.asCalendar(date));
+		Predicate oidPredicate = criteriaBuilder.equal(root.<String>get("_oid"),
+									 				   oid.asString());
+		criteriaUpdate.where(oidPredicate);
+		int updatedCount = _entityManager.createQuery(criteriaUpdate)
+					  					 .executeUpdate();
+
+		// Compose the PersistenceOperationResult object
+		PersistenceOperationResult<Boolean> outResult = null;
+		if (updatedCount == 0) {
+			outResult = new PersistenceOperationExecError<Boolean>(COREServiceMethod.named("touch"),
+																   Strings.customized("Could NOT find a {} entity with oid={} when trying to get the last update date",
+																				   	  _modelObjectType,oid));
+			log.warn(outResult.getDetailedMessage());
+		} else {
+			outResult = new PersistenceOperationExecOK<Boolean>(COREServiceMethod.named("touch"),
+															 	true);
 		}
 		return outResult;
 	}

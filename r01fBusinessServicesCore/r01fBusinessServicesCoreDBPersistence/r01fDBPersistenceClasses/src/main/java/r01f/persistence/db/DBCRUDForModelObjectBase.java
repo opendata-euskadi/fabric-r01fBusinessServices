@@ -178,13 +178,13 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 		// set the db entity fields from the model object data
 		this.setDBEntityFieldsFromModelObject(securityContext,
 						     	  			  modelObj,dbEntity);
-		// DO NOT MOVE! sometimes the oid is computed by combining 
+		// DO NOT MOVE! sometimes the oid is computed by combining
 		//				some model object's fields
 		if (persistenceOp == PersistencePerformedOperation.CREATED
 		 && Strings.isNullOrEmpty(dbEntity.getOid())) {
 			dbEntity.setOid(modelObj.getOid().asString());
 		}
-		
+
 		// BEWARE!! do NOT move
 		if (dbEntity instanceof HasTrackingInfo) {
 			if (modelObj.getTrackingInfo() == null) modelObj.setTrackingInfo(new ModelObjectTracking());
@@ -265,6 +265,12 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 								final COREServiceMethodCallbackSpec callbackSpec) {
 		throw new IllegalStateException(Throwables.message("Implemented at service level (see {})",
 														   CRUDServicesForModelObjectDelegateBase.class));
+	}
+	@Override
+	public PersistenceOperationResult<Boolean> touch(final SecurityContext securityContext,
+													 final O oid,final Date date) {
+		return this.doTouch(securityContext,
+							oid,date);
 	}
 	@Override
 	public CRUDResult<M> delete(final SecurityContext securityContext,
@@ -503,7 +509,7 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 				.remove(dbEntity);
 			this.getEntityManager()
 			 	.flush();
-			
+
 			M outModelObj =  _wrapDBEntityToModelObject(securityContext,
 												  		dbEntity);
 			outResult = CRUDResultBuilder.using(securityContext)
@@ -553,7 +559,7 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 			}
 		}
 		// [2]... if no name was retrieved, try to use the model object's name
-		if (Strings.isNullOrEmpty(outName) 
+		if (Strings.isNullOrEmpty(outName)
 		 && modelObject.hasFacet(HasName.class)) {
 			if (modelObject.hasFacet(HasLangDependentNamedFacet.class)) {
 				LangDependentNamed langNames = modelObject.asFacet(HasLangDependentNamedFacet.class)

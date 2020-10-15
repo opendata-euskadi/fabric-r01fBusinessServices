@@ -17,6 +17,7 @@ import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.CRUDResultBuilder;
 import r01f.model.persistence.PersistenceOperationExecError;
+import r01f.model.persistence.PersistenceOperationExecOK;
 import r01f.model.persistence.PersistenceOperationResult;
 import r01f.model.persistence.PersistenceRequestedOperation;
 import r01f.model.services.COREServiceMethod;
@@ -240,6 +241,15 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 				   callbackSpec);
 		// [7] return
 		return outOpResult;
+	}
+	@Override @SuppressWarnings("unchecked")
+	public PersistenceOperationResult<Boolean> touch(final SecurityContext securityContext,
+												  	 final O oid,final Date date) {
+		if (date == null) return new PersistenceOperationExecOK<>(COREServiceMethod.named("touch"),
+																  false);
+		return this.getServiceImplAs(CRUDServicesForModelObject.class)
+				   .touch(securityContext,
+						  oid,date);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  DELETE
