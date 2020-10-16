@@ -113,15 +113,13 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 								final DBModuleConfig dbCfg,
 								final EntityManager entityManager,
 								final Marshaller marshaller) {
-		super(dbCfg,
+		this(modelObjectType,dbEntityType,
+			 // create a default transformer using the marshaller
+			 DBBase.createTransformsDBEntityIntoModelObjectUsing(marshaller,		
+																 modelObjectType),
+			  dbCfg,
 			  entityManager,
 			  marshaller);
-		_modelObjectType = modelObjectType;
-		_DBEntityType = dbEntityType;
-
-		// create a default transformer using the marshaller
-		_dbEntityIntoModelObjectTransformer = DBBase.createTransFromsDBEntityIntoModelObjectUsing(_modelObjectsMarshaller,
-																						   		  modelObjectType);
 	}
 	public DBBaseForModelObject(final Class<M> modelObjectType,final Class<DB> dbEntityType,
 								final TransformsDBEntityIntoModelObject<DB,M> dbEntityIntoModelObjectTransformer,
@@ -138,8 +136,14 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONVERTERS
 /////////////////////////////////////////////////////////////////////////////////////////
+	@Deprecated
 	protected M _wrapDBEntityToModelObject(final SecurityContext securityContext,
-								           final DB dbEntity) {
+										   final DB dbEntity) {
+		return _transformDBEntityToModelObject(securityContext,
+											   dbEntity);
+	}
+	protected M _transformDBEntityToModelObject(final SecurityContext securityContext,
+								           		final DB dbEntity) {
 		M out = this.dbEntityToModelObject(securityContext,
 										   dbEntity);
 		// ensure the tracking info ant entity version are set
@@ -258,8 +262,8 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 		// Compose the PersistenceOperationResult object
 		CRUDResult<M> outEntityLoadResult = null;
 		if (dbEntity != null) {
-			M modelObj = _wrapDBEntityToModelObject(securityContext,
-											    	dbEntity);
+			M modelObj = _transformDBEntityToModelObject(securityContext,
+											    		 dbEntity);
 			outEntityLoadResult = CRUDResultBuilder.using(securityContext)
 										  .on(_modelObjectType)
 										  .loaded()

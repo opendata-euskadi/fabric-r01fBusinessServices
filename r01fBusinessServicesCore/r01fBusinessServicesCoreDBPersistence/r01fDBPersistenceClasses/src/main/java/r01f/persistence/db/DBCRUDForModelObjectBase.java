@@ -186,10 +186,29 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 		}
 
 		// BEWARE!! do NOT move
+		// transfer the tracking info
+		DBCRUDForModelObjectBase.transferModelObjectTrackingInfoFromDBEntityToModelObject(securityContext,
+																	  					  dbEntity,modelObj,
+																	  					  persistenceOp);
+		// the xml descriptor MUST be the last field to be set
+		if (dbEntity instanceof DBEntityHasModelObjectDescriptor) {
+			this.setDescriptorForDBEntity(modelObj,dbEntity);
+		}
+	}
+	protected void setDescriptorForDBEntity(final M modelObj,final DB dbEntity) {
+		DBEntityHasModelObjectDescriptor hasDescriptor = (DBEntityHasModelObjectDescriptor)dbEntity;
+		String xmlDescriptor = _modelObjectsMarshaller.forWriting().toXml(modelObj);
+		hasDescriptor.setDescriptor(xmlDescriptor);
+	}
+	protected static <M extends PersistableModelObject<?>,DB extends DBEntityForModelObject<?>> 
+					 void transferModelObjectTrackingInfoFromDBEntityToModelObject(final SecurityContext securityContext,
+							 													   final DB dbEntity,final M modelObj,
+							 													   final PersistencePerformedOperation persistenceOp) {
+		// BEWARE!! do NOT move
 		if (dbEntity instanceof HasTrackingInfo) {
 			if (modelObj.getTrackingInfo() == null) modelObj.setTrackingInfo(new ModelObjectTracking());
 
-			// compute the dbentity tracking info
+			// compute the db entity tracking info
 			HasTrackingInfo dbEntityHasTrackingInfo = (HasTrackingInfo)dbEntity;
 			ModelObjectTracking dbEntityTracking = dbEntityHasTrackingInfo.getTrackingInfo();		// always return a tracking info obj
 			dbEntityTracking.mergeWith(modelObj.getTrackingInfo())	// modelObj.getTrackingInfo() can be null; if so, nothing is done
@@ -205,16 +224,7 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 			}
 			if (dbEntityTracking.getLastUpdatorUserCode() != null)	dbEntityHasTrackingInfo.setLastUpdatorUserCode(dbEntityTracking.getLastUpdatorUserCode());
 		}
-		// the xml descriptor MUST be the last field to be set
-		if (dbEntity instanceof DBEntityHasModelObjectDescriptor) {
-			this.setDescriptorForDBEntity(modelObj,dbEntity);
-		}
 	}
-    protected void setDescriptorForDBEntity(final M modelObj,final DB dbEntity) {
-		DBEntityHasModelObjectDescriptor hasDescriptor = (DBEntityHasModelObjectDescriptor)dbEntity;
-		String xmlDescriptor = _modelObjectsMarshaller.forWriting().toXml(modelObj);
-		hasDescriptor.setDescriptor(xmlDescriptor);
-    }
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CRUD
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -369,8 +379,8 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 			ChecksChangesInModelObjectIimmutableFieldsBeforeUpdate<M> checksImmutableFieldsChanges = (ChecksChangesInModelObjectIimmutableFieldsBeforeUpdate<M>)this;
 
 			// a) get a model obj from the CUREENTLY-STORED data
-			M actualStoredObj = _wrapDBEntityToModelObject(securityContext,
-										     	   		   dbEntityToPersist);
+			M actualStoredObj = _transformDBEntityToModelObject(securityContext,
+										     	   		   		dbEntityToPersist);
 			boolean immutableFieldChanged = checksImmutableFieldsChanges.isAnyImmutablePropertyChanged(securityContext,
 																									   actualStoredObj,modelObj);
 			if (immutableFieldChanged) return CRUDResultBuilder.using(securityContext)
@@ -453,9 +463,9 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 																 .flush();
 
 		// [2]: build the result
-		M outModelObj = _wrapDBEntityToModelObject(securityContext,
-										     	   outManagedDBEntity);	// beware that the managed object is the merge's returned entity
-																		// the one that contains the updated entity version...
+		M outModelObj = _transformDBEntityToModelObject(securityContext,
+										     	   		outManagedDBEntity);// beware that the managed object is the merge's returned entity
+																			// the one that contains the updated entity version...
 
 		// [3]: call the persistence event listeners
 		if (CollectionUtils.hasData(_dbEntityPersistenceEventsListeners)) {
@@ -510,8 +520,8 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 			this.getEntityManager()
 			 	.flush();
 
-			M outModelObj =  _wrapDBEntityToModelObject(securityContext,
-												  		dbEntity);
+			M outModelObj =  _transformDBEntityToModelObject(securityContext,
+												  			 dbEntity);
 			outResult = CRUDResultBuilder.using(securityContext)
 										 .on(_modelObjectType)
 										 .deleted()
