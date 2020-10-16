@@ -29,6 +29,15 @@ public interface CRUDServicesForModelObject<O extends PersistableObjectOID,M ext
 //	CRUD
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
+	 * Checks if the given object exists 
+	 * it's a "lighter" operation than a "load" operation
+	 * @param securityContext
+	 * @param oid
+	 * @return
+	 */
+	public PersistenceOperationResult<Boolean> exists(final SecurityContext securityContext,
+													  final O oid);
+	/**
 	 * Returns the last update date of the given object
 	 * @param securityContext
 	 * @param oid

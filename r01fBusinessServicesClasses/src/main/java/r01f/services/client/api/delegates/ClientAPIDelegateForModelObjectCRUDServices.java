@@ -42,14 +42,26 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 //  LOAD
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
+	 * Checks a record existence in a "lighter" operation than a full "load"
+	 * @param oid
+	 * @return
+	 * @throws PersistenceException
+	 */
+	public boolean exists(final O oid) {
+		PersistenceOperationResult<Boolean> exists = this.getServiceProxy()
+														 .exists(this.getSecurityContext(),
+																 oid);
+		return exists.getOrThrow();
+	}
+	/**
 	 * Returns the last update date of the given object oid
 	 * @param oid
 	 * @return
 	 */
 	public Date getLastUpdateDateOf(final O oid) {
 		PersistenceOperationResult<Date> lastUpdateExec = this.getServiceProxy()
-																	.getLastUpdateDate(this.getSecurityContext(),
-																					   oid);
+																.getLastUpdateDate(this.getSecurityContext(),
+																				   oid);
 		return lastUpdateExec.getOrThrow();
 	}
 	/**
@@ -87,15 +99,6 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 			if (!persistEx.isEntityNotFound()) throw persistEx;
 		}
 		return outRecord;
-	}
-	/**
-	 * Checks a record existence
-	 * @param oid
-	 * @return
-	 * @throws PersistenceException
-	 */
-	public boolean exists(final O oid) {
-		return this.loadOrNull(oid) != null;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 // 	SAVE

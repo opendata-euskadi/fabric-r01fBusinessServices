@@ -41,13 +41,40 @@ public abstract class DelegateForRawREST {
 		return _responseToResultMapper;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//	HEAD
+/////////////////////////////////////////////////////////////////////////////////////////
+	public static HttpResponse HEAD(final Url restResourceUrl,
+								   final String securityContextXml) {
+		return HEAD(restResourceUrl, new HttpRequestHeader("securityContext",securityContextXml));
+	}
+	public static HttpResponse HEAD(final Url restResourceUrl,
+								   final HttpRequestHeader securityHeader,
+								   final HttpRequestHeader... otherHeaders) {
+		log.warn("\t\tHEAD resource: {}",restResourceUrl);
+			
+		HttpResponse outHttpResponse = null;
+		try {
+			outHttpResponse = HttpClient.forUrl(restResourceUrl)
+									    // Security Header
+										.withHeader(securityHeader.getName(),securityHeader.getValue())
+										.withHeaders(otherHeaders)		// any additional header
+									    .HEAD()
+									  	.getResponse()
+									  		.directNoAuthConnected();
+		} catch (final IOException ioEx) {
+			ioEx.getLocalizedMessage();
+			log.error("Error while HEADing {}: {}",restResourceUrl,ioEx.getMessage());
+			throw new COREServiceProxyException(ioEx);
+		}
+		return outHttpResponse;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//  GET
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static HttpResponse GET(final Url restResourceUrl,
 								   final String securityContextXml) {
 		return GET(restResourceUrl, new HttpRequestHeader("securityContext",securityContextXml));
 	}
-	
 	public static HttpResponse GET(final Url restResourceUrl,
 								   final HttpRequestHeader securityHeader,
 								   final HttpRequestHeader... otherHeaders) {
@@ -69,8 +96,9 @@ public abstract class DelegateForRawREST {
 		}
 		return outHttpResponse;
 	}
-	
-	
+/////////////////////////////////////////////////////////////////////////////////////////
+//	POST
+/////////////////////////////////////////////////////////////////////////////////////////
 	public static HttpResponse POST(final Url restResourceUrl,
 									final String securityContextXml,
 							     	final String entityXml,
@@ -82,7 +110,6 @@ public abstract class DelegateForRawREST {
 				    headers);
 	
 	}
-	
 	public static HttpResponse POST(final Url restResourceUrl,
 			                        final MimeType mimeType,
 									final HttpRequestHeader securityHeader,
@@ -118,7 +145,9 @@ public abstract class DelegateForRawREST {
 		}				
 		return outHttpResponse;
 	}
-	
+/////////////////////////////////////////////////////////////////////////////////////////
+//	PUT
+/////////////////////////////////////////////////////////////////////////////////////////	
 	public static HttpResponse PUT(final Url restResourceUrl,
 								   final String securityContextXml,
 				 			  	   final String entityXml,
@@ -167,13 +196,13 @@ public abstract class DelegateForRawREST {
 		}		
 		return outHttpResponse;
 	}
-	
-	
+/////////////////////////////////////////////////////////////////////////////////////////
+//	DELETE
+/////////////////////////////////////////////////////////////////////////////////////////
 	public static HttpResponse DELETE(final Url restResourceUrl,
 									  final String securityContextXml) {	
 		return DELETE(restResourceUrl, new HttpRequestHeader("securityContext",securityContextXml));	
 	}
-	
 	public static HttpResponse DELETE(final Url restResourceUrl, 
 									  final HttpRequestHeader securityHeader,
 									  final HttpRequestHeader... otherHeaders) {

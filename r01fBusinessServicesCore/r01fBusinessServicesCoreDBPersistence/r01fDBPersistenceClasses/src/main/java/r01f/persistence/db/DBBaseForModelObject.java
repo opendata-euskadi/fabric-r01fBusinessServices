@@ -186,6 +186,38 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 /////////////////////////////////////////////////////////////////////////////////////////
 //  LOAD
 /////////////////////////////////////////////////////////////////////////////////////////
+	protected PersistenceOperationResult<Boolean> doCheckExistence(final SecurityContext securityContext,
+								   								   final O oid) {
+		// Load the [last update date]
+		CriteriaBuilder criteriaBuilder = _entityManager.getCriteriaBuilder();
+		CriteriaQuery<Tuple> criteriaQuery = criteriaBuilder.createTupleQuery();
+		Root<? extends DB> root = criteriaQuery.from(_DBEntityType);
+
+		criteriaQuery.multiselect(root.get("_oid"));
+		Predicate oidPredicate = criteriaBuilder.equal(root.<String>get("_oid"),
+									 				   oid.asString());
+		criteriaQuery.where(oidPredicate);
+		List<Tuple> tupleResult = _entityManager.createQuery(criteriaQuery)
+													.setHint(QueryHints.READ_ONLY,HintValues.TRUE)
+											    .getResultList();
+
+		// Compose the PersistenceOperationResult object
+		PersistenceOperationResult<Boolean> outResult = null;
+		if (CollectionUtils.isNullOrEmpty(tupleResult)) {
+			outResult = new PersistenceOperationExecOK<Boolean>(COREServiceMethod.named("exists"),
+																false);	// does NOT exists
+			log.warn(outResult.getDetailedMessage());
+		} else if (tupleResult.size() == 1) {
+			outResult = new PersistenceOperationExecOK<Boolean>(COREServiceMethod.named("exists"),
+																true);
+		} else if (tupleResult.size() > 1) {
+			outResult = new PersistenceOperationExecError<Boolean>(COREServiceMethod.named("exists"),
+																   Strings.customized("There exists more than a single {} entities with oid={} when trying check it's existence",
+																					   _modelObjectType,oid));
+			log.warn(outResult.getDetailedMessage());
+		}
+		return outResult;
+	}
 	protected PersistenceOperationResult<Date> doGetLastUpdateDate(final SecurityContext securityContext,
 								   								   final O oid) {
 		// Load the [last update date]

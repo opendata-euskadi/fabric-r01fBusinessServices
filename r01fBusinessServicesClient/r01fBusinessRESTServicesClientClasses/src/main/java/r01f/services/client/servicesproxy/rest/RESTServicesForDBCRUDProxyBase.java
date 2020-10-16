@@ -68,6 +68,38 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 //  CRUD
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Override @SuppressWarnings({ "unchecked","serial" })
+	public PersistenceOperationResult<Boolean> exists(final SecurityContext securityContext,
+													  final O oid) {
+		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
+													 .pathOfEntity(oid)
+													 .joinedWith("lastUpdateDate"));
+		String ctxXml = _marshaller.forWriting().toXml(securityContext);
+		HttpResponse httpResponse = DelegateForRawREST.HEAD(restResourceUrl,
+										 				    ctxXml);
+		// [0] - Load the response
+		String responseStr = httpResponse.loadAsString();		// DO not move!!
+		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
+															  	   									   restResourceUrl));
+
+		MimeType mimeType = this.getResponseToCRUDResultMapperForModelObject()
+								.getMimeType();
+		TypeToken<PersistenceOperationResult<Boolean>> typeToken = new TypeToken<PersistenceOperationResult<Boolean>>() { /* nothing */ };
+
+		// [1] - Map the response
+		PersistenceOperationResult<Boolean> outResult = null;
+		if (mimeType.is(MimeTypes.APPLICATION_XML)) {
+			outResult = _marshaller.forReading()
+								   .fromXml(responseStr,typeToken);
+		} else if (mimeType.is(MimeTypes.APPLICATION_JSON)) {
+			outResult = _marshaller.forReading()
+								   .fromJson(responseStr,typeToken);
+		} else {
+			throw new IllegalArgumentException(Strings.customized("{} mimeType not suported",mimeType)) ;
+		}
+		// return
+		return outResult;
+	}
+	@Override @SuppressWarnings({ "unchecked","serial" })
 	public PersistenceOperationResult<Date> getLastUpdateDate(final SecurityContext securityContext,
 															  final O oid) {
 		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)

@@ -12,6 +12,7 @@ import com.google.inject.persist.Transactional;
 
 import lombok.experimental.Accessors;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanExposed;
+import r01f.generics.TypeRef;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDResult;
@@ -82,20 +83,29 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 //  CRUD
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Transactional
-	@Override @SuppressWarnings("unchecked")
+	@Override 
+	public PersistenceOperationResult<Boolean> exists(final SecurityContext securityContext,
+													  final O oid) {
+		return this.forSecurityContext(securityContext)
+						.createDelegateAs(new TypeRef<CRUDServicesForModelObject<O,M>>() { /* nothing */ })
+							.exists(securityContext,
+									oid);
+	}
+	@Transactional
+	@Override 
 	public PersistenceOperationResult<Date> getLastUpdateDate(final SecurityContext securityContext,
 														   	  final O oid) {
 		return this.forSecurityContext(securityContext)
-						.createDelegateAs(CRUDServicesForModelObject.class)
+						.createDelegateAs(new TypeRef<CRUDServicesForModelObject<O,M>>() { /* nothing */ })
 							.getLastUpdateDate(securityContext,
 											   oid);
 	}
 	@Transactional
-	@Override @SuppressWarnings("unchecked")
+	@Override 
 	public CRUDResult<M> load(final SecurityContext securityContext,
 							  final O oid) {
 		return this.forSecurityContext(securityContext)
-						.createDelegateAs(CRUDServicesForModelObject.class)
+						.createDelegateAs(new TypeRef<CRUDServicesForModelObject<O,M>>() { /* nothing */ })
 							.load(securityContext,
 								  oid);
 	}
@@ -108,12 +118,12 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 						   null);	// no callback
 	}
 	@Transactional
-	@Override @SuppressWarnings("unchecked")
+	@Override
 	public CRUDResult<M> create(final SecurityContext securityContext,
 								final M record,
 								final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.forSecurityContext(securityContext)
-						.createDelegateAs(CRUDServicesForModelObject.class)
+						.createDelegateAs(new TypeRef<CRUDServicesForModelObject<O,M>>() { /* nothing */ })
 							.create(securityContext,
 									record,
 									callbackSpec);
@@ -127,22 +137,22 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 						   null);		// no callback
 	}
 	@Transactional
-	@Override @SuppressWarnings("unchecked")
+	@Override 
 	public CRUDResult<M> update(final SecurityContext securityContext,
 								final M record,
 								final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.forSecurityContext(securityContext)
-						.createDelegateAs(CRUDServicesForModelObject.class)
+						.createDelegateAs(new TypeRef<CRUDServicesForModelObject<O,M>>() { /* nothing */ })
 							.update(securityContext,
 									record,
 									callbackSpec);
 	}
 	@Transactional
-	@Override @SuppressWarnings("unchecked")
+	@Override 
 	public PersistenceOperationResult<Boolean> touch(final SecurityContext securityContext,
 													 final O oid,final Date date) {
 		return this.forSecurityContext(securityContext)
-						.createDelegateAs(CRUDServicesForModelObject.class)
+						.createDelegateAs(new TypeRef<CRUDServicesForModelObject<O,M>>() { /* nothing */ })
 							.touch(securityContext,
 								   oid,date);
 	}
@@ -155,12 +165,12 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 						   null);	// no callback
 	}
 	@Transactional
-	@Override @SuppressWarnings("unchecked")
+	@Override
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 							    final O oid,
 							    final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.forSecurityContext(securityContext)
-						.createDelegateAs(CRUDServicesForModelObject.class)
+						.createDelegateAs(new TypeRef<CRUDServicesForModelObject<O,M>>() { /* nothing */ })
 							.delete(securityContext,
 									oid,
 									callbackSpec);

@@ -229,6 +229,12 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 //  CRUD
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Override
+	public PersistenceOperationResult<Boolean> exists(final SecurityContext securityContext,
+													  final O oid) {
+		return this.doCheckExistence(securityContext,
+									 oid);
+	}
+	@Override
 	public PersistenceOperationResult<Date> getLastUpdateDate(final SecurityContext securityContext,
 														   	  final O oid) {
 		return this.doGetLastUpdateDate(securityContext,
