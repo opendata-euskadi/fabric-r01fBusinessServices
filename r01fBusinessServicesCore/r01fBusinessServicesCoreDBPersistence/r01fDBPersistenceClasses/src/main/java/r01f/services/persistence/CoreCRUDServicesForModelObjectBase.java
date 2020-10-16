@@ -12,7 +12,6 @@ import com.google.inject.persist.Transactional;
 
 import lombok.experimental.Accessors;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanExposed;
-import r01f.generics.TypeRef;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDResult;
@@ -83,34 +82,34 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 //  CRUD
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Transactional
-	@Override 
+	@Override @SuppressWarnings("unchecked")
 	public PersistenceOperationResult<Boolean> exists(final SecurityContext securityContext,
 													  final O oid) {
 		return this.forSecurityContext(securityContext)
-						.createDelegateAs(new TypeRef<CRUDServicesForModelObject<O,M>>() { /* nothing */ })
+						.createDelegateAs(CRUDServicesForModelObject.class)
 							.exists(securityContext,
 									oid);
 	}
 	@Transactional
-	@Override 
+	@Override @SuppressWarnings("unchecked")
 	public PersistenceOperationResult<Date> getLastUpdateDate(final SecurityContext securityContext,
 														   	  final O oid) {
 		return this.forSecurityContext(securityContext)
-						.createDelegateAs(new TypeRef<CRUDServicesForModelObject<O,M>>() { /* nothing */ })
+						.createDelegateAs(CRUDServicesForModelObject.class)
 							.getLastUpdateDate(securityContext,
 											   oid);
 	}
 	@Transactional
-	@Override 
+	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> load(final SecurityContext securityContext,
 							  final O oid) {
 		return this.forSecurityContext(securityContext)
-						.createDelegateAs(new TypeRef<CRUDServicesForModelObject<O,M>>() { /* nothing */ })
+						.createDelegateAs(CRUDServicesForModelObject.class)
 							.load(securityContext,
 								  oid);
 	}
 	@Transactional
-	@Override
+	@Override 
 	public CRUDResult<M> create(final SecurityContext securityContext,
 								final M record) {
 		return this.create(securityContext,
@@ -118,12 +117,12 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 						   null);	// no callback
 	}
 	@Transactional
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> create(final SecurityContext securityContext,
 								final M record,
 								final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.forSecurityContext(securityContext)
-						.createDelegateAs(new TypeRef<CRUDServicesForModelObject<O,M>>() { /* nothing */ })
+						.createDelegateAs(CRUDServicesForModelObject.class)
 							.create(securityContext,
 									record,
 									callbackSpec);
@@ -137,27 +136,27 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 						   null);		// no callback
 	}
 	@Transactional
-	@Override 
+	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> update(final SecurityContext securityContext,
 								final M record,
 								final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.forSecurityContext(securityContext)
-						.createDelegateAs(new TypeRef<CRUDServicesForModelObject<O,M>>() { /* nothing */ })
+						.createDelegateAs(CRUDServicesForModelObject.class)
 							.update(securityContext,
 									record,
 									callbackSpec);
 	}
 	@Transactional
-	@Override 
+	@Override @SuppressWarnings("unchecked")
 	public PersistenceOperationResult<Boolean> touch(final SecurityContext securityContext,
 													 final O oid,final Date date) {
 		return this.forSecurityContext(securityContext)
-						.createDelegateAs(new TypeRef<CRUDServicesForModelObject<O,M>>() { /* nothing */ })
+						.createDelegateAs(CRUDServicesForModelObject.class)
 							.touch(securityContext,
 								   oid,date);
 	}
 	@Transactional
-	@Override
+	@Override 
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 							    final O oid) {
 		return this.delete(securityContext,
@@ -165,12 +164,12 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 						   null);	// no callback
 	}
 	@Transactional
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 							    final O oid,
 							    final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.forSecurityContext(securityContext)
-						.createDelegateAs(new TypeRef<CRUDServicesForModelObject<O,M>>() { /* nothing */ })
+						.createDelegateAs(CRUDServicesForModelObject.class)
 							.delete(securityContext,
 									oid,
 									callbackSpec);
