@@ -384,10 +384,10 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 		 && dbEntities.size() > 1) return CRUDResultBuilder.using(securityContext)
 											 .on(_modelObjectType)
 											 .notLoaded()
-											 	.becauseServerError("The DB is in an illegal status: there MUST exist a single db entity of {} but {} exists",
-											 				    	_DBEntityType,dbEntities.size())
-											 	.about(meta,value)
-											 	.build();
+										 	 .becauseServerError("The DB is in an illegal status: there MUST exist a single db entity of {} but {} exists",
+										 				    	_DBEntityType,dbEntities.size())
+										 	 .about(meta,value)
+										 	 .build();
 		// Return
 		CRUDResult<M> outResult = null;
 		if (CollectionUtils.hasData(dbEntities)) {
@@ -397,16 +397,16 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 			outResult = CRUDResultBuilder.using(securityContext)
 										 .on(_modelObjectType)
 										 .loaded()
-											.dbEntity(dbEntity)
-											.transformedToModelObjectUsing(_dbEntityIntoModelObjectTransformer);
+										 .dbEntity(dbEntity)
+										 .transformedToModelObjectUsing(_dbEntityIntoModelObjectTransformer);
 		} else {
 			// no results
 			outResult = CRUDResultBuilder.using(securityContext)
 										 .on(_modelObjectType)
 										 .notLoaded()
-										 	.becauseClientRequestedEntityWasNOTFound()
-										 	.about(meta,value)
-										 	.build();
+									 	 .becauseClientRequestedEntityWasNOTFound()
+									 	 .about(meta,value)
+									 	 .build();
 		}
 		return outResult;
 	}
