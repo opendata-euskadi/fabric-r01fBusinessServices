@@ -206,7 +206,6 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 		if (CollectionUtils.isNullOrEmpty(tupleResult)) {
 			outResult = new PersistenceOperationExecOK<Boolean>(COREServiceMethod.named("exists"),
 																false);	// does NOT exists
-			log.warn(outResult.getDetailedMessage());
 		} else if (tupleResult.size() == 1) {
 			outResult = new PersistenceOperationExecOK<Boolean>(COREServiceMethod.named("exists"),
 																true);
