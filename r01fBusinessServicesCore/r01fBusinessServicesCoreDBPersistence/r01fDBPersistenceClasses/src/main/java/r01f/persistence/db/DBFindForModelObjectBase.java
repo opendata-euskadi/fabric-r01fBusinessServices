@@ -144,7 +144,7 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 	public FindOIDsResult<O> findByLastUpdateDate(final SecurityContext securityContext,
 												  final Range<Date> lastUpdateDate) {
 		return new QueryWrapper()
-					.addFilterByDateRangePredicate(lastUpdateDate,"lastUpdateDate")
+					.addFilterByDateRangePredicate(lastUpdateDate,"_lastUpdateDate")
 					.findOidsUsing(securityContext);
 	}
 	@Override
