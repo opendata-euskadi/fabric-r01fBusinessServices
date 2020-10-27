@@ -69,7 +69,7 @@ public abstract class DBBase
 	 * @return
 	 */
 	public static <DB extends DBEntity,
-				   M extends ModelObject> TransformsDBEntityIntoModelObject<DB,M> createTransFromsDBEntityIntoModelObjectUsing(final Marshaller marshaller,
+				   M extends ModelObject> TransformsDBEntityIntoModelObject<DB,M> createTransformsDBEntityIntoModelObjectUsing(final Marshaller marshaller,
 							  																								   final Class<M> modelObjectType) {
 		return new TransformsDBEntityIntoModelObject<DB,M>() {
 						@Override

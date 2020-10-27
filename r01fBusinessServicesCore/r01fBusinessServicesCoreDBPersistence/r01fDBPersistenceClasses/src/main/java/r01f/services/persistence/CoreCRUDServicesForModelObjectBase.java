@@ -24,18 +24,18 @@ import r01f.services.interfaces.CRUDServicesForModelObject;
 
 /**
  * Core service base for persistence services
- * 
+ *
  * INJECTED STATUS
  * ===============
- * 	The TRANSACTIONAL methods are located at the Services layer (this type); 
+ * 	The TRANSACTIONAL methods are located at the Services layer (this type);
  * 	Some operations might span multiple @Transactional-annotated methods so it's very important
  *  	for the {@link EntityManager} to have Extended-scope
  * 		see http://piotrnowicki.com/2012/11/types-of-entitymanagers-application-managed-entitymanager/
- * 		 or http://www.javacodegeeks.com/2013/06/jpa-2-entitymanagers-transactions-and-everything-around-it.html 
- *    	
+ * 		 or http://www.javacodegeeks.com/2013/06/jpa-2-entitymanagers-transactions-and-everything-around-it.html
+ *
  * 	The {@link EntityManager} should be created at the services layer (this type) and handled to every delegated
  * 	type (crud, search, etc)
- * 
+ *
  *  	Beware that:
  *  	<ul>
  *  		<li>This type is (at the end) injected in a service-layer that usually is a {@link Singleton} instance</li>
@@ -46,7 +46,7 @@ import r01f.services.interfaces.CRUDServicesForModelObject;
  *  			managers ALLWAYS have EXTENDED SCOPE (see http://piotrnowicki.com/2012/11/types-of-entitymanagers-application-managed-entitymanager/)</li>
  *  	</ul>
  *  	See
- *  	<ul> 
+ *  	<ul>
  *  		<li>http://www.javacodegeeks.com/2013/06/jpa-2-entitymanagers-transactions-and-everything-around-it.html</li>
  *  		<li>http://piotrnowicki.com/2012/11/types-of-entitymanagers-application-managed-entitymanager/</li>
  *  	</ul>
@@ -57,7 +57,7 @@ import r01f.services.interfaces.CRUDServicesForModelObject;
  */
 @Accessors(prefix="_")
 public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableObjectOID,M extends PersistableModelObject<O>>
-			  extends CorePersistenceServicesBase 
+			  extends CorePersistenceServicesBase
 		   implements CRUDServicesForModelObject<O,M> {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	CONSTRUCTOR
@@ -83,6 +83,15 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Transactional
 	@Override @SuppressWarnings("unchecked")
+	public PersistenceOperationResult<Boolean> exists(final SecurityContext securityContext,
+													  final O oid) {
+		return this.forSecurityContext(securityContext)
+						.createDelegateAs(CRUDServicesForModelObject.class)
+							.exists(securityContext,
+									oid);
+	}
+	@Transactional
+	@Override @SuppressWarnings("unchecked")
 	public PersistenceOperationResult<Date> getLastUpdateDate(final SecurityContext securityContext,
 														   	  final O oid) {
 		return this.forSecurityContext(securityContext)
@@ -101,7 +110,7 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 	}
 	@Transactional
 	@Override 
-	public CRUDResult<M> create(final SecurityContext securityContext, 
+	public CRUDResult<M> create(final SecurityContext securityContext,
 								final M record) {
 		return this.create(securityContext,
 						   record,
@@ -109,7 +118,7 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 	}
 	@Transactional
 	@Override @SuppressWarnings("unchecked")
-	public CRUDResult<M> create(final SecurityContext securityContext, 
+	public CRUDResult<M> create(final SecurityContext securityContext,
 								final M record,
 								final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.forSecurityContext(securityContext)
@@ -119,8 +128,8 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 									callbackSpec);
 	}
 	@Transactional
-	@Override 
-	public CRUDResult<M> update(final SecurityContext securityContext, 
+	@Override
+	public CRUDResult<M> update(final SecurityContext securityContext,
 								final M record) {
 		return this.update(securityContext,
 						   record,
@@ -128,7 +137,7 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 	}
 	@Transactional
 	@Override @SuppressWarnings("unchecked")
-	public CRUDResult<M> update(final SecurityContext securityContext, 
+	public CRUDResult<M> update(final SecurityContext securityContext,
 								final M record,
 								final COREServiceMethodCallbackSpec callbackSpec) {
 		return this.forSecurityContext(securityContext)
@@ -138,9 +147,18 @@ public abstract class CoreCRUDServicesForModelObjectBase<O extends PersistableOb
 									callbackSpec);
 	}
 	@Transactional
+	@Override @SuppressWarnings("unchecked")
+	public PersistenceOperationResult<Boolean> touch(final SecurityContext securityContext,
+													 final O oid,final Date date) {
+		return this.forSecurityContext(securityContext)
+						.createDelegateAs(CRUDServicesForModelObject.class)
+							.touch(securityContext,
+								   oid,date);
+	}
+	@Transactional
 	@Override 
 	public CRUDResult<M> delete(final SecurityContext securityContext,
-							    final O oid) {		
+							    final O oid) {
 		return this.delete(securityContext,
 						   oid,
 						   null);	// no callback

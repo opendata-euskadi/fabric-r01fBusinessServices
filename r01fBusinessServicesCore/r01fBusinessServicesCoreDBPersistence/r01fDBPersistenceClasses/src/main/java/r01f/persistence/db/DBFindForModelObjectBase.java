@@ -144,7 +144,7 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 	public FindOIDsResult<O> findByLastUpdateDate(final SecurityContext securityContext,
 												  final Range<Date> lastUpdateDate) {
 		return new QueryWrapper()
-					.addFilterByDateRangePredicate(lastUpdateDate,"lastUpdateDate")
+					.addFilterByDateRangePredicate(lastUpdateDate,"_lastUpdateDate")
 					.findOidsUsing(securityContext);
 	}
 	@Override
@@ -546,6 +546,21 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 										   .noEntityFound();
 		}
 		return outOids;
+	}
+	protected <S extends SummarizedModelObject<M>> FindSummariesResult<M> _buildSummariesResultFromDBEntities(final SecurityContext securityContext,
+																											  final Collection<DB> dbEntities,final Function<DB,S> dbEntityToSummaryConverter) {
+		FindSummariesResult<M> outSummaries = null;
+		if (CollectionUtils.hasData(dbEntities)) {
+			outSummaries = FindSummariesResultBuilder.using(securityContext)
+													 .on(_modelObjectType)
+													 .foundDBEntities(dbEntities)
+													 .transformedToSummarizedModelObjectUsing(dbEntityToSummaryConverter);
+		} else {
+			outSummaries = FindSummariesResultBuilder.using(securityContext)
+													 .on(_modelObjectType)
+													 .noSummaryFound();
+		}
+		return outSummaries;
 	}
 	protected <S extends SummarizedModelObject<M>> FindSummariesResult<M> _buildSummariesResultFromTupleValues(final SecurityContext securityContext,
 																										 	   final Collection<Tuple> dbTuples,final Function<Object[],S> dbTupleToSummaryConverter) {

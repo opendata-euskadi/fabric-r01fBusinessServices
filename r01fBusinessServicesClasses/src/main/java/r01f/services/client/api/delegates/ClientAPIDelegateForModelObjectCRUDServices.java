@@ -25,7 +25,7 @@ import r01f.types.dirtytrack.DirtyTrackAdapter;
  * @param <M>
  */
 @Slf4j
-public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends PersistableObjectOID,M extends PersistableModelObject<O>> 
+public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends PersistableObjectOID,M extends PersistableModelObject<O>>
 	          extends ClientAPIServiceDelegateBase<CRUDServicesForModelObject<O,M>> {
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -42,29 +42,41 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 //  LOAD
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
+	 * Checks a record existence in a "lighter" operation than a full "load"
+	 * @param oid
+	 * @return
+	 * @throws PersistenceException
+	 */
+	public boolean exists(final O oid) {
+		PersistenceOperationResult<Boolean> exists = this.getServiceProxy()
+														 .exists(this.getSecurityContext(),
+																 oid);
+		return exists.getOrThrow();
+	}
+	/**
 	 * Returns the last update date of the given object oid
 	 * @param oid
 	 * @return
 	 */
 	public Date getLastUpdateDateOf(final O oid) {
 		PersistenceOperationResult<Date> lastUpdateExec = this.getServiceProxy()
-																	.getLastUpdateDate(this.getSecurityContext(),
-																					   oid);
+																.getLastUpdateDate(this.getSecurityContext(),
+																				   oid);
 		return lastUpdateExec.getOrThrow();
 	}
 	/**
 	 * Loads a record
 	 * @param oid
 	 * @return
-	 * @throws PersistenceException 
+	 * @throws PersistenceException
 	 */
 	public M load(final O oid) {
 		CRUDResult<M> loadOpResult = this.getServiceProxy()
 												.load(this.getSecurityContext(),
 	 	  		 								      oid);
 		log.debug(loadOpResult.debugInfo().toString());
-		
-		M outRecord = loadOpResult.getOrThrow();	
+
+		M outRecord = loadOpResult.getOrThrow();
 		if (outRecord instanceof DirtyStateTrackable) {
 			ClientAPIModelObjectChangesTrack.startTrackingChangesOnLoaded(outRecord);
 		}
@@ -84,22 +96,13 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 		try {
 			outRecord = this.load(oid);
 		} catch (PersistenceException persistEx) {
-			if (!persistEx.isEntityNotFound()) throw persistEx;  
+			if (!persistEx.isEntityNotFound()) throw persistEx;
 		}
 		return outRecord;
 	}
-	/**
-	 * Checks a record existence
-	 * @param oid
-	 * @return
-	 * @throws PersistenceException
-	 */
-	public boolean exists(final O oid) {
-		return this.loadOrNull(oid) != null;
-	}
 /////////////////////////////////////////////////////////////////////////////////////////
 // 	SAVE
-/////////////////////////////////////////////////////////////////////////////////////////	
+/////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Updates a record. This method is usually used when {@link DirtyStateTrackable} aspect is NOT being used
 	 * @param record
@@ -116,19 +119,19 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 //																													  	record.getClass()));
 			if (((DirtyStateTrackable)record).getTrackingStatus().isThisNew()) throw new IllegalStateException(Throwables.message("{} instance new... maybe you have to call create() or save() method instead of update",
 																													    		  record.getClass()));
-			
+
 		}
 		// [1] - Do the update
 		CRUDResult<M> saveOpResult = this.getServiceProxy()
 											.update(this.getSecurityContext(),
 						 				   		  	record);
 		M outRecord = saveOpResult.getOrThrow();
-		
+
 		// [2] - After create or update, set the dirty status to both the CORE received saved object
-		// 		 AND the original object sent to the CORE just for the case the caller continues using 
+		// 		 AND the original object sent to the CORE just for the case the caller continues using
 		// 		 this instance instead of the received by the CORE
 		_postCreateOrUpdate(record,outRecord);
-		
+
 		// [3] - return
 		return outRecord;
 	}
@@ -150,20 +153,20 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 			if (!((DirtyStateTrackable)record).getTrackingStatus().isThisNew()) throw new IllegalStateException(Throwables.message("{} instance is NOT new... maybe you have to call update() or save() method instead of create",
 																													    		   record.getClass()));
 		}
-		
+
 		// [1] - Do the creation
 		CRUDResult<M> saveOpResult = this.getServiceProxy()
 											.create(this.getSecurityContext(),
 						 				   		  	record);
 		M outRecord = saveOpResult.getOrThrow();
-		
-		
+
+
 		// Adapt the returned object
 		// [2] - After create or update, set the dirty status to both the CORE received saved object
-		// 		 AND the original object sent to the CORE just for the case the caller continues using 
+		// 		 AND the original object sent to the CORE just for the case the caller continues using
 		// 		 this instance instead of the received by the CORE
 		_postCreateOrUpdate(record,outRecord);
-		
+
 		// [3] - return
 		return outRecord;
 	}
@@ -172,23 +175,23 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 * If weaving is NOT being used, use the create() or update() methods instead
 	 * @param record
 	 * @return
-	 * @throws PersistenceException 
+	 * @throws PersistenceException
 	 */
 	public M save(final M record) {
 		// [0] - The record to save MUST be a trackable object
 		//		 (otherwise we won't know if it's a creat operation or an update one)
 		if (!(record instanceof DirtyStateTrackable)) throw new IllegalStateException(Throwables.message("{} is NOT a {} instance... " +
 																										 "maybe the {} aspect is NOT weaved because the JVM is NOT started with the -javaagent:aspectjweaver.jar, " +
-																										 "or maybe if weaving is NOT an option, the create() or update() method should be used instead of the save() method", 
+																										 "or maybe if weaving is NOT an option, the create() or update() method should be used instead of the save() method",
 																										 record.getClass(),DirtyStateTrackable.class.getSimpleName(),
 																										 ConvertToDirtyStateTrackable.class.getSimpleName()));
 		// [1]- Get a trackable version of the record
 		DirtyStateTrackable trckReceivedRecord = DirtyTrackAdapter.adapt(record);
-	
+
 		// [2]  - Save
-		M outRecord = null; 
+		M outRecord = null;
 		CRUDResult<M> saveOpResult = null;
-		
+
 		// Check if the record is dirty (is changed)
 		if (((DirtyStateTrackable)record).getTrackingStatus().isThisNew()) {
 			// 2.1) the record is new
@@ -196,27 +199,27 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 									.create(this.getSecurityContext(),
 				 				   		  	record);
 			outRecord = saveOpResult.getOrThrow();
-			
+
 		} else if (trckReceivedRecord.isDirty()) {
 			// 2.1) - The record already existed (it's an update)
 			saveOpResult = this.getServiceProxy()
 										.update(this.getSecurityContext(),
 										 		record);
 			outRecord = saveOpResult.getOrThrow();
-			
+
 		} else {
 			// 2.1) - Nothing was done with the record
 			log.warn("Record of type {} NOT updated, maybe you do NOT have to call api.save()",record.getClass());
 			outRecord = record;
-		}	
+		}
 		// some debugging
 		if (saveOpResult != null) log.debug(saveOpResult.debugInfo().toString());
-		
+
 		// [3] - After create or update, set the dirty status to both the CORE received saved object
-		// 		 AND the original object sent to the CORE just for the case the caller continues using 
+		// 		 AND the original object sent to the CORE just for the case the caller continues using
 		// 		 this instance instead of the received by the CORE
 		_postCreateOrUpdate(record,outRecord);
-		
+
 		// [4] - return
 		return outRecord;
 	}
@@ -226,7 +229,7 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 * @param record
 	 * @param callbackspec
 	 * @return
-	 * @throws PersistenceException 
+	 * @throws PersistenceException
 	 */
 	public M save(final M record,
 				  final COREServiceMethodCallbackSpec callbackSpec) {
@@ -234,17 +237,17 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 		//		 (otherwise we won't know if it's a creat operation or an update one)
 		if (!(record instanceof DirtyStateTrackable)) throw new IllegalStateException(Throwables.message("{} is NOT a {} instance... " +
 																										 "maybe the {} aspect is NOT weaved because the JVM is NOT started with the -javaagent:aspectjweaver.jar, " +
-																										 "or maybe if weaving is NOT an option, the create() or update() method should be used instead of the save() method", 
+																										 "or maybe if weaving is NOT an option, the create() or update() method should be used instead of the save() method",
 																										 record.getClass(),DirtyStateTrackable.class.getSimpleName(),
 																										 ConvertToDirtyStateTrackable.class.getSimpleName()));
 		// [1]- Get a trackable version of the record
 		DirtyStateTrackable trckReceivedRecord = DirtyTrackAdapter.adapt(record);
-	
+
 		// [2]  - Save
-		M outRecord = null; 
+		M outRecord = null;
 		CRUDResult<M> saveOpResult = null;
-		
-		// Check if the record is dirty (is changed)	
+
+		// Check if the record is dirty (is changed)
 		// TODO trckReceivedRecord.getTrackingStatus().isThisNew() always returns NEW!!
 		// FIXME rckReceivedRecord.getTrackingStatus().isThisNew() always returns NEW!!
 		// DirtyStateTrackable trckReceivedRecord = DirtyTrackAdapter.adapt(record);
@@ -256,7 +259,7 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 				 				   		  	record,
 				 				   		  	callbackSpec);
 			outRecord = saveOpResult.getOrThrow();
-			
+
 		} else if (trckReceivedRecord.isDirty()) {
 			// 2.1) - The record already existed (it's an update)
 			saveOpResult = this.getServiceProxy()
@@ -264,55 +267,67 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 										 		record,
 										 		callbackSpec);
 			outRecord = saveOpResult.getOrThrow();
-			
+
 		} else {
 			// 2.1) - Nothing was done with the record
 			log.warn("Record of type {} NOT updated, maybe you do NOT have to call api.save()",record.getClass());
 			outRecord = record;
-		}	
+		}
 		// some debugging
 		if (saveOpResult != null) log.debug(saveOpResult.debugInfo().toString());
-		
+
 		// [3] - After create or update, set the dirty status to both the CORE received saved object
-		// 		 AND the original object sent to the CORE just for the case the caller continues using 
+		// 		 AND the original object sent to the CORE just for the case the caller continues using
 		// 		 this instance instead of the received by the CORE
 		_postCreateOrUpdate(record,outRecord);
-		
+
 		// [4] - return
 		return outRecord;
 	}
 	/**
 	 * After create or update, set the dirty status to both the CORE received saved object
-	 * AND the original object sent to the CORE just for the case the caller continues using 
+	 * AND the original object sent to the CORE just for the case the caller continues using
 	 * this instance instead of the received by the CORE
 	 * @param record
 	 * @param outRecord
 	 */
 	protected void _postCreateOrUpdate(final M record,final M outRecord) {
-		if (outRecord != null && outRecord instanceof DirtyStateTrackable) { 
+		if (outRecord != null && outRecord instanceof DirtyStateTrackable) {
 			ClientAPIModelObjectChangesTrack.startTrackingChangesOnSaved(outRecord);
 		}
 		if (record != null && record instanceof DirtyStateTrackable) {
 			ClientAPIModelObjectChangesTrack.startTrackingChangesOnSaved(record);
 		}
 	}
+	/**
+	 * sets last update date of the given object oid
+	 * @param oid
+	 * @param
+	 * @return
+	 */
+	public boolean touch(final O oid,final Date date) {
+		PersistenceOperationResult<Boolean> touchExec = this.getServiceProxy()
+																.touch(this.getSecurityContext(),
+																	   oid,date);
+		return touchExec.getOrThrow();
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
-// 	
-/////////////////////////////////////////////////////////////////////////////////////////	
+//
+/////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Deletes a record
-	 * @param record 
+	 * @param record
 	 * @return the deleted record if the operation was successful, null otherwise
-	 * @throws PersistenceException 
+	 * @throws PersistenceException
 	 */
 	public M delete(final M record) {
 		return this.delete(record.getOid());
 	}
 	/**
 	 * Deletes a record
-	 * @param recordOid 
+	 * @param recordOid
 	 * @return the deleted record if the operation was successful, null otherwise
-	 * @throws PersistenceException 
+	 * @throws PersistenceException
 	 */
 	public M delete(final O recordOid) {
 		// [1] - Delete the record
@@ -320,10 +335,10 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 												.delete(this.getSecurityContext(),
 	  	    										   	recordOid);
 		log.debug(deleteOpResult.debugInfo().toString());
-		
+
 		// [2] - If the record has been deleted, it's a new record
 		M outRecord = deleteOpResult.getOrThrow();
-		
+
 		if (outRecord instanceof DirtyStateTrackable) {
 			ClientAPIModelObjectChangesTrack.startTrackingChangesOnDeleted(outRecord);
 		}

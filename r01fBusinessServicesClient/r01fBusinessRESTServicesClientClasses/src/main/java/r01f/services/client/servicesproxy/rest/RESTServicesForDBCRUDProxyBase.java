@@ -27,7 +27,7 @@ import r01f.util.types.Strings;
 @Accessors(prefix="_")
 @Slf4j
 public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObjectOID,M extends PersistableModelObject<O>>
-              extends RESTServicesForModelObjectProxyBase<O,M> 
+              extends RESTServicesForModelObjectProxyBase<O,M>
            implements CRUDServicesForModelObject<O,M> {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIELDS
@@ -37,8 +37,8 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 	 */
 	protected final RESTResponseToCRUDResultMapperForModelObject<O,M> _responseToCRUDResultMapper;
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
-/////////////////////////////////////////////////////////////////////////////////////////	
+//
+/////////////////////////////////////////////////////////////////////////////////////////
 	public <P extends RESTServiceResourceUrlPathBuilderForModelObjectPersistence<O>>
 		   RESTServicesForDBCRUDProxyBase(final Marshaller marshaller,
 									 	  final Class<M> modelObjectType,
@@ -68,7 +68,39 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 //  CRUD
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Override @SuppressWarnings({ "unchecked","serial" })
-	public PersistenceOperationResult<Date> getLastUpdateDate(final SecurityContext securityContext, 
+	public PersistenceOperationResult<Boolean> exists(final SecurityContext securityContext,
+													  final O oid) {
+		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
+													 .pathOfEntity(oid)
+													 .joinedWith("lastUpdateDate"));
+		String ctxXml = _marshaller.forWriting().toXml(securityContext);
+		HttpResponse httpResponse = DelegateForRawREST.HEAD(restResourceUrl,
+										 				    ctxXml);
+		// [0] - Load the response
+		String responseStr = httpResponse.loadAsString();		// DO not move!!
+		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
+															  	   									   restResourceUrl));
+
+		MimeType mimeType = this.getResponseToCRUDResultMapperForModelObject()
+								.getMimeType();
+		TypeToken<PersistenceOperationResult<Boolean>> typeToken = new TypeToken<PersistenceOperationResult<Boolean>>() { /* nothing */ };
+
+		// [1] - Map the response
+		PersistenceOperationResult<Boolean> outResult = null;
+		if (mimeType.is(MimeTypes.APPLICATION_XML)) {
+			outResult = _marshaller.forReading()
+								   .fromXml(responseStr,typeToken);
+		} else if (mimeType.is(MimeTypes.APPLICATION_JSON)) {
+			outResult = _marshaller.forReading()
+								   .fromJson(responseStr,typeToken);
+		} else {
+			throw new IllegalArgumentException(Strings.customized("{} mimeType not suported",mimeType)) ;
+		}
+		// return
+		return outResult;
+	}
+	@Override @SuppressWarnings({ "unchecked","serial" })
+	public PersistenceOperationResult<Date> getLastUpdateDate(final SecurityContext securityContext,
 															  final O oid) {
 		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
 															.pathOfEntity(oid)
@@ -76,15 +108,15 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 		String ctxXml = _marshaller.forWriting().toXml(securityContext);
 		HttpResponse httpResponse = DelegateForRawREST.GET(restResourceUrl,
 										 				   ctxXml);
-		// [0] - Load the response		
+		// [0] - Load the response
 		String responseStr = httpResponse.loadAsString();		// DO not move!!
 		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
 															  	   									   restResourceUrl));
-		
+
 		MimeType mimeType = this.getResponseToCRUDResultMapperForModelObject()
 								.getMimeType();
 		TypeToken<PersistenceOperationResult<Date>> typeToken = new TypeToken<PersistenceOperationResult<Date>>() { /* nothing */ };
-		
+
 		// [1] - Map the response
 		PersistenceOperationResult<Date> outResult = null;
 		if (mimeType.is(MimeTypes.APPLICATION_XML)) {
@@ -117,7 +149,7 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 												.identifiedOnErrorBy(oid);
 		// check that the received entity is the expected one
 		if (outResponse.hasSucceeded()) _checkReceivedEntity(oid,outResponse.getOrThrow());
-		
+
 		// log & return
 		_logResponse(restResourceUrl,outResponse);
 		return outResponse;
@@ -136,13 +168,13 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 		// do the http call
 		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
 															   			  .pathOfAllEntities());	//   .pathOfEntity(entity.getOid())); 	// _resourcePathForRecord(record,PersistenceRequestedOperation.CREATE);
-		String ctxXml = _marshaller.forWriting().toXml(securityContext); 		
+		String ctxXml = _marshaller.forWriting().toXml(securityContext);
 		String entityXml = _marshaller.forWriting().toXml(entity);
 		HttpResponse httpResponse = DelegateForRawREST.POST(restResourceUrl,
 										  					ctxXml,
 										  					entityXml);
 		// map the response
-					
+
 		CRUDResult<M> outResponse = this.getResponseToCRUDResultMapperForModelObject()
 												.mapHttpResponseForEntity(securityContext,
 															              PersistenceRequestedOperation.CREATE,
@@ -151,7 +183,7 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 		// check that the received entity is the expected one just if requested entity oid is not null .
 		// It could be possible on creating a new entity not to send an entity oid
 		if (outResponse.hasSucceeded() && entity.getOid() != null) _checkReceivedEntity(entity.getOid(),outResponse.getOrThrow());
-		
+
 		// log & return
 		_logResponse(restResourceUrl,outResponse);
 		return outResponse;
@@ -170,7 +202,7 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 		// do the http call
 		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
 													 		   			  .pathOfEntity(entity.getOid())); 	// _resourcePathForRecord(record,PersistenceRequestedOperation.UPDATE);
-		String ctxXml = _marshaller.forWriting().toXml(securityContext); 	
+		String ctxXml = _marshaller.forWriting().toXml(securityContext);
 		String entityXml = _marshaller.forWriting().toXml(entity);
 		HttpResponse httpResponse = DelegateForRawREST.PUT(restResourceUrl,
 										 				   ctxXml,
@@ -181,14 +213,47 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 																 		  PersistenceRequestedOperation.UPDATE,
 															  			  entity,
 															  			  restResourceUrl,httpResponse);
-		// check that the received entity is the expected one 
+		// check that the received entity is the expected one
 		if (outResponse.hasSucceeded() ) _checkReceivedEntity(entity.getOid(),outResponse.getOrThrow());
-		
+
 		// log & return
 		_logResponse(restResourceUrl,outResponse);
 		return outResponse;
 	}
-	@Override 
+	@Override @SuppressWarnings({ "unchecked","serial" })
+	public PersistenceOperationResult<Boolean> touch(final SecurityContext securityContext,
+													 final O oid,final Date date) {
+		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
+															.pathOfEntity(oid)
+															.joinedWith("lastUpdateDate"));
+		String ctxXml = _marshaller.forWriting().toXml(securityContext);
+		HttpResponse httpResponse = DelegateForRawREST.POST(restResourceUrl,
+										 				    ctxXml,
+										 				    Long.toString(date.getTime()));
+		// [0] - Load the response
+		String responseStr = httpResponse.loadAsString();		// DO not move!!
+		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
+															  	   									   restResourceUrl));
+
+		MimeType mimeType = this.getResponseToCRUDResultMapperForModelObject()
+								.getMimeType();
+		TypeToken<PersistenceOperationResult<Boolean>> typeToken = new TypeToken<PersistenceOperationResult<Boolean>>() { /* nothing */ };
+
+		// [1] - Map the response
+		PersistenceOperationResult<Boolean> outResult = null;
+		if (mimeType.is(MimeTypes.APPLICATION_XML)) {
+			outResult = _marshaller.forReading()
+								   .fromXml(responseStr,typeToken);
+		} else if (mimeType.is(MimeTypes.APPLICATION_JSON)) {
+			outResult = _marshaller.forReading()
+								   .fromJson(responseStr,typeToken);
+		} else {
+			throw new IllegalArgumentException(Strings.customized("{} mimeType not suported",mimeType)) ;
+		}
+		// return
+		return outResult;
+	}
+	@Override
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 							    final O oid) {
 		return this.delete(securityContext,
@@ -213,7 +278,7 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 															  .identifiedOnErrorBy(oid);
 		// check that the received entity is the expected one
 		if (outResponse.hasSucceeded()) _checkReceivedEntity(oid,outResponse.getOrThrow());
-		
+
 		// log & return
 		_logResponse(restResourceUrl,outResponse);
 		return outResponse;
@@ -239,12 +304,12 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 		}
 		else if (opResult.asCRUDError().wasBecauseClientCouldNotConnectToServer()) {			// as(CRUDError.class)
 			log.error("Client cannot connect to REST endpoint {}",restResourceUrl);
-		} 
+		}
 		else if (!opResult.asCRUDError().wasBecauseAClientError()) {							// as(CRUDError.class)
 			log.error("REST: On requesting the {} operation, the REST resource with path={} returned a persistence error code={}",
-					  opResult.getRequestedOperation(),restResourceUrl,opResult.asCRUDError().getErrorType().getCode());					
+					  opResult.getRequestedOperation(),restResourceUrl,opResult.asCRUDError().getErrorType().getCode());
 			log.debug("[ERROR]: {}",opResult.getDetailedMessage());
-		} 
+		}
 		else {
 			log.debug("Client error on requesting the {} operation, the REST resource with path={} returned: {}",
 					  opResult.getRequestedOperation(),restResourceUrl,opResult.getDetailedMessage());

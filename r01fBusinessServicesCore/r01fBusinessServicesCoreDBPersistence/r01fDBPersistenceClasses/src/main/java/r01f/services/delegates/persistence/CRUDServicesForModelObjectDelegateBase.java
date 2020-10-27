@@ -17,6 +17,7 @@ import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CRUDResult;
 import r01f.model.persistence.CRUDResultBuilder;
 import r01f.model.persistence.PersistenceOperationExecError;
+import r01f.model.persistence.PersistenceOperationExecOK;
 import r01f.model.persistence.PersistenceOperationResult;
 import r01f.model.persistence.PersistenceRequestedOperation;
 import r01f.model.services.COREServiceMethod;
@@ -68,18 +69,22 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 ////////////////////////////////////////////////////////////////////////////////////////
 //  LOAD | EXISTS
 ////////////////////////////////////////////////////////////////////////////////////////
-	public boolean exists(final SecurityContext securityContext,
-						  final O oid) {
+	@Override @SuppressWarnings("unchecked")
+	public PersistenceOperationResult<Boolean> exists(final SecurityContext securityContext,
+						  							  final O oid) {
+		PersistenceOperationResult<Boolean> outExists = null;
 
-		CRUDResult<M> loadResult = this.load(securityContext,
-										     oid);
-		boolean outExists = loadResult.hasSucceeded();
-		if (loadResult.hasFailed() && !loadResult.asCRUDError()		// as(CRUDError.class)
-												 .wasBecauseClientRequestedEntityWasNOTFound()) {
-			log.warn("Error trying to check the existence of record with oid={}: {}",oid,
-					  loadResult.asCRUDError()	// as(CRUDError.class)
-					  		    .getPersistenceException().getMessage());
+		// [0] - check the oid
+		if (oid == null) {
+			return new PersistenceOperationExecError<Boolean>(COREServiceMethod.named("exists"),
+														      Strings.customized("The {} entity's oid cannot be null in order to check it's existence",
+																   			  	 _modelObjectType));
 		}
+		// [1] - Load
+		outExists = this.getServiceImplAs(CRUDServicesForModelObject.class)
+					    .exists(securityContext,
+							    oid);
+		// [2] - Return
 		return outExists;
 	}
 	@Override @SuppressWarnings("unchecked")
@@ -240,6 +245,15 @@ public abstract class CRUDServicesForModelObjectDelegateBase<O extends Persistab
 				   callbackSpec);
 		// [7] return
 		return outOpResult;
+	}
+	@Override @SuppressWarnings("unchecked")
+	public PersistenceOperationResult<Boolean> touch(final SecurityContext securityContext,
+												  	 final O oid,final Date date) {
+		if (date == null) return new PersistenceOperationExecOK<>(COREServiceMethod.named("touch"),
+																  false);
+		return this.getServiceImplAs(CRUDServicesForModelObject.class)
+				   .touch(securityContext,
+						  oid,date);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  DELETE

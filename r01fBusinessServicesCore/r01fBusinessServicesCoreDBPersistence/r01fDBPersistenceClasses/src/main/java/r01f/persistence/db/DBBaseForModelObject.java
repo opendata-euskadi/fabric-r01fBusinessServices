@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -112,15 +113,13 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 								final DBModuleConfig dbCfg,
 								final EntityManager entityManager,
 								final Marshaller marshaller) {
-		super(dbCfg,
+		this(modelObjectType,dbEntityType,
+			 // create a default transformer using the marshaller
+			 DBBase.createTransformsDBEntityIntoModelObjectUsing(marshaller,		
+																 modelObjectType),
+			  dbCfg,
 			  entityManager,
 			  marshaller);
-		_modelObjectType = modelObjectType;
-		_DBEntityType = dbEntityType;
-
-		// create a default transformer using the marshaller
-		_dbEntityIntoModelObjectTransformer = DBBase.createTransFromsDBEntityIntoModelObjectUsing(_modelObjectsMarshaller,
-																						   		  modelObjectType);
 	}
 	public DBBaseForModelObject(final Class<M> modelObjectType,final Class<DB> dbEntityType,
 								final TransformsDBEntityIntoModelObject<DB,M> dbEntityIntoModelObjectTransformer,
@@ -137,8 +136,14 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONVERTERS
 /////////////////////////////////////////////////////////////////////////////////////////
+	@Deprecated
 	protected M _wrapDBEntityToModelObject(final SecurityContext securityContext,
-								           final DB dbEntity) {
+										   final DB dbEntity) {
+		return _transformDBEntityToModelObject(securityContext,
+											   dbEntity);
+	}
+	protected M _transformDBEntityToModelObject(final SecurityContext securityContext,
+								           		final DB dbEntity) {
 		M out = this.dbEntityToModelObject(securityContext,
 										   dbEntity);
 		// ensure the tracking info ant entity version are set
@@ -181,18 +186,49 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 /////////////////////////////////////////////////////////////////////////////////////////
 //  LOAD
 /////////////////////////////////////////////////////////////////////////////////////////
+	protected PersistenceOperationResult<Boolean> doCheckExistence(final SecurityContext securityContext,
+								   								   final O oid) {
+		// Load the [last update date]
+		CriteriaBuilder criteriaBuilder = _entityManager.getCriteriaBuilder();
+		CriteriaQuery<Tuple> criteriaQuery = criteriaBuilder.createTupleQuery();
+		Root<? extends DB> root = criteriaQuery.from(_DBEntityType);
+
+		criteriaQuery.multiselect(root.get("_oid"));
+		Predicate oidPredicate = criteriaBuilder.equal(root.<String>get("_oid"),
+									 				   oid.asString());
+		criteriaQuery.where(oidPredicate);
+		List<Tuple> tupleResult = _entityManager.createQuery(criteriaQuery)
+													.setHint(QueryHints.READ_ONLY,HintValues.TRUE)
+											    .getResultList();
+
+		// Compose the PersistenceOperationResult object
+		PersistenceOperationResult<Boolean> outResult = null;
+		if (CollectionUtils.isNullOrEmpty(tupleResult)) {
+			outResult = new PersistenceOperationExecOK<Boolean>(COREServiceMethod.named("exists"),
+																false);	// does NOT exists
+		} else if (tupleResult.size() == 1) {
+			outResult = new PersistenceOperationExecOK<Boolean>(COREServiceMethod.named("exists"),
+																true);
+		} else if (tupleResult.size() > 1) {
+			outResult = new PersistenceOperationExecError<Boolean>(COREServiceMethod.named("exists"),
+																   Strings.customized("There exists more than a single {} entities with oid={} when trying check it's existence",
+																					   _modelObjectType,oid));
+			log.warn(outResult.getDetailedMessage());
+		}
+		return outResult;
+	}
 	protected PersistenceOperationResult<Date> doGetLastUpdateDate(final SecurityContext securityContext,
 								   								   final O oid) {
 		// Load the [last update date]
-		CriteriaBuilder _criteriaBuilder = _entityManager.getCriteriaBuilder();
-		CriteriaQuery<Tuple> _criteriaQuery = _criteriaBuilder.createTupleQuery();
-		Root<? extends DB> _root = _criteriaQuery.from(_DBEntityType);
+		CriteriaBuilder criteriaBuilder = _entityManager.getCriteriaBuilder();
+		CriteriaQuery<Tuple> criteriaQuery = criteriaBuilder.createTupleQuery();
+		Root<? extends DB> root = criteriaQuery.from(_DBEntityType);
 
-		_criteriaQuery.multiselect(_root.get("_lastUpdateDate"));
-		Predicate oidPredicate = _criteriaBuilder.equal(_root.<String>get("_oid"),
+		criteriaQuery.multiselect(root.get("_lastUpdateDate"));
+		Predicate oidPredicate = criteriaBuilder.equal(root.<String>get("_oid"),
 									 					oid.asString());
-		_criteriaQuery.where(oidPredicate);
-		List<Tuple> tupleResult = _entityManager.createQuery(_criteriaQuery)
+		criteriaQuery.where(oidPredicate);
+		List<Tuple> tupleResult = _entityManager.createQuery(criteriaQuery)
 													.setHint(QueryHints.READ_ONLY,HintValues.TRUE)
 											    .getResultList();
 
@@ -216,6 +252,32 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 		}
 		return outResult;
 	}
+	protected PersistenceOperationResult<Boolean> doTouch(final SecurityContext securityContext,
+								   						  final O oid,final Date date) {
+		// Load the [last update date]
+		CriteriaBuilder criteriaBuilder = _entityManager.getCriteriaBuilder();
+		CriteriaUpdate<DB> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(_DBEntityType);
+		Root<? extends DB> root = criteriaUpdate.from(_DBEntityType);
+		criteriaUpdate.set(root.get("_lastUpdateDate"),Dates.asCalendar(date));
+		Predicate oidPredicate = criteriaBuilder.equal(root.<String>get("_oid"),
+									 				   oid.asString());
+		criteriaUpdate.where(oidPredicate);
+		int updatedCount = _entityManager.createQuery(criteriaUpdate)
+					  					 .executeUpdate();
+
+		// Compose the PersistenceOperationResult object
+		PersistenceOperationResult<Boolean> outResult = null;
+		if (updatedCount == 0) {
+			outResult = new PersistenceOperationExecError<Boolean>(COREServiceMethod.named("touch"),
+																   Strings.customized("Could NOT find a {} entity with oid={} when trying to get the last update date",
+																				   	  _modelObjectType,oid));
+			log.warn(outResult.getDetailedMessage());
+		} else {
+			outResult = new PersistenceOperationExecOK<Boolean>(COREServiceMethod.named("touch"),
+															 	true);
+		}
+		return outResult;
+	}
 	protected CRUDResult<M> doLoad(final SecurityContext securityContext,
 								   final O oid,final PK pk) {
 		// check the oid
@@ -231,8 +293,8 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 		// Compose the PersistenceOperationResult object
 		CRUDResult<M> outEntityLoadResult = null;
 		if (dbEntity != null) {
-			M modelObj = _wrapDBEntityToModelObject(securityContext,
-											    	dbEntity);
+			M modelObj = _transformDBEntityToModelObject(securityContext,
+											    		 dbEntity);
 			outEntityLoadResult = CRUDResultBuilder.using(securityContext)
 										  .on(_modelObjectType)
 										  .loaded()
@@ -322,10 +384,10 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 		 && dbEntities.size() > 1) return CRUDResultBuilder.using(securityContext)
 											 .on(_modelObjectType)
 											 .notLoaded()
-											 	.becauseServerError("The DB is in an illegal status: there MUST exist a single db entity of {} but {} exists",
-											 				    	_DBEntityType,dbEntities.size())
-											 	.about(meta,value)
-											 	.build();
+										 	 .becauseServerError("The DB is in an illegal status: there MUST exist a single db entity of {} but {} exists",
+										 				    	_DBEntityType,dbEntities.size())
+										 	 .about(meta,value)
+										 	 .build();
 		// Return
 		CRUDResult<M> outResult = null;
 		if (CollectionUtils.hasData(dbEntities)) {
@@ -335,16 +397,16 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 			outResult = CRUDResultBuilder.using(securityContext)
 										 .on(_modelObjectType)
 										 .loaded()
-											.dbEntity(dbEntity)
-											.transformedToModelObjectUsing(_dbEntityIntoModelObjectTransformer);
+										 .dbEntity(dbEntity)
+										 .transformedToModelObjectUsing(_dbEntityIntoModelObjectTransformer);
 		} else {
 			// no results
 			outResult = CRUDResultBuilder.using(securityContext)
 										 .on(_modelObjectType)
 										 .notLoaded()
-										 	.becauseClientRequestedEntityWasNOTFound()
-										 	.about(meta,value)
-										 	.build();
+									 	 .becauseClientRequestedEntityWasNOTFound()
+									 	 .about(meta,value)
+									 	 .build();
 		}
 		return outResult;
 	}

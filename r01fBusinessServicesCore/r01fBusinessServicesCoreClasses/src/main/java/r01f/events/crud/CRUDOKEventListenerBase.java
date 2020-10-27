@@ -96,7 +96,8 @@ public abstract class CRUDOKEventListenerBase
 							if (!matchesType) return false;
 							
 							// b) try the given filter
-							return crudOperationOKEventFilter.hasTobeHandled(opEvent);			
+							boolean matchesFilter = crudOperationOKEventFilter.hasTobeHandled(opEvent);
+							return matchesFilter;
 						}
 			 });
 	}

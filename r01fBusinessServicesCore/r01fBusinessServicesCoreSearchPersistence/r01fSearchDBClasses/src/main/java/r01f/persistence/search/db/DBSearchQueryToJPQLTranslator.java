@@ -550,7 +550,6 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 		for (Iterator<QualifiedQueryClause<? extends QueryClause>> clauseIt = clauses.iterator(); clauseIt.hasNext(); ) {
 			QueryClause clause = clauseIt.next().getClause();
 			
-			
 			// If it's a BooleanQueryClause...
 			if (clause instanceof BooleanQueryClause) {
 				BooleanQueryClause boolClause = (BooleanQueryClause)clause;
