@@ -193,9 +193,9 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 		@SuppressWarnings("unchecked")
 		public SELF_TYPE addFilterByEntityTypePredicate(final Class<? extends DBEntity> dbEntityType) {
 			// type(e) = dbEntityType
-			Predicate oidPredicate = this.getCriteriaBuilder().equal(this.getRoot().type(),
-																	 this.getCriteriaBuilder().literal(dbEntityType));
-			this.addPredicate(oidPredicate);
+			Predicate typePredicate = this.getCriteriaBuilder().equal(this.getRoot().type(),
+																	  this.getCriteriaBuilder().literal(dbEntityType));
+			this.addPredicate(typePredicate);
 			return (SELF_TYPE)this;
 		}
 		@SuppressWarnings("unchecked")

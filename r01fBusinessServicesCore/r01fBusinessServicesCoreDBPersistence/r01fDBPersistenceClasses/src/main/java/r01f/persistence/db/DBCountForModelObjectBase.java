@@ -46,9 +46,9 @@ public abstract class DBCountForModelObjectBase<O extends PersistableObjectOID,M
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Override
 	public CountResult<M> countAll(final SecurityContext securityContext) {
-		final CriteriaBuilder criteriaBuilder = _entityManager.getCriteriaBuilder();
-		final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-		final Root<? extends DB> root = criteriaQuery.from(_DBEntityType);
+		CriteriaBuilder criteriaBuilder = _entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+		Root<? extends DB> root = criteriaQuery.from(_DBEntityType);
 		
 		criteriaQuery.select(criteriaBuilder.count(root));
 		long countResult = _entityManager.createQuery(criteriaQuery)
