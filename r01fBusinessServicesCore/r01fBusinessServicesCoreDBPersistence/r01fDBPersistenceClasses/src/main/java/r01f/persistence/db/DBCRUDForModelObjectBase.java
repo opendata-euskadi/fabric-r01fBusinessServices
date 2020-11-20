@@ -368,13 +368,13 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 		PersistencePerformedOperation performedOp = null;
 		if (dbEntityToPersist != null && pk != null) {
 			// Update
-			log.warn("> updating a {} entity with pk={} and entityVersion={}",_DBEntityType,
+			log.debug("> updating a {} entity with pk={} and entityVersion={}",_DBEntityType,
 					  pk.asString(),modelObj.getEntityVersion());
 			performedOp = PersistencePerformedOperation.UPDATED;
 		}
 		else {
 			// Create
-			log.warn("> creating a {} entity with pk={}",_DBEntityType,
+			log.debug("> creating a {} entity with pk={}",_DBEntityType,
 					  (pk != null ? pk.asString() : "<should be generated at db>"));
 
 			performedOp = PersistencePerformedOperation.CREATED;
