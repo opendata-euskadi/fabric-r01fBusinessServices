@@ -14,9 +14,9 @@ import com.google.common.base.Stopwatch;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import r01f.guids.CommonOIDs.UserCode;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
+import r01f.securitycontext.SecurityIDS.LoginID;
 import r01f.services.client.api.delegates.ClientAPIDelegateForModelObjectFindServices;
 import r01f.services.client.api.delegates.ClientAPIHasDelegateForDependentModelObjectFind;
 import r01f.test.api.TestAPIBase;
@@ -78,7 +78,7 @@ public class TestPersistableModelObjectFind<O extends PersistableObjectOID,M ext
 		Assert.assertTrue(CollectionUtils.hasData(oidsByLastUpdatedDate));
 
 		// [3] - By creator
-		UserCode user = TestAPIBase.TEST_USER;
+		LoginID user = TestAPIBase.TEST_USER;
 
 		log.warn("\tFIND ENTITY's OIDs BY CREATOR: {}",user);
 		Collection<O> oidsByCreator = _findAPI.findByCreator(user);

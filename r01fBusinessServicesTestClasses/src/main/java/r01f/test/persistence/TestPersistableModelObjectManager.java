@@ -98,7 +98,7 @@ public class TestPersistableModelObjectManager<O extends PersistableObjectOID,M 
 			}
 			objectToBeCreated.setEntityVersion(0);						// ensure it have a zero entity numeric id
 
-			objectToBeCreated.setTrackingInfo(new ModelObjectTracking(TestAPIBase.TEST_USER,
+			objectToBeCreated.setTrackingInfo(new ModelObjectTracking(TestAPIBase.TEST_USER_OID,TestAPIBase.TEST_USER,
 																	  new Date()));			// Ensure tracking info
 
 			final M createdModelObj = _CRUDApi.save(objectToBeCreated);

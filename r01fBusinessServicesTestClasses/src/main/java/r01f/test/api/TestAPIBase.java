@@ -18,7 +18,8 @@ import r01f.bootstrap.services.ServicesBootstrapUtil;
 import r01f.bootstrap.services.config.ServicesBootstrapConfig;
 import r01f.bootstrap.services.config.core.ServicesCoreModuleEventsConfig;
 import r01f.concurrent.Threads;
-import r01f.guids.CommonOIDs.UserCode;
+import r01f.securitycontext.SecurityIDS.LoginID;
+import r01f.securitycontext.SecurityOIDs.UserOID;
 import r01f.services.client.ClientAPI;
 import r01f.types.TimeLapse;
 import r01f.util.types.Strings;
@@ -33,8 +34,9 @@ import r01f.util.types.Strings;
 public abstract class TestAPIBase {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	CONSTANTS
-/////////////////////////////////////////////////////////////////////////////////////////	
-	public static final UserCode TEST_USER = UserCode.forId("testUser");
+/////////////////////////////////////////////////////////////////////////////////////////
+	public static final UserOID TEST_USER_OID = UserOID.supply();
+	public static final LoginID TEST_USER = LoginID.forId("testUser");
 /////////////////////////////////////////////////////////////////////////////////////////
 //  STATIC FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////

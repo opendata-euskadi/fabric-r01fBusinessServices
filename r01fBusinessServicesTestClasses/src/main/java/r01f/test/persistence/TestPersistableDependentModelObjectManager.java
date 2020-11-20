@@ -99,7 +99,7 @@ public class TestPersistableDependentModelObjectManager<O extends PersistableObj
 		_createdMockObjsOids = Sets.newLinkedHashSetWithExpectedSize(numOfObjsToCreate);
 		for (int i=0; i < numOfObjsToCreate; i++) {
 			M modelObjectToBeCreated = _mockObjectsFactory.create();
-			modelObjectToBeCreated.setTrackingInfo(new ModelObjectTracking(TestAPIBase.TEST_USER,new Date()));			// Ensure tracking info
+			modelObjectToBeCreated.setTrackingInfo(new ModelObjectTracking(TestAPIBase.TEST_USER_OID,TestAPIBase.TEST_USER,new Date()));			// Ensure tracking info
 
 			M createdModelObj = _clientApiDelegateForDependentObjsCRUD.create(this.getParentModelObjectRef(),
 												  							  modelObjectToBeCreated);

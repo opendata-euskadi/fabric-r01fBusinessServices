@@ -1,11 +1,10 @@
 package r01f.persistence.db.config;
 
+import org.eclipse.persistence.config.TargetDatabase;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-
-import org.eclipse.persistence.config.TargetDatabase;
-
 import r01f.enums.EnumWithCode;
 import r01f.enums.EnumWithCodeWrapper;
 

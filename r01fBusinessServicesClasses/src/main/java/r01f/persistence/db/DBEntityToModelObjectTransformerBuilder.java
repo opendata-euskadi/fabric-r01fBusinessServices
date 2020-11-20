@@ -73,9 +73,9 @@ public class DBEntityToModelObjectTransformerBuilder
 									}
 								}
 								return outModelObj;
-							}catch (Exception ex) {
+							} catch (Exception ex) {
 								log.error("DBEntityToModelObjectTransformerBuilder error :{}",ex.getMessage(),ex);
-							}catch (Throwable ex) {
+							} catch (Throwable ex) {
 								log.error("DBEntityToModelObjectTransformerBuilder error :{}",ex.getMessage(),ex);
 							}																	
 							return null;//Return null if any exception happens, so must be applied a not null filtering!
@@ -99,6 +99,12 @@ public class DBEntityToModelObjectTransformerBuilder
 					&& modelObject.getTrackingInfo().getCreateDate() != null) {
 				trackingInfo.setCreateDate(modelObject.getTrackingInfo().getCreateDate());
 			}
+			if (hasCreationData.getCreatorUserOid() != null) {
+				trackingInfo.setCreatorUserOid(hasCreationData.getCreatorUserOid());
+			} else if (modelObject.getTrackingInfo() != null
+					&& modelObject.getTrackingInfo().getCreatorUserOid() != null) {
+				trackingInfo.setCreatorUserOid(modelObject.getTrackingInfo().getCreatorUserOid());
+			}
 			if (hasCreationData.getCreatorUserCode() != null) {
 				trackingInfo.setCreatorUserCode(hasCreationData.getCreatorUserCode());
 			} else if (modelObject.getTrackingInfo() != null 
@@ -114,6 +120,12 @@ public class DBEntityToModelObjectTransformerBuilder
 			} else if (modelObject.getTrackingInfo() != null 
 					&& modelObject.getTrackingInfo().getLastUpdateDate() != null) {
 				trackingInfo.setLastUpdateDate(modelObject.getTrackingInfo().getLastUpdateDate());
+			}
+			if (hasUpdateData.getLastUpdatorUserOid() != null) {
+				trackingInfo.setLastUpdatorUserOid(hasUpdateData.getLastUpdatorUserOid());
+			} else if (modelObject.getTrackingInfo() != null
+					&& modelObject.getTrackingInfo().getLastUpdatorUserOid() != null) {
+				trackingInfo.setLastUpdatorUserOid(modelObject.getTrackingInfo().getLastUpdatorUserOid());
 			}
 			if (hasUpdateData.getLastUpdatorUserCode() != null) {
 				trackingInfo.setLastUpdatorUserCode(hasUpdateData.getLastUpdatorUserCode());

@@ -187,8 +187,8 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 
 		// BEWARE!! do NOT move
 		// transfer the tracking info
-		DBCRUDForModelObjectBase.transferModelObjectTrackingInfoFromDBEntityToModelObject(securityContext,
-																	  					  dbEntity,modelObj,
+		DBCRUDForModelObjectBase.transferModelObjectTrackingInfoFromModelObjectToDBEntity(securityContext,
+																	  					  modelObj,dbEntity,
 																	  					  persistenceOp);
 		// the xml descriptor MUST be the last field to be set
 		if (dbEntity instanceof DBEntityHasModelObjectDescriptor) {
@@ -201,8 +201,8 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 		hasDescriptor.setDescriptor(xmlDescriptor);
 	}
 	protected static <M extends PersistableModelObject<?>,DB extends DBEntityForModelObject<?>> 
-					 void transferModelObjectTrackingInfoFromDBEntityToModelObject(final SecurityContext securityContext,
-							 													   final DB dbEntity,final M modelObj,
+					 void transferModelObjectTrackingInfoFromModelObjectToDBEntity(final SecurityContext securityContext,
+							 													   final M modelObj,final DB dbEntity,
 							 													   final PersistencePerformedOperation persistenceOp) {
 		// BEWARE!! do NOT move
 		if (dbEntity instanceof HasTrackingInfo) {
@@ -220,9 +220,11 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 
 			// set the dbentity data
 			if (persistenceOp == PersistencePerformedOperation.CREATED) {
-				if (dbEntityTracking.getCreatorUserCode() != null) 	dbEntityHasTrackingInfo.setCreatorUserCode(dbEntityTracking.getCreatorUserCode());
+				if (dbEntityTracking.getCreatorUserOid() != null) dbEntityHasTrackingInfo.setCreatorUserOid(dbEntityTracking.getCreatorUserOid());
+				if (dbEntityTracking.getCreatorUserCode() != null) dbEntityHasTrackingInfo.setCreatorUserCode(dbEntityTracking.getCreatorUserCode());
 			}
-			if (dbEntityTracking.getLastUpdatorUserCode() != null)	dbEntityHasTrackingInfo.setLastUpdatorUserCode(dbEntityTracking.getLastUpdatorUserCode());
+			if (dbEntityTracking.getLastUpdatorUserOid() != null) dbEntityHasTrackingInfo.setLastUpdatorUserOid(dbEntityTracking.getLastUpdatorUserOid());
+			if (dbEntityTracking.getLastUpdatorUserCode() != null) dbEntityHasTrackingInfo.setLastUpdatorUserCode(dbEntityTracking.getLastUpdatorUserCode());
 		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////

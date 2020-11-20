@@ -18,12 +18,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import r01f.guids.CommonOIDs.UserCode;
 import r01f.guids.OID;
 import r01f.model.HasTrackingInfo;
 import r01f.model.ModelObjectTracking;
 import r01f.model.facets.HasEntityVersion;
 import r01f.persistence.db.DBEntity;
+import r01f.securitycontext.SecurityIDS.LoginID;
+import r01f.securitycontext.SecurityOIDs.UserOID;
 import r01f.util.types.Dates;
 import r01f.util.types.Strings;
 
@@ -64,10 +65,20 @@ public abstract class DBEntityBase
 	@Column(name="CREATED_BY",length=OID.OID_LENGTH)
 	@Getter @Setter protected String _creator;
 	/**
+	 * The user oid of the creator 
+	 */
+	@Column(name="CREATED_BY_OID",length=OID.OID_LENGTH)
+	@Getter @Setter protected String _creatorOid;
+	/**
 	 * The user code / application code of the last updator
 	 */
 	@Column(name="UPDATED_BY",length=OID.OID_LENGTH)
 	@Getter @Setter protected String _lastUpdator;
+	/**
+	 * The user oid of the last updator
+	 */
+	@Column(name="UPDATED_BY_OID",length=OID.OID_LENGTH)
+	@Getter @Setter protected String _lastUpdatorOid;
 	/**
 	 * Entity Version to prevent conflicts
 	 * See:
@@ -162,27 +173,46 @@ public abstract class DBEntityBase
 		throw new UnsupportedOperationException("Do not call setLastUpdateTimeStamp at the persistence layer!");
 	}
 	@Override 
-	public UserCode getCreatorUserCode() {
-		return Strings.isNOTNullOrEmpty(_creator) ? UserCode.forId(_creator) : null;
+	public LoginID getCreatorUserCode() {
+		return Strings.isNOTNullOrEmpty(_creator) ? LoginID.forId(_creator) : null;
 	}
+	
 	@Override
-	public void setCreatorUserCode(final UserCode creator) {
+	public void setCreatorUserCode(final LoginID creator) {
 		if (creator != null) _creator = creator.asString();
 	}
-	@Override 
-	public UserCode getLastUpdatorUserCode() {
-		return Strings.isNOTNullOrEmpty(_lastUpdator) ? UserCode.forId(_lastUpdator) : null;
+	@Override
+	public UserOID getCreatorUserOid() {
+		return Strings.isNOTNullOrEmpty(_creatorOid) ? UserOID.forId(_creatorOid) : null;
 	}
 	@Override
-	public void setLastUpdatorUserCode(final UserCode lastUpdator) {
+	public void setCreatorUserOid(final UserOID creatorOid) {
+		if (creatorOid != null) _creatorOid = creatorOid.asString();
+	}
+	@Override 
+	public LoginID getLastUpdatorUserCode() {
+		return Strings.isNOTNullOrEmpty(_lastUpdator) ? LoginID.forId(_lastUpdator) : null;
+	}
+	@Override
+	public void setLastUpdatorUserCode(final LoginID lastUpdator) {
 		if (lastUpdator != null) _lastUpdator = lastUpdator.asString();
+	}
+	@Override
+	public UserOID getLastUpdatorUserOid() {
+		return Strings.isNOTNullOrEmpty(_lastUpdatorOid) ? UserOID.forId(_lastUpdatorOid) : null;
+	}
+	@Override
+	public void setLastUpdatorUserOid(final UserOID lastUpdatorOid) {
+		if (lastUpdatorOid != null) _lastUpdatorOid = lastUpdatorOid.asString();
 	}
 	@Override
 	public ModelObjectTracking getTrackingInfo() {
 		if (_createDate != null) _modelObjectTracking.setCreateDate(_createDate.getTime());
 		if (_lastUpdateDate != null) _modelObjectTracking.setLastUpdateDate(_lastUpdateDate.getTime());
-		if (_creator != null) _modelObjectTracking.setCreatorUserCode(UserCode.forId(_creator));
-		if (_lastUpdator != null) _modelObjectTracking.setLastUpdatorUserCode(UserCode.forId(_lastUpdator));
+		if (_creatorOid != null) _modelObjectTracking.setCreatorUserOid(UserOID.forId(_creatorOid));
+		if (_creator != null) _modelObjectTracking.setCreatorUserCode(LoginID.forId(_creator));
+		if (_lastUpdatorOid != null) _modelObjectTracking.setLastUpdatorUserOid(UserOID.forId(_lastUpdatorOid));
+		if (_lastUpdator != null) _modelObjectTracking.setLastUpdatorUserCode(LoginID.forId(_lastUpdator));
 		return _modelObjectTracking;
 	}
 }
