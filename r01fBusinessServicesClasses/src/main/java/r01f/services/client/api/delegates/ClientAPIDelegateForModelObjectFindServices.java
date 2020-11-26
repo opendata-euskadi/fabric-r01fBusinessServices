@@ -13,6 +13,7 @@ import r01f.model.persistence.FindOIDsResult;
 import r01f.objectstreamer.Marshaller;
 import r01f.securitycontext.SecurityContext;
 import r01f.securitycontext.SecurityIDS.LoginID;
+import r01f.securitycontext.SecurityOIDs.UserOID;
 import r01f.services.interfaces.FindServicesForModelObject;
 import r01f.types.Range;
 
@@ -105,6 +106,23 @@ public abstract class ClientAPIDelegateForModelObjectFindServices<O extends Pers
 		return outOids;
 	}
 	/**
+	 * Finds all persisted model object entities created by the provided user
+	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the 
+	 * currently active versions
+	 * @param creatorUserCode
+	 * @return a {@link PersistenceOperationOK} that encapsulates the entities
+	 */
+	public Collection<O> findByCreator(final UserOID creatorUserOid) {
+		FindOIDsResult<O> findResult = this.getServiceProxy()
+												.findByCreator(this.getSecurityContext(),
+															   creatorUserOid);
+		
+		log.debug(findResult.debugInfo().toString());
+		
+		Collection<O> outOids = findResult.getOrThrow();		
+		return outOids;
+	}
+	/**
 	 * Finds all persisted model object entities last updated by the provided user
 	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the 
 	 * currently active versions
@@ -115,6 +133,23 @@ public abstract class ClientAPIDelegateForModelObjectFindServices<O extends Pers
 		FindOIDsResult<O> findResult = this.getServiceProxy()
 													.findByLastUpdator(this.getSecurityContext(),
 																   	   lastUpdatorUserCode);
+		
+		log.debug(findResult.debugInfo().toString());
+		
+		Collection<O> outOids = findResult.getOrThrow();	
+		return outOids;
+	}
+	/**
+	 * Finds all persisted model object entities last updated by the provided user
+	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the 
+	 * currently active versions
+	 * @param lastUpdatorUserOid
+	 * @return a {@link PersistenceOperationOK} that encapsulates the entities
+	 */
+	public Collection<O> findByLastUpdator(final UserOID lastUpdatorUserOid) {
+		FindOIDsResult<O> findResult = this.getServiceProxy()
+													.findByLastUpdator(this.getSecurityContext(),
+																   	   lastUpdatorUserOid);
 		
 		log.debug(findResult.debugInfo().toString());
 		
