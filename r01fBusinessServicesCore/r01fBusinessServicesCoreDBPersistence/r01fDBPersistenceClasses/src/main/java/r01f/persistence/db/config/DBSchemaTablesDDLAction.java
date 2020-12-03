@@ -1,10 +1,10 @@
 package r01f.persistence.db.config;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 @Accessors(prefix="_")
 @RequiredArgsConstructor

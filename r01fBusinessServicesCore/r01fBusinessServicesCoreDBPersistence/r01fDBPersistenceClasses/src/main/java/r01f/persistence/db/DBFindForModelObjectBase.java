@@ -27,7 +27,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import r01f.facets.util.Facetables;
-import r01f.guids.CommonOIDs.UserCode;
 import r01f.guids.OID;
 import r01f.guids.OIDs;
 import r01f.guids.PersistableObjectOID;
@@ -47,6 +46,8 @@ import r01f.persistence.db.entities.DBEntityForModelObject;
 import r01f.persistence.db.entities.primarykeys.DBPrimaryKeyForModelObject;
 import r01f.reflection.ReflectionUtils;
 import r01f.securitycontext.SecurityContext;
+import r01f.securitycontext.SecurityIDS.LoginID;
+import r01f.securitycontext.SecurityOIDs.UserOID;
 import r01f.types.Range;
 import r01f.util.types.collections.CollectionUtils;
 
@@ -149,14 +150,28 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 	}
 	@Override
 	public FindOIDsResult<O> findByCreator(final SecurityContext securityContext,
-										   final UserCode creatorUserCode) {
+										   final UserOID creatorUserOid) {
 		return new QueryWrapper()
-					.addFilterByUserPredicate(creatorUserCode,"_creator")
-					.findOidsUsing(securityContext);
+						.addFilterByUserPredicate(creatorUserOid,"_creatorOid")
+						.findOidsUsing(securityContext);
+	}
+	@Override
+	public FindOIDsResult<O> findByCreator(final SecurityContext securityContext,
+										   final LoginID creatorUserCode) {
+		return new QueryWrapper()
+						.addFilterByUserPredicate(creatorUserCode,"_creator")
+						.findOidsUsing(securityContext);
 	}
 	@Override
 	public FindOIDsResult<O> findByLastUpdator(final SecurityContext securityContext,
-											   final UserCode lastUpdatorUserCode) {
+											   final UserOID lastUpdatorOid) {
+		return new QueryWrapper()
+						.addFilterByUserPredicate(lastUpdatorOid,"_lastUpdatorOid")
+						.findOidsUsing(securityContext);
+	}
+	@Override
+	public FindOIDsResult<O> findByLastUpdator(final SecurityContext securityContext,
+											   final LoginID lastUpdatorUserCode) {
 		return new QueryWrapper()
 						.addFilterByUserPredicate(lastUpdatorUserCode,"_lastUpdator")
 						.findOidsUsing(securityContext);
@@ -213,7 +228,14 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 			return (SELF_TYPE)this;
 		}
 		@SuppressWarnings("unchecked")
-		public SELF_TYPE addFilterByUserPredicate(final UserCode userCode,final String dbEntityCol) {
+		public SELF_TYPE addFilterByUserPredicate(final UserOID userCode,final String dbEntityCol) {
+			Predicate userCodePredicate = _buildUserPredicate(this.getCriteriaBuilder(),this.getRoot(),
+															  dbEntityCol,userCode);
+			this.addPredicate(userCodePredicate);
+			return (SELF_TYPE)this;
+		}
+		@SuppressWarnings("unchecked")
+		public SELF_TYPE addFilterByUserPredicate(final LoginID userCode,final String dbEntityCol) {
 			Predicate userCodePredicate = _buildUserPredicate(this.getCriteriaBuilder(),this.getRoot(),
 															  dbEntityCol,userCode);
 			this.addPredicate(userCodePredicate);
@@ -246,11 +268,21 @@ public abstract class DBFindForModelObjectBase<O extends PersistableObjectOID,M 
 		}
 		protected Predicate _buildUserPredicate(final CriteriaBuilder builder,
 												final Root<? extends DB> root,final String dbColName,
-												final UserCode userCode) {
+												final LoginID userCode) {
 			Predicate outPredicate = null;
 			if (userCode != null) {
 				outPredicate = builder.equal(root.<String>get(dbColName),
 											 userCode.asString());
+			}
+			return outPredicate;
+		}
+		protected Predicate _buildUserPredicate(final CriteriaBuilder builder,
+												final Root<? extends DB> root,final String dbColName,
+												final UserOID userOid) {
+			Predicate outPredicate = null;
+			if (userOid != null) {
+				outPredicate = builder.equal(root.<String>get(dbColName),
+											 userOid.asString());
 			}
 			return outPredicate;
 		}

@@ -4,7 +4,7 @@ package r01f.persistence.db.sql;
  * Es una clase de ayuda para ejecutar diversas operaciones de base de datos.
  * Para poder utilizar los metodos generales de esta clase, es necesario establecer
  * las propiedades de la conexion de base de datos que se va a utilizar, para ello
- * se utiliza el constructor o el metodo setConnectionProperties. A estos m�todos
+ * se utiliza el constructor o el metodo setConnectionProperties. A estos mtodos
  * hay que pasar un objeto Properties con datos para obtener la conexion.
  * Los datos de la conexion normalmente se obtienen de un fichero .properties.xml
  * que ha de tener una seccion con la forma:
@@ -56,19 +56,19 @@ package r01f.persistence.db.sql;
  * Utilizando el metodo DBSQLHelpper.getConnectionProperties(appCode,connectionName)
  * se obtiene el objeto Properties a partir del XML anterior.
  *
- * Adicionalmente se ofrecen una serie de m�todos est�ticos para obtener conexiones
+ * Adicionalmente se ofrecen una serie de mtodos estticos para obtener conexiones
  *
  * IMPORTANTE!!!!
  * Hay dos modos de uso:
- * MODO NORMAL:		Se abre una conex��n o una transaccion antes de ejecutar cualquier cosa
+ * MODO NORMAL:		Se abre una conexn o una transaccion antes de ejecutar cualquier cosa
  * 					y se cierra al final
  * 					DBSQLHelpper sqlHelp = new DBSQLHelpper(properties);
  * 					sqlHelp.obtainConnection();  // o bien sqlHelp.beginTransaction();
  * 					sqlHelp.<cualquier operacion>
  * 					sqlHelp.releaseConnection(); // o bien sqlHelp.endTransaction();
  *
- * MODO STANDALONE:	Para cada operaci�n se abre implicitamente una conexi�n de base de datos
- * 					y se cierra autom�ticamente
+ * MODO STANDALONE:	Para cada operacin se abre implicitamente una conexin de base de datos
+ * 					y se cierra automticamente
  * 					SQLHelppper sqlHelp = new DBSQLHelpper(properties);
  * 					sqlHelp.<cualquier operacion>
  */
@@ -219,7 +219,7 @@ public class DBManager {
                 ps = null;
                 if (rs != null) rs.close();
                 rs = null;
-                // Solo cerrar la conexi�n si esta se ha creado para la transaccion actual
+                // Solo cerrar la conexin si esta se ha creado para la transaccion actual
                 if (_conx == null && conx != null) {
                     DBConnectionHelpper.closeConnection(conx);
                     conx = null;
@@ -316,7 +316,7 @@ public class DBManager {
         }
         /**
          * Ejecuta un statement en la base de datos a partir de una sentencia SQL a ejecutar
-         * y los par�metros a dicha sentencia.
+         * y los parmetros a dicha sentencia.
          * @param sql La query a ejecutar
          * @param params Los parametros de la query
          * @return El numero de filas afectadas por la operacion
@@ -397,7 +397,7 @@ public class DBManager {
         String sql = null;
         try {
             sql = "SELECT " + seqName + ".nextVal FROM DUAL";
-            // Obtener una nueva conexion solo si no hay una ya creada (transacci�n)
+            // Obtener una nueva conexion solo si no hay una ya creada (transaccin)
 			conx = (_conx == null ? DBConnectionHelpper.getConnection(_conxProps) : _conx);
             ps = conx.prepareStatement(sql);
             ps.executeQuery();      //OJO!! No hacer rs = ps.executeQuery ya que falla con los TXDatasources

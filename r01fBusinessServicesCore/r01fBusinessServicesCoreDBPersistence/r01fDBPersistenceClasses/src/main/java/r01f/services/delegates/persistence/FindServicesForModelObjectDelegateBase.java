@@ -6,13 +6,14 @@ import java.util.Date;
 import com.google.common.eventbus.EventBus;
 
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanExposed;
-import r01f.guids.CommonOIDs.UserCode;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.FindOIDsResult;
 import r01f.model.persistence.FindOIDsResultBuilder;
 import r01f.persistence.db.DBFindForModelObject;
 import r01f.securitycontext.SecurityContext;
+import r01f.securitycontext.SecurityIDS.LoginID;
+import r01f.securitycontext.SecurityOIDs.UserOID;
 import r01f.services.interfaces.FindServicesForModelObject;
 import r01f.types.Range;
 
@@ -85,7 +86,23 @@ public abstract class FindServicesForModelObjectDelegateBase<O extends Persistab
 	}
 	@Override @SuppressWarnings("unchecked")
 	public FindOIDsResult<O> findByCreator(final SecurityContext securityContext,
-									   	   final UserCode creatorUserCode) {
+									   	   final UserOID creatorUserOid) {
+		// [0] - check the date
+		if (creatorUserOid == null) {
+			return FindOIDsResultBuilder.using(securityContext)
+										.on(_modelObjectType)
+										.errorFindingOids()
+												.causedByClientBadRequest("The user oid MUST NOT be null in order to find entities creator");
+		}
+		// [1] - do the find
+		FindOIDsResult<O> outResults = this.getServiceImplAs(FindServicesForModelObject.class)
+												.findByCreator(securityContext,
+															   creatorUserOid);
+		return outResults;
+	}
+	@Override @SuppressWarnings("unchecked")
+	public FindOIDsResult<O> findByCreator(final SecurityContext securityContext,
+									   	   final LoginID creatorUserCode) {
 		// [0] - check the date
 		if (creatorUserCode == null) {
 			return FindOIDsResultBuilder.using(securityContext)
@@ -101,7 +118,23 @@ public abstract class FindServicesForModelObjectDelegateBase<O extends Persistab
 	}
 	@Override @SuppressWarnings("unchecked")
 	public FindOIDsResult<O> findByLastUpdator(final SecurityContext securityContext,
-										       final UserCode lastUpdatorUserCode) {
+										       final UserOID lastUpdatorUserOid) {
+		// [0] - check the date
+		if (lastUpdatorUserOid == null) {
+			return FindOIDsResultBuilder.using(securityContext)
+										.on(_modelObjectType)
+										.errorFindingOids()
+											.causedByClientBadRequest("The user oid MUST NOT be null in order to find entities by last updator user code");
+		}
+		// [1] - do the find
+		FindOIDsResult<O> outResults = this.getServiceImplAs(FindServicesForModelObject.class)
+												.findByLastUpdator(securityContext,
+																   lastUpdatorUserOid);
+		return outResults;
+	}
+	@Override @SuppressWarnings("unchecked")
+	public FindOIDsResult<O> findByLastUpdator(final SecurityContext securityContext,
+										       final LoginID lastUpdatorUserCode) {
 		// [0] - check the date
 		if (lastUpdatorUserCode == null) {
 			return FindOIDsResultBuilder.using(securityContext)

@@ -2,13 +2,14 @@ package r01f.services.interfaces;
 
 import java.util.Date;
 
-import r01f.guids.CommonOIDs.UserCode;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable;
 import r01f.model.persistence.FindOIDsResult;
 import r01f.model.persistence.FindResult;
 import r01f.securitycontext.SecurityContext;
+import r01f.securitycontext.SecurityIDS.LoginID;
+import r01f.securitycontext.SecurityOIDs.UserOID;
 import r01f.types.Range;
 
 /**
@@ -54,11 +55,31 @@ public interface FindServicesForModelObject<O extends PersistableObjectOID,M ext
 	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the 
 	 * currently active versions
 	 * @param securityContext the user auth data & context info
+	 * @param creatorUserOid
+	 * @return a {@link FindResult} that encapsulates the oids
+	 */
+	public FindOIDsResult<O> findByCreator(final SecurityContext securityContext,
+									   	   final UserOID creatorUserOid);
+	/**
+	 * Finds all persisted model object oids created by the provided user
+	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the 
+	 * currently active versions
+	 * @param securityContext the user auth data & context info
 	 * @param creatorUserCode
 	 * @return a {@link FindResult} that encapsulates the oids
 	 */
 	public FindOIDsResult<O> findByCreator(final SecurityContext securityContext,
-									   	   final UserCode creatorUserCode);
+									   	   final LoginID creatorUserCode);
+	/**
+	 * Finds all persisted model object oids last updated by the provided user
+	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the 
+	 * currently active versions
+	 * @param securityContext the user auth data & context info
+	 * @param lastUpdtorUserOid
+	 * @return a {@link FindResult} that encapsulates the oids
+	 */
+	public FindOIDsResult<O> findByLastUpdator(final SecurityContext securityContext,
+										   	   final UserOID lastUpdtorUserOid);
 	/**
 	 * Finds all persisted model object oids last updated by the provided user
 	 * If the entity is a {@link Versionable}  {@link PersistableModelObject}, it returns the 
@@ -68,5 +89,5 @@ public interface FindServicesForModelObject<O extends PersistableObjectOID,M ext
 	 * @return a {@link FindResult} that encapsulates the oids
 	 */
 	public FindOIDsResult<O> findByLastUpdator(final SecurityContext securityContext,
-										   	   final UserCode lastUpdtorUserCode);
+										   	   final LoginID lastUpdtorUserCode);
 }

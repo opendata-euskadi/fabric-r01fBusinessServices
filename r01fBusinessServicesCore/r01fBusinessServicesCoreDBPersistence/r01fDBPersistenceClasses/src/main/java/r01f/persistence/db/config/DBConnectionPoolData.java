@@ -10,8 +10,8 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import r01f.debug.Debuggable;
 import r01f.guids.CommonOIDs.AppCode;
-import r01f.guids.CommonOIDs.Password;
-import r01f.guids.CommonOIDs.UserCode;
+import r01f.securitycontext.SecurityIDS.LoginID;
+import r01f.securitycontext.SecurityIDS.Password;
 import r01f.types.JavaTypeName;
 import r01f.util.types.Strings;
 import r01f.util.types.collections.CollectionUtils;
@@ -23,7 +23,7 @@ public class DBConnectionPoolData
   implements Debuggable {
 	@Getter private final DBConnectionPoolSize _poolSize;
 
-	@Getter private final UserCode _user;
+	@Getter private final LoginID _user;
 	@Getter private final Password _password;
 
 	@Getter private final JavaTypeName _driverClassName;
@@ -60,8 +60,8 @@ public class DBConnectionPoolData
 		_poolSize = new DBConnectionPoolSize(appCode,
 									     	 unitType,dbSpec,
 									     	 xmlProps);
-		_user = Strings.isNOTNullOrEmpty(user) ? UserCode.forId(user)
-											   : UserCode.forId(appCode.asString());
+		_user = Strings.isNOTNullOrEmpty(user) ? LoginID.forId(user)
+											   : LoginID.forId(appCode.asString());
 		_password = Strings.isNOTNullOrEmpty(pwd) ? Password.forId(pwd)
 												  : Password.forId(appCode.asString());
 		_driverClassName = Strings.isNOTNullOrEmpty(driverJavaType) ? new JavaTypeName(driverJavaType)
