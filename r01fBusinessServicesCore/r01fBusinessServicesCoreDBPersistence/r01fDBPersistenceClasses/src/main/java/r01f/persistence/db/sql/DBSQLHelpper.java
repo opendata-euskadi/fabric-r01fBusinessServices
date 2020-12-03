@@ -17,7 +17,7 @@ public final class DBSQLHelpper {
      * @param params Lista con los parametros de la parte WHERE de la select.
      * @param where WHERE de la select.
      * @param columnsOrder indice de las columnas por las que se ordena.
-     * @param desc indica si los resultados se ordenan de forma descendente para cada columna del par�metro "columsOrder".
+     * @param desc indica si los resultados se ordenan de forma descendente para cada columna del parmetro "columsOrder".
      * @param distinctRows Indica si hay que incluir el indicador DISTINCT en la select.
 	 * @return La sentencia SQL para realizar la consulta en forma de cadena.
      */
@@ -64,7 +64,7 @@ public final class DBSQLHelpper {
      * Crear una sentencia SQL para realizar una Insert.
      * @param insertData Parejas de elementos NOMBRE_COLUMNA / VALOR.
      * @param table Nombre de la tabla sobre la que se hace la insert.
-     * @return La sentencia SQL para realizar la inserci�n en forma de cadena.
+     * @return La sentencia SQL para realizar la insercin en forma de cadena.
      */
     static String composeInsert(final List<DBData> insertData,
     							final String table) {
@@ -78,7 +78,7 @@ public final class DBSQLHelpper {
 	        for (DBData currDBData : insertData) {
 	            if (!Strings.isNullOrEmpty(currDBData.value)) {
 	                sbCols.append(currDBData.columnName);
-	                // Si se trata de una funci�n SQL, debe ir sin comillas en la sentencia
+	                // Si se trata de una funcin SQL, debe ir sin comillas en la sentencia
 	                if (currDBData.isNumeric) {
 	                    sbValues.append(currDBData.value);
 	                } else {
@@ -109,7 +109,7 @@ public final class DBSQLHelpper {
      * Crear una sentencia SQL para realizar una Update.
      * @param updateData Parejas de elementos NOMBRE_COLUMNA / VALOR.
      * @param table Tabla sobre la que queremos que se ejecute el update.
-     * @param where Cla�sula WHERE.
+     * @param where Clasula WHERE.
      * @return La sentencia SQL para realizar la update en forma de cadena.
      */
     static String composeUpdate(final List<DBData> updateData,
@@ -179,7 +179,7 @@ public final class DBSQLHelpper {
 //  METODOS PRIVADOS
 /////////////////////////////////////////////////////////////////////////////////////////
     /**
-     * M�todo que escapa un string (escapa las comillas internas).
+     * Mtodo que escapa un string (escapa las comillas internas).
      * @param str La cadena a escapar.
      * @return La cadena escapada.
      */
@@ -237,10 +237,10 @@ public final class DBSQLHelpper {
         }
     }
 /////////////////////////////////////////////////////////////////////////////////////////
-//  CLASE AUXILIAR PARA LA CONSTRUCCI�N DE UNA LISTA DE objetos DBData
+//  CLASE AUXILIAR PARA LA CONSTRUCCIN DE UNA LISTA DE objetos DBData
 /////////////////////////////////////////////////////////////////////////////////////////
     /**
-     * Inner class para la creaci�n de una lista de objetos DBData.<br>
+     * Inner class para la creacin de una lista de objetos DBData.<br>
      * Simplemente hacer:
      * <pre class="brush:java">
      *      DBDataListCreator listCreator = SQLHelpper.new DBDataListCreator();
@@ -268,7 +268,7 @@ public final class DBSQLHelpper {
 //  METODOS PARA CREAR OBJETOS DBData
 /////////////////////////////////////////////////////////////////////////////////////////
     /**
-     * Creaci�n de un objeto columna-valor para generar las sentencias SQL.
+     * Creacin de un objeto columna-valor para generar las sentencias SQL.
      * @param columnName Nombre del campo de la tabla de base de datos.
      * @param value Valor del campo.
      * @return Entidad que representa un objeto columna-valor para generar las sentencias SQL.
@@ -278,10 +278,10 @@ public final class DBSQLHelpper {
         return dbDataListCreator.addDBData(columnName,value);
     }
     /**
-     * Creaci�n de un objeto columna-valor para generar las sentencias SQL.
+     * Creacin de un objeto columna-valor para generar las sentencias SQL.
      * @param columnName Nombre del campo de la tabla de base de datos.
      * @param value Valor del campo.
-     * @param isNumeric Indica si se trata de un valor num�rico o no.
+     * @param isNumeric Indica si se trata de un valor numrico o no.
      * @return Entidad que representa un objeto columna-valor para generar las sentencias SQL.
     */
     public static DBData createDBData(String columnName, String value,boolean isNumeric) {

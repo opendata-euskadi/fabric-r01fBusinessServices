@@ -19,7 +19,7 @@ import org.apache.lucene.search.TopDocs;
 
 
 /**
- * Encapsula los resultados devueltos por lucene para una p�gina
+ * Encapsula los resultados devueltos por lucene para una pgina
  * <pre>
  * NOTA:	Lucene como resultado de una busqueda devuelve un objeto TopDocs
  * 			que contiene un array de objetos {@link ScoreDoc} cada uno de los cuales
