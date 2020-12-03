@@ -8,11 +8,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import r01f.guids.CommonOIDs.UserCode;
 import r01f.bootstrap.services.config.client.ServicesCoreModuleExpositionAsRESTServices;
 import r01f.guids.OID;
 import r01f.guids.OIDForVersionableModelObject;
 import r01f.guids.VersionIndependentOID;
+import r01f.securitycontext.SecurityIDS.LoginID;
+import r01f.securitycontext.SecurityOIDs.UserOID;
 import r01f.types.Range;
 import r01f.types.url.Host;
 import r01f.types.url.UrlPath;
@@ -125,8 +126,10 @@ public class RESTServiceResourceUrlPathBuilders {
 		public UrlPath pathOfEntityList();	
 		public UrlPath pathOfEntityListByCreateDate(final Range<Date> dateRange);
 		public UrlPath pathOfEntityListByLastUpdateDate(final Range<Date> dateRange);
-		public UrlPath pathOfEntityListByCreator(final UserCode creatorUserCode);
-		public UrlPath pathOfEntityListByLastUpdator(final UserCode lastUpdatorUserCode);		
+		public UrlPath pathOfEntityListByCreator(final UserOID creatorUserOid);
+		public UrlPath pathOfEntityListByCreator(final LoginID creatorUserCode);
+		public UrlPath pathOfEntityListByLastUpdator(final UserOID lastUpdatorUserOid);
+		public UrlPath pathOfEntityListByLastUpdator(final LoginID lastUpdatorUserCode);		
 	}
 	@GwtIncompatible("Not used from GWT")
 	public static abstract class RESTServiceResourceUrlPathBuilderForModelObjectPersistenceBase<O extends OID>
@@ -171,13 +174,25 @@ public class RESTServiceResourceUrlPathBuilders {
 					   						dateRange.asString());
 		}
 		@Override
-		public UrlPath pathOfEntityListByCreator(final UserCode creatorUserCode) {
+		public UrlPath pathOfEntityListByCreator(final UserOID creatorUserOid) {
+			return Paths.forUrlPaths().join(this.pathOfEntityList(),
+					   					    "byCreatorOid",
+					   					    creatorUserOid.asString());
+		}
+		@Override
+		public UrlPath pathOfEntityListByCreator(final LoginID creatorUserCode) {
 			return Paths.forUrlPaths().join(this.pathOfEntityList(),
 					   					    "byCreator",
 					   					    creatorUserCode.asString());
 		}
 		@Override
-		public UrlPath pathOfEntityListByLastUpdator(final UserCode lastUpdatorUserCode) {
+		public UrlPath pathOfEntityListByLastUpdator(final UserOID lastUpdatorUserOid) {
+			return Paths.forUrlPaths().join(this.pathOfEntityList(),
+					   						"byLastUpdatorOid",
+					   						lastUpdatorUserOid.asString());
+		}
+		@Override
+		public UrlPath pathOfEntityListByLastUpdator(final LoginID lastUpdatorUserCode) {
 			return Paths.forUrlPaths().join(this.pathOfEntityList(),
 					   						"byLastUpdator",
 					   						lastUpdatorUserCode.asString());

@@ -7,7 +7,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import lombok.experimental.Accessors;
-import r01f.guids.CommonOIDs.UserCode;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable;
@@ -16,6 +15,7 @@ import r01f.rest.RESTOperationsResponseBuilder;
 import r01f.rest.RESTOperationsResponseBuilder.PersistenceOperationOnObjectResulCollectionToReponseEntity;
 import r01f.rest.RESTOperationsResponseBuilder.PersistenceOperationOnObjectResulToReponseEntity;
 import r01f.securitycontext.SecurityContext;
+import r01f.securitycontext.SecurityIDS.LoginID;
 import r01f.services.interfaces.FindServicesForModelObject;
 import r01f.types.Range;
 
@@ -174,7 +174,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
 	public Response findByCreator(final SecurityContext securityContext,final String resourcePath,
-								  final UserCode creatorUserCode) {
+								  final LoginID creatorUserCode) {
 		return findByCreator(securityContext,resourcePath,_transformer, creatorUserCode);
 	}
 	
@@ -189,7 +189,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
 	public Response findByCreator(final SecurityContext securityContext,final String resourcePath,final PersistenceOperationOnObjectResulToReponseEntity<?> transformer,
-								  final UserCode creatorUserCode) {
+								  final LoginID creatorUserCode) {
 		FindOIDsResult<O> findResult = _findServices.findByCreator(securityContext,
 																   creatorUserCode);
 		Response outResponse = RESTOperationsResponseBuilder.findOn(_modelObjectType)
@@ -210,9 +210,10 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
 	public Response findByLastUpdator(final SecurityContext securityContext,final String resourcePath,
-									  final UserCode lastUpdtorUserCode) {
+									  final LoginID lastUpdtorUserCode) {
 		
-		return findByLastUpdator(securityContext,resourcePath,_transformer, lastUpdtorUserCode);
+		return this.findByLastUpdator(securityContext,resourcePath,_transformer, 
+									  lastUpdtorUserCode);
 	}
 	/**
 	 * Finds all persisted model object oids last updated by the provided user
@@ -224,7 +225,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
 	public Response findByLastUpdator(final SecurityContext securityContext,final String resourcePath,final PersistenceOperationOnObjectResulToReponseEntity<?> transformer,
-									  final UserCode lastUpdtorUserCode) {
+									  final LoginID lastUpdtorUserCode) {
 		FindOIDsResult<O> findResult = _findServices.findByLastUpdator(securityContext,
 																	   lastUpdtorUserCode);
 		Response outResponse = RESTOperationsResponseBuilder.findOn(_modelObjectType)

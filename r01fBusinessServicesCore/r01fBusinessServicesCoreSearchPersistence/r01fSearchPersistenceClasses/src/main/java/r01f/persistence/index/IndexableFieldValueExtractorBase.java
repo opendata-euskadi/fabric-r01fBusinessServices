@@ -282,22 +282,22 @@ public abstract class IndexableFieldValueExtractorBase<M extends IndexableModelO
 															.asFieldMetaData();
 				_fields.add(IndexDocumentFieldValue.forMetaData(createDateField)
 											   .andValue(new Date()));
-				if (securityContext.getUserCode() != null) {
+				if (securityContext.getLoginId() != null) {
 					FieldMetaData creatorField = typeMetaData.findFieldByIdOrThrow(HasMetaDataForHasTrackableFacetForModelObject.SEARCHABLE_METADATA.CREATOR)
 															 .asFieldMetaData();
 					_fields.add(IndexDocumentFieldValue.forMetaData(creatorField)
-											       	   .andValue(securityContext.getUserCode()));
+											       	   .andValue(securityContext.getLoginId()));
 				}
 			} else if (reqOp.is(PersistenceRequestedOperation.UPDATE)) {
 				FieldMetaData lastUpdateDateField = typeMetaData.findFieldByIdOrThrow(HasMetaDataForHasTrackableFacetForModelObject.SEARCHABLE_METADATA.LAST_UPDATE_DATE)
 																.asFieldMetaData();
 				_fields.add(IndexDocumentFieldValue.forMetaData(lastUpdateDateField)
 											   	   .andValue(new Date()));
-				if (securityContext.getUserCode() != null) {
+				if (securityContext.getLoginId() != null) {
 					FieldMetaData lastUpdatorField = typeMetaData.findFieldByIdOrThrow(HasMetaDataForHasTrackableFacetForModelObject.SEARCHABLE_METADATA.LAST_UPDATOR)
 																 .asFieldMetaData();
 					_fields.add(IndexDocumentFieldValue.forMetaData(lastUpdatorField)
-													   .andValue(securityContext.getUserCode()));
+													   .andValue(securityContext.getLoginId()));
 				}
 			}
 		}

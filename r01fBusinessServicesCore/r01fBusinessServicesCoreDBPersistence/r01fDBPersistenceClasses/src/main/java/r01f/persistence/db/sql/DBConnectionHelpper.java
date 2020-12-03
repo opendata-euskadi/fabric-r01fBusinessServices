@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  * Utilizando el metodo SQLHelpper.getConnectionProperties(appCode,connectionName)
  * se obtiene el objeto Properties a partir del XML anterior.
  *
- * Se ofrecen una serie de métodos estáticos para obtener conexiones
+ * Se ofrecen una serie de mtodos estticos para obtener conexiones
  */
 @Slf4j
 @NoArgsConstructor
@@ -48,7 +48,7 @@ public class DBConnectionHelpper {
 //  METODOS
 /////////////////////////////////////////////////////////////////////////////////////////
     /**
-     * Devuelve una conexión con la base de datos
+     * Devuelve una conexin con la base de datos
      * Hay que pasar como parametro un objeto Properties con la definicion de
      * la conexion.
      * Esta definicion normalmente se hace en un fichero .properties.xml
@@ -72,14 +72,14 @@ public class DBConnectionHelpper {
      * utilizando el uri, servidor, usuario y clave especificados
      *
      * @param props Propiedades para obtener la conexion
-     * @return Conexión con la base de datos
+     * @return Conexin con la base de datos
      * @throws SQLException si hay algun error
      */
     public static Connection getConnection(final Properties props) throws SQLException {
         log.trace("Obteniendo conexion");
         if (props == null) {
             log.warn(DBConnectionHelpper.composeNoConfigErrorMessage() );
-            throw new IllegalArgumentException( "Las propiedades para obtener la conexión no son validas (null)" );
+            throw new IllegalArgumentException( "Las propiedades para obtener la conexin no son validas (null)" );
         }
 
         // Obtener la clase y el uri para la conexion
@@ -118,8 +118,8 @@ public class DBConnectionHelpper {
         }
     }
     /**
-     * Libera una conexión a base de datos
-     * @param conx la conexión que hay que cerrar
+     * Libera una conexin a base de datos
+     * @param conx la conexin que hay que cerrar
      * @throws SQLException si hay algun error al cerrar
      */
     public static void closeConnection(final Connection conx) throws SQLException {
@@ -138,12 +138,12 @@ public class DBConnectionHelpper {
      */
     public static String composeNoConfigErrorMessage() {
         StringBuffer sb = new StringBuffer();
-        sb.append("ERROR EN LA DEFINICIÓN DE LA CONEXION A BASE DE DATOS\r\n");
+        sb.append("ERROR EN LA DEFINICIN DE LA CONEXION A BASE DE DATOS\r\n");
         sb.append("-------------------------------------------------------------\r\n");
         sb.append("Este error puede estar provocado porque no se ha definido\r\n");
         sb.append("la conexion en el fichero .properties.xml o bien porque la\r\n");
-        sb.append("definición no es correcta\r\n");
-        sb.append("Una conexión en este fichero tiene las formas:\r\n");
+        sb.append("definicin no es correcta\r\n");
+        sb.append("Una conexin en este fichero tiene las formas:\r\n");
         sb.append("<connection name='prueba'>\r\n");
         sb.append(      "\t<class>weblogic.jdbc20.oci.Driver</class>\r\n");
         sb.append(      "\t<uri>jdbc20:weblogic:oracle</uri>\r\n");
@@ -155,7 +155,7 @@ public class DBConnectionHelpper {
         sb.append(      "\t<class>Datasource</class>\r\n");
         sb.append(      "\t<uri>poolPrueba</uri>\r\n");
         sb.append("</connection>\r\n");
-        sb.append("Solo hay que identificar la conexión con un nombre y pedirla\r\n");
+        sb.append("Solo hay que identificar la conexin con un nombre y pedirla\r\n");
         sb.append("con este mismo nombre en los programas java\r\n");
         return sb.toString();
     }
@@ -163,10 +163,10 @@ public class DBConnectionHelpper {
 //  METODOS PRIVADOS
 /////////////////////////////////////////////////////////////////////////////////////////
     /**
-     * Devuelve una conexión con la base de datos a partir del pool que se pasa
+     * Devuelve una conexin con la base de datos a partir del pool que se pasa
      * @param props Propiedades para obtener la conexion
      * @param isTX Indica si el datasource es TX o no
-     * @return Conexión con la base de datos
+     * @return Conexin con la base de datos
      * @throws SQLException si hay algun error al obtener el dataSource
      */
     private static Connection _obtainDataSourceConnection(final String dataSourceName,final boolean isTX) throws SQLException {
@@ -186,13 +186,13 @@ public class DBConnectionHelpper {
         }
     }
     /**
-     * Devuelve una conexión con la base de datos a partir del pool que se pasa
+     * Devuelve una conexin con la base de datos a partir del pool que se pasa
      * @param driverClass La clase java del driver jdbc
      * @param uri El uri para obtener la conexion
      * @param user El usuario de base de datos
      * @param password El password de la base de datos
      * @param server El servidor de BD
-     * @return Conexión con la base de datos
+     * @return Conexin con la base de datos
      * @throws SQLException si hay algun error
      */
     private static Connection _obtainJDBCConnection(final String driverClass,final String uri,
@@ -205,9 +205,9 @@ public class DBConnectionHelpper {
             if (password != null)   props.setProperty("password",password);
             if (server != null)     props.setProperty("server",server);
             // Inicializar el driver
-            Class.forName(driverClass).newInstance();	// newInstance() asegura que el inicializador estático
+            Class.forName(driverClass).newInstance();	// newInstance() asegura que el inicializador esttico
             											// del driver que lo registra en el sistema se llama
-            											// en todas las máquinas virtuales.
+            											// en todas las mquinas virtuales.
             //Connection conx = DriverManager.getConnection(uri,props);
             Connection conx = DriverManager.getConnection(uri,user,password);
             if (conx == null) throw new SQLException( "No se ha podido obtener una conexion utilizando el driver " + driverClass + " a la uri " + uri );

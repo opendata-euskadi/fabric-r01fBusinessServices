@@ -11,12 +11,13 @@ import com.google.common.eventbus.EventBus;
 
 import lombok.experimental.Accessors;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanExposed;
-import r01f.guids.CommonOIDs.UserCode;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.FindOIDsResult;
 import r01f.objectstreamer.Marshaller;
 import r01f.securitycontext.SecurityContext;
+import r01f.securitycontext.SecurityIDS.LoginID;
+import r01f.securitycontext.SecurityOIDs.UserOID;
 import r01f.services.interfaces.FindServicesForModelObject;
 import r01f.types.Range;
 
@@ -103,18 +104,34 @@ public abstract class CoreFindServicesForModelObjectBase<O extends PersistableOb
 	}
 	@Override @SuppressWarnings("unchecked")
 	public FindOIDsResult<O> findByCreator(final SecurityContext securityContext,
-										   final UserCode creatorUserCode) {
+										   final LoginID creatorUserCode) {
 		return this.forSecurityContext(securityContext)
 						.createDelegateAs(FindServicesForModelObject.class)
 							.findByCreator(securityContext,
 										   creatorUserCode);
 	}
 	@Override @SuppressWarnings("unchecked")
+	public FindOIDsResult<O> findByCreator(final SecurityContext securityContext,
+										   final UserOID creatorUserOid) {
+		return this.forSecurityContext(securityContext)
+						.createDelegateAs(FindServicesForModelObject.class)
+							.findByCreator(securityContext,
+										   creatorUserOid);
+	}
+	@Override @SuppressWarnings("unchecked")
 	public FindOIDsResult<O> findByLastUpdator(final SecurityContext securityContext,
-											   final UserCode lastUpdtorUserCode) {
+											   final LoginID lastUpdtorUserCode) {
 		return this.forSecurityContext(securityContext)
 						.createDelegateAs(FindServicesForModelObject.class)
 							.findByLastUpdator(securityContext,
 											   lastUpdtorUserCode);
+	}
+	@Override @SuppressWarnings("unchecked")
+	public FindOIDsResult<O> findByLastUpdator(final SecurityContext securityContext,
+											   final UserOID lastUpdtorUserOid) {
+		return this.forSecurityContext(securityContext)
+						.createDelegateAs(FindServicesForModelObject.class)
+							.findByLastUpdator(securityContext,
+											   lastUpdtorUserOid);
 	}
 }

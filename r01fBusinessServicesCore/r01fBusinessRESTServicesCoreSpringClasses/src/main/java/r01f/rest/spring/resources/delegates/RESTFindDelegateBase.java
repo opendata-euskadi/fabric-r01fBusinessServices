@@ -7,12 +7,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import lombok.experimental.Accessors;
-import r01f.guids.CommonOIDs.UserCode;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.facets.Versionable;
 import r01f.model.persistence.FindOIDsResult;
 import r01f.securitycontext.SecurityContext;
+import r01f.securitycontext.SecurityIDS.LoginID;
 import r01f.services.interfaces.FindServicesForModelObject;
 import r01f.types.Range;
 
@@ -109,7 +109,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
 	public ResponseEntity<FindOIDsResult<O>> findByCreator(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType,
-														   final UserCode creatorUserCode) {
+														   final LoginID creatorUserCode) {
 		FindOIDsResult<O> findResult = _findServices.findByCreator(securityContext,
 																   creatorUserCode);
 		ResponseEntity<FindOIDsResult<O>> outResponse = RESTOperationsSpringResponseEntityBuilder.findOn(_modelObjectType)
@@ -128,7 +128,7 @@ public abstract class RESTFindDelegateBase<O extends PersistableObjectOID,M exte
 	 * @return a {@link PersistenceOperationOK} that encapsulates the oids
 	 */
 	public ResponseEntity<FindOIDsResult<O>>  findByLastUpdator(final SecurityContext securityContext,final String resourcePath,final MediaType mediaType,
-																final UserCode lastUpdtorUserCode) {
+																final LoginID lastUpdtorUserCode) {
 		FindOIDsResult<O> findResult = _findServices.findByLastUpdator(securityContext,
 																	   lastUpdtorUserCode);
 
