@@ -7,7 +7,6 @@ import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfigWhenBeanEx
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.CountResult;
-import r01f.persistence.db.DBCountForModelObject;
 import r01f.securitycontext.SecurityContext;
 import r01f.services.interfaces.CountServicesForModelObject;
 
@@ -22,7 +21,7 @@ public abstract class CountServicesForModelObjectDelegateBase<O extends Persista
 /////////////////////////////////////////////////////////////////////////////////////////
 	public CountServicesForModelObjectDelegateBase(final ServicesCoreBootstrapConfigWhenBeanExposed coreCfg,
 												   final Class<M> modelObjectType,
-											 	   final DBCountForModelObject<O,M> dbCrud,
+											 	   final CountServicesForModelObject<O,M> dbCrud,
 											 	   final EventBus eventBus) {
 		super(coreCfg,
 			  modelObjectType,
@@ -31,7 +30,7 @@ public abstract class CountServicesForModelObjectDelegateBase<O extends Persista
 	}
 	public CountServicesForModelObjectDelegateBase(final ServicesCoreBootstrapConfigWhenBeanExposed coreCfg,
 												   final Class<M> modelObjectType,
-											 	   final DBCountForModelObject<O,M> dbCrud) {
+											 	   final CountServicesForModelObject<O,M> dbCrud) {
 		this(coreCfg,
 			 modelObjectType,
 		     dbCrud,
