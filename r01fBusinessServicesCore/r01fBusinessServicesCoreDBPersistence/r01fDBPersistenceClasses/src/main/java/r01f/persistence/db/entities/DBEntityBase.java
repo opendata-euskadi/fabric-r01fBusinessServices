@@ -192,8 +192,8 @@ public abstract class DBEntityBase
 	}
 	public void setCreatorFrom(final SecurityContext securityContext) {
 		this.setCreatorUserCode(securityContext.getLoginId());
-		if (securityContext.hasUserOid()) this.setCreatorUserOid(securityContext.asForHasUserOid()
-																			    .getUserOid());
+		if (securityContext.isForUser()) this.setCreatorUserOid(securityContext.asForUser()
+																			   .getUserOid());
 	}
 	@Override
 	public LoginID getLastUpdatorUserCode() {
@@ -213,8 +213,8 @@ public abstract class DBEntityBase
 	}
 	public void setLastUpdatorFrom(final SecurityContext securityContext) {
 		this.setLastUpdatorUserCode(securityContext.getLoginId());
-		if (securityContext.hasUserOid()) this.setLastUpdatorUserOid(securityContext.asForHasUserOid()
-																				    .getUserOid());
+		if (securityContext.isForUser()) this.setLastUpdatorUserOid(securityContext.asForUser()
+																				   .getUserOid());
 	}
 	@Override
 	public ModelObjectTracking getTrackingInfo() {
