@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 import javax.inject.Qualifier;
 
 import r01f.securitycontext.SecurityContext;
-import r01f.securitycontext.SecurityContextProviderForSystemUserBase;
 
 
 
