@@ -193,7 +193,7 @@ public abstract class DBEntityBase
 	public void setCreatorFrom(final SecurityContext securityContext) {
 		this.setCreatorUserCode(securityContext.getLoginId());
 		if (securityContext.isForUser()) this.setCreatorUserOid(securityContext.asForUser()
-																			    .getUserOid());
+																			   .getUserOid());
 	}
 	@Override
 	public LoginID getLastUpdatorUserCode() {

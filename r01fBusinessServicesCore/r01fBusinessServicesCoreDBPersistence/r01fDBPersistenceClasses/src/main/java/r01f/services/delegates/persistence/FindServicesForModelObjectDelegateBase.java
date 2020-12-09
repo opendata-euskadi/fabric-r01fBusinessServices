@@ -10,7 +10,6 @@ import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.FindOIDsResult;
 import r01f.model.persistence.FindOIDsResultBuilder;
-import r01f.persistence.db.DBFindForModelObject;
 import r01f.securitycontext.SecurityContext;
 import r01f.securitycontext.SecurityIDS.LoginID;
 import r01f.securitycontext.SecurityOIDs.UserOID;
@@ -28,7 +27,7 @@ public abstract class FindServicesForModelObjectDelegateBase<O extends Persistab
 /////////////////////////////////////////////////////////////////////////////////////////
 	public FindServicesForModelObjectDelegateBase(final ServicesCoreBootstrapConfigWhenBeanExposed coreCfg,
 												  final Class<M> modelObjectType,
-												  final DBFindForModelObject<O,M> findServices) {
+												  final FindServicesForModelObject<O,M> findServices) {
 		this(coreCfg,
 			 modelObjectType,
 			 findServices,
@@ -36,7 +35,7 @@ public abstract class FindServicesForModelObjectDelegateBase<O extends Persistab
 	}
 	public FindServicesForModelObjectDelegateBase(final ServicesCoreBootstrapConfigWhenBeanExposed coreCfg,
 												  final Class<M> modelObjectType,
-												  final DBFindForModelObject<O,M> findServices,
+												  final FindServicesForModelObject<O,M> findServices,
 												  final EventBus eventBus) {
 		super(coreCfg,
 			  modelObjectType,
