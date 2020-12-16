@@ -12,7 +12,6 @@ import r01f.bootstrap.services.config.client.ServicesClientGuiceBootstrapConfig;
 import r01f.inject.HasMoreBindings;
 import r01f.model.metadata.HasTypesMetaData;
 import r01f.model.metadata.TypeMetaDataInspector;
-import r01f.services.annotations.ClientAPIForSystemUser;
 
 /**
  * This GUICE module is where the client-api bindings takes place
@@ -81,11 +80,6 @@ public abstract class ServicesClientAPIBootstrapGuiceModuleBase
 		if (_clientBootstrapCfg.getClientApiType() != null) {
 			// for the "normal" security context
 			binder.bind(_clientBootstrapCfg.getClientApiType())
-				  .in(Singleton.class);
-			
-			// for the "system" security context
-			binder.bind(_clientBootstrapCfg.getClientApiType())
-				  .annotatedWith(ClientAPIForSystemUser.class)
 				  .in(Singleton.class);
 		}
 	}
