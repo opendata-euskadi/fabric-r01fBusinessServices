@@ -36,7 +36,7 @@ import r01f.util.types.collections.Lists;
 @Slf4j
 @Configuration
 public abstract class SpringRootConfigBootstrapGuiceBase
-              extends  SpringRootConfigBootstrapBase  {
+			  extends  SpringRootConfigBootstrapBase  {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -52,31 +52,33 @@ public abstract class SpringRootConfigBootstrapGuiceBase
 			 (Collection<Module>)null);		// no commong guice modules
 	}
 	protected SpringRootConfigBootstrapGuiceBase(final ServicesBootstrapConfig bootstrapCfg,
-										         final Module... commonModules) {
+												 final Module... commonModules) {
 		this(Lists.newArrayList(bootstrapCfg),
 			 CollectionUtils.hasData(commonModules) ? Lists.<Module>newArrayList(commonModules) : Lists.<Module>newArrayList());
 	}
 	protected SpringRootConfigBootstrapGuiceBase(final Collection<ServicesBootstrapConfig> bootstrapCfgs,
-										         final ServicesCoreModuleEventsConfig buildCommonModuleEventsConfig,
-										         final Module... commonModules) {
+												 final ServicesCoreModuleEventsConfig buildCommonModuleEventsConfig,
+												 final Module... commonModules) {
 		this(bootstrapCfgs,buildCommonModuleEventsConfig,
 			 CollectionUtils.hasData(commonModules) ? Lists.<Module>newArrayList(commonModules) : Lists.<Module>newArrayList());
 	}
 
 	protected SpringRootConfigBootstrapGuiceBase(final Collection<ServicesBootstrapConfig> bootstrapCfgs,
-										         final Module... commonModules) {
+												 final Module... commonModules) {
 		this(bootstrapCfgs,
 			 CollectionUtils.hasData(commonModules) ? Lists.<Module>newArrayList(commonModules) : Lists.<Module>newArrayList());
 	}
 
 	protected SpringRootConfigBootstrapGuiceBase(final Collection<ServicesBootstrapConfig> bootstrapCfg,
-										         final Collection<Module> commonGuiceModules) {
-		this(bootstrapCfg,null,commonGuiceModules);
+												 final Collection<Module> commonGuiceModules) {
+		this(bootstrapCfg,
+			 null,		// no events
+			 commonGuiceModules);
 	}
 
 	protected SpringRootConfigBootstrapGuiceBase(final Collection<ServicesBootstrapConfig> bootstrapCfg,
-											     final ServicesCoreModuleEventsConfig commonEventsConfig,
-										         final Collection<Module> commonGuiceModules) {
+												 final ServicesCoreModuleEventsConfig commonEventsConfig,
+												 final Collection<Module> commonGuiceModules) {
 		if (CollectionUtils.isNullOrEmpty(bootstrapCfg)) {
 			throw new IllegalArgumentException();
 		}
@@ -88,15 +90,15 @@ public abstract class SpringRootConfigBootstrapGuiceBase
 // LIFECYCLE MANAGEMENT INTERFACE
 ///////////////////////////////////////////////////////////////////////////////////
 	 public static interface ServiceBootstrapSpringHandler {
-    	public void startServices();
-    	public void stopServices();
-    	public Injector getInjector();
-    }
+		public void startServices();
+		public void stopServices();
+		public Injector getInjector();
+	}
 
-    @Bean (initMethod="startServices" , destroyMethod = "stopServices")
+	@Bean (initMethod="startServices" , destroyMethod = "stopServices")
 	public ServiceBootstrapSpringHandler bootstrapSpring() {
-       return new ServiceBootstrapSpringHandler() {
-	    	   			Injector  GUICE_INJECTOR =  createInjector();
+	   return new ServiceBootstrapSpringHandler() {
+			   			Injector  GUICE_INJECTOR =  createInjector();
 	
 						@Override
 						public void startServices() {
@@ -112,70 +114,70 @@ public abstract class SpringRootConfigBootstrapGuiceBase
 							return GUICE_INJECTOR;
 						}
 			 };
-    }
+	}
 //////////////////////////////////////////////////////////////////////////////////
 // EXPOSED SERVICES
 //////////////////////////////////////////////////////////////////////////////////
   
-    @Inject  //  Inject ServiceBootstrapSpringHandler
-    @Bean    //  Expose
-    public  GuiceExposedServicesToBeanProcessor exposeGuiceServicesToBeans(final ServiceBootstrapSpringHandler servicesBootstrap) {
-      return new GuiceExposedServicesToBeanProcessor(servicesBootstrap);
-    }
-    
-    @Inject                         //Inject ServiceBootstrapSpringHandler
-    @Bean @ModelObjectsMarshaller  // Expose as @ModelObjectsMarshaller
-    public Marshaller marshaller(final ServiceBootstrapSpringHandler servicesBootstrap) {
-    	return servicesBootstrap.getInjector()
-    								.getInstance(Key.get(Marshaller.class,ModelObjectsMarshaller.class));
-    }
+	@Inject  //  Inject ServiceBootstrapSpringHandler
+	@Bean	//  Expose
+	public  GuiceExposedServicesToBeanProcessor exposeGuiceServicesToBeans(final ServiceBootstrapSpringHandler servicesBootstrap) {
+	  return new GuiceExposedServicesToBeanProcessor(servicesBootstrap);
+	}
+	
+	@Inject						 //Inject ServiceBootstrapSpringHandler
+	@Bean @ModelObjectsMarshaller  // Expose as @ModelObjectsMarshaller
+	public Marshaller marshaller(final ServiceBootstrapSpringHandler servicesBootstrap) {
+		return servicesBootstrap.getInjector()
+									.getInstance(Key.get(Marshaller.class,ModelObjectsMarshaller.class));
+	}
  ////////////////////////////////////////////////////////////////////////////////////
 //  INJECTOR CREATION
 ///////////////////////////////////////////////////////////////////////////////////
 	protected Injector createInjector() {
-	    Injector GUICE_INJECTOR = Guice.createInjector(ServicesBootstrapUtil.getBootstrapGuiceModules(_servicesBootstrapConfig)
-											 					                          .withCommonEventsExecutor(_commonEventsConfig)
-																						  .withCommonBindingModules(_commonGuiceModules));
+		Injector GUICE_INJECTOR = Guice.createInjector(ServicesBootstrapUtil.getBootstrapGuiceModules(_servicesBootstrapConfig)
+								 											.withCommonEventsExecutor(_commonEventsConfig)
+																			.withCommonBindingModules(_commonGuiceModules));
 
 		return GUICE_INJECTOR;
 	}
-	
 	public class GuiceExposedServicesToBeanProcessor
    	  implements BeanDefinitionRegistryPostProcessor {
 
-	    final ServiceBootstrapSpringHandler _servicesBootstrap;
+		final ServiceBootstrapSpringHandler _servicesBootstrap;
 
-      	public GuiceExposedServicesToBeanProcessor(final ServiceBootstrapSpringHandler servicesBootstrap) {
-	    	  _servicesBootstrap = servicesBootstrap;
-      	}
+	  	public GuiceExposedServicesToBeanProcessor(final ServiceBootstrapSpringHandler servicesBootstrap) {
+			  _servicesBootstrap = servicesBootstrap;
+	  	}
 		@Override
 		public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) throws BeansException {
-	       List<Class<?>>  exposedClass = _getExposedServicesAsClass();
-	       for (final Class<?> serviceClass : exposedClass  ) {
-	    	   BeanDefinitionBuilder  beanDefBuilder =  BeanDefinitionBuilder.genericBeanDefinition(serviceClass).setLazyInit(true);
-	    	   registry.registerBeanDefinition( serviceClass.getName(),beanDefBuilder.getBeanDefinition());
-	       }
-	    }
+		   List<Class<?>>  exposedClass = _getExposedServicesAsClass();
+		   for (final Class<?> serviceClass : exposedClass  ) {
+			   BeanDefinitionBuilder  beanDefBuilder =  BeanDefinitionBuilder.genericBeanDefinition(serviceClass).setLazyInit(true);
+			   registry.registerBeanDefinition( serviceClass.getName(),beanDefBuilder.getBeanDefinition());
+		   }
+		}
 		@Override
 		public void postProcessBeanFactory(final ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		    List<Class<?>>  exposedClass = _getExposedServicesAsClass();
-	        for (final Class<?> serviceClass : exposedClass  ) {
-	    	    log.warn(" >> Registred bean {}  ", serviceClass.getName());
-	    	   	beanFactory.registerSingleton(serviceClass.getName(), _servicesBootstrap.getInjector()
-	    	   			                                                                 .getInstance(serviceClass));
-	       }
+			List<Class<?>>  exposedClass = _getExposedServicesAsClass();
+			for (final Class<?> serviceClass : exposedClass  ) {
+				log.warn(">> Registred bean: {} ",
+						 serviceClass.getName());
+			   	beanFactory.registerSingleton(serviceClass.getName(), _servicesBootstrap.getInjector()
+			   																			 .getInstance(serviceClass));
+		   }
 		}
 		private List<Class<?>> _getExposedServicesAsClass() {
 			List<Class<?>> servicesInterfaces = Lists.newArrayList();
 			for (Binding<?> b : _servicesBootstrap.getInjector().getBindings().values()) {
-    			 boolean isAsignable =
-    					 ServiceInterface.class.isAssignableFrom(b.getKey().getTypeLiteral().getRawType()) ;
-    			 if (isAsignable) {
-    				 if (b.getKey().getTypeLiteral().getRawType().isAnnotationPresent(ExposedServiceInterface.class) ) {
+				 boolean isAsignable =
+						 ServiceInterface.class.isAssignableFrom(b.getKey().getTypeLiteral().getRawType()) ;
+				 if (isAsignable) {
+					 if (b.getKey().getTypeLiteral().getRawType().isAnnotationPresent(ExposedServiceInterface.class) ) {
 						servicesInterfaces.add(ReflectionUtils.typeFromClassName( b.getKey().getTypeLiteral().getRawType().getCanonicalName()));
-    				 }
-    			 }
-    		}
+					 }
+				 }
+			}
 			return servicesInterfaces;
 		}
    }

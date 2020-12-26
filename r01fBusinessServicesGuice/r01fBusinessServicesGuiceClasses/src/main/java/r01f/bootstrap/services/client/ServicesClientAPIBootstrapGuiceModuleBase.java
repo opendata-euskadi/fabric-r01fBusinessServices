@@ -78,6 +78,7 @@ public abstract class ServicesClientAPIBootstrapGuiceModuleBase
 		// [3] - Bind the client API aggregator types as singletons
 		//		 The ClientAPI is injected with a service proxy aggregator defined at [2]
 		if (_clientBootstrapCfg.getClientApiType() != null) {
+			// for the "normal" security context
 			binder.bind(_clientBootstrapCfg.getClientApiType())
 				  .in(Singleton.class);
 		}

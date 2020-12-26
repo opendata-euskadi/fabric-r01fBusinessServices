@@ -8,7 +8,7 @@ public abstract class SpringConfigGuiceDistpatcherInitializerBase<R extends Spri
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 	CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public SpringConfigGuiceDistpatcherInitializerBase( final Class<R> classType, final  Class<MVC> mvvcComponent) {
+	public SpringConfigGuiceDistpatcherInitializerBase(final Class<R> classType,final  Class<MVC> mvvcComponent) {
 		super(classType,mvvcComponent);
 	}
 }

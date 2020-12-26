@@ -14,8 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import r01f.bootstrap.services.ServicesBootstrapUtil;
 import r01f.bootstrap.services.config.ServicesBootstrapConfig;
 import r01f.bootstrap.services.config.core.ServicesCoreModuleEventsConfig;
+import r01f.patterns.FactoryFrom;
 import r01f.util.types.collections.CollectionUtils;
 import r01f.util.types.collections.Lists;
+import r01f.xmlproperties.XMLPropertiesForApp;
 
 /**
  * Extends {@link GuiceServletContextListener} (that in turn extends {@link ServletContextListener})
@@ -83,7 +85,23 @@ public abstract class ServletContextListenerBase
 		_commonGuiceModules = commonGuiceModules;
 		_commonEventsConfig = commonEventsConfig;
 	}
-
+	protected ServletContextListenerBase(final XMLPropertiesForApp xmlProps,
+										 final FactoryFrom<XMLPropertiesForApp,Collection<ServicesBootstrapConfig>> bootstrapCfgFactory,
+										 final FactoryFrom<XMLPropertiesForApp,Collection<Module>> commonGuiceModulesFactory) {
+		this(xmlProps,
+			 bootstrapCfgFactory,
+			 null,
+			 commonGuiceModulesFactory);
+	}
+	protected ServletContextListenerBase(final XMLPropertiesForApp xmlProps,
+										 final FactoryFrom<XMLPropertiesForApp,Collection<ServicesBootstrapConfig>> bootstrapCfgFactory,
+										 final FactoryFrom<XMLPropertiesForApp,ServicesCoreModuleEventsConfig> commonEventsConfigFactory,
+										 final FactoryFrom<XMLPropertiesForApp,Collection<Module>> commonGuiceModulesFactory) {
+		this(bootstrapCfgFactory != null ? bootstrapCfgFactory.from(xmlProps) : null,
+			 commonEventsConfigFactory != null ? commonEventsConfigFactory.from(xmlProps) : null,
+			 commonGuiceModulesFactory != null ? commonGuiceModulesFactory.from(xmlProps) : null);
+	}
+	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  Overridden methods of GuiceServletContextListener
 /////////////////////////////////////////////////////////////////////////////////////////

@@ -10,7 +10,7 @@ import javax.inject.Qualifier;
 
 
 /**
- * see {@link r01f.securitycontext.SecurityContextProviderForSystemUserBase}
+ * see {@link r01f.model.security.context.SecurityContextProviderForSystemUserBase}
  */
 @Qualifier //@BindingAnnotation						
 @Retention(RetentionPolicy.RUNTIME)
