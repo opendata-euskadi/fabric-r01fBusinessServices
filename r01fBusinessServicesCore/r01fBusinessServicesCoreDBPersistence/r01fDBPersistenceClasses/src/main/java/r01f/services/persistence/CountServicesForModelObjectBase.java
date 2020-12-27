@@ -16,9 +16,6 @@ import r01f.securitycontext.SecurityContext;
 import r01f.services.interfaces.CountServicesForModelObject;
 
 
-/**
- * Implements the {@link R01MStructure} persistence-related services which in turn are delegated to {@link R01YCRUDServicesDelegateForStructure}
- */
 @Singleton
 @Accessors(prefix="_")
 public abstract class CountServicesForModelObjectBase<O extends PersistableObjectOID,M extends PersistableModelObject<O>> 
