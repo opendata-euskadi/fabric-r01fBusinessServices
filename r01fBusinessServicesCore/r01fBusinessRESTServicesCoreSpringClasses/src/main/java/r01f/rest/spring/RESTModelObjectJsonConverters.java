@@ -14,8 +14,8 @@ import org.springframework.http.converter.GenericHttpMessageConverter;
 
 import lombok.experimental.Accessors;
 import r01f.model.ModelObject;
-import r01f.model.persistence.PersistenceOperationResult;
 import r01f.model.search.SearchModelObject;
+import r01f.model.services.COREServiceMethodExecResult;
 import r01f.objectstreamer.Marshaller;
 import r01f.persistence.index.IndexManagementCommand;
 import r01f.types.jobs.EnqueuedJob;
@@ -139,10 +139,10 @@ public class RESTModelObjectJsonConverters {
 	/**
 	 * GenericHttpMessageConverter for all {@link PersistenceOperationOK}
 	 */
-	public static class PersistenceOperationConverter
-		                 extends ObjectMessageJsonConverter<PersistenceOperationResult<?>> {
-		public PersistenceOperationConverter(final Marshaller modelObjectsMarshaller) {
-			super(PersistenceOperationResult.class,
+	public static class COREServiceMethodExecResultConverter
+		                 extends ObjectMessageJsonConverter<COREServiceMethodExecResult<?>> {
+		public COREServiceMethodExecResultConverter(final Marshaller modelObjectsMarshaller) {
+			super(COREServiceMethodExecResult.class,
 				  modelObjectsMarshaller);
 		}
 	}

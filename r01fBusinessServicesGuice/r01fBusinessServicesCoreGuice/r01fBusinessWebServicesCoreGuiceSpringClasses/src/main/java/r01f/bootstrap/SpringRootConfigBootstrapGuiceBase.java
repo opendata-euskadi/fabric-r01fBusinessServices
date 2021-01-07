@@ -43,7 +43,6 @@ public abstract class SpringRootConfigBootstrapGuiceBase
 	private final Collection<ServicesBootstrapConfig> _servicesBootstrapConfig;
 	private final Collection<Module> _commonGuiceModules;
 	private final ServicesCoreModuleEventsConfig _commonEventsConfig;
-
 /////////////////////////////////////////////////////////////////////////////////////////
 // 	CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -99,12 +98,12 @@ public abstract class SpringRootConfigBootstrapGuiceBase
 	public ServiceBootstrapSpringHandler bootstrapSpring() {
 	   return new ServiceBootstrapSpringHandler() {
 			   			Injector  GUICE_INJECTOR =  createInjector();
-	
+
 						@Override
 						public void startServices() {
 							ServicesBootstrapUtil.startServices(GUICE_INJECTOR);
 						}
-	
+
 						@Override
 						public void stopServices() {
 							ServicesBootstrapUtil.stopServices(GUICE_INJECTOR);
@@ -118,14 +117,14 @@ public abstract class SpringRootConfigBootstrapGuiceBase
 //////////////////////////////////////////////////////////////////////////////////
 // EXPOSED SERVICES
 //////////////////////////////////////////////////////////////////////////////////
-  
+
 	@Inject  //  Inject ServiceBootstrapSpringHandler
 	@Bean	//  Expose
 	public  GuiceExposedServicesToBeanProcessor exposeGuiceServicesToBeans(final ServiceBootstrapSpringHandler servicesBootstrap) {
 	  return new GuiceExposedServicesToBeanProcessor(servicesBootstrap);
 	}
-	
-	@Inject						 //Inject ServiceBootstrapSpringHandler
+
+	@Inject						   //Inject ServiceBootstrapSpringHandler
 	@Bean @ModelObjectsMarshaller  // Expose as @ModelObjectsMarshaller
 	public Marshaller marshaller(final ServiceBootstrapSpringHandler servicesBootstrap) {
 		return servicesBootstrap.getInjector()
