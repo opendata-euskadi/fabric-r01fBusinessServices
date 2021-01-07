@@ -59,7 +59,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 		_mimeType = mimeType;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 	public PersistenceCRUDResultIdOnErrorStep mapHttpResponseForEntity(final SecurityContext securityContext,
 															   	 	   final PersistenceRequestedOperation requestedOp,
@@ -74,7 +74,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 	   	private final PersistenceRequestedOperation requestedOp;
 	   	private final Url restResourceUrl;
 	   	private final HttpResponse httpResponse;
-	   	
+
 	   	public CRUDResult<M> identifiedOnErrorBy(final OID... oids) {
 	   		CRUDResult<M> outCRUDResult = null;
 	   		if (oids.length == 1) {
@@ -95,6 +95,8 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 	   	}
 		private CRUDResult<M> _identifiedOnErrorBy(final OID oid) {
 			CRUDResult<M> outOperationResult = null;
+
+			System.out.println(" http response code " + httpResponse.isSuccess());
 			if (httpResponse.isSuccess()) {
 				outOperationResult = _mapHttpResponseForSuccess(securityContext,
 																requestedOp,
@@ -142,32 +144,32 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 												   final PersistenceRequestedOperation requestedOp,
 												   final Url restResourceUrl,final HttpResponse httpResponse) {
 		CRUDOK<M> outOperationResult = null;
-		
-		// [0] - Load the response		
+
+		// [0] - Load the response
 		String responseStr = httpResponse.loadAsString();		// DO not move!!
 		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
 															   	   									   restResourceUrl));
-		/*	 Marshaller tries to marshall "M" just a PersistableObject Interface and NOT as the concrete class... so crashes... 
+		/*	 Marshaller tries to marshall "M" just a PersistableObject Interface and NOT as the concrete class... so crashes...
 			   outOperationResult = _marshaller.forReading().fromJson(responseStr,
 														  new TypeToken<CRUDOK<M>>() { /* nothing */
 		/*	... temporary use this dirty trick to get concrete class to marhaller , so the CRUD will JUST for modelTypes
 		 *  		 (TypeToken<CRUDOK<M>>) TypeToken.of( new ParameterizedTypeImpl(CRUDOK.class, modelTypes, null));
-		 */	 
+		 */
 		Type[] modelTypes = { _modelObjectType };
-		TypeToken<CRUDOK<M>> typeToken =  (TypeToken<CRUDOK<M>>)TypeToken.of(new ParameterizedTypeImpl(CRUDOK.class, 
-																									   modelTypes, 
+		TypeToken<CRUDOK<M>> typeToken =  (TypeToken<CRUDOK<M>>)TypeToken.of(new ParameterizedTypeImpl(CRUDOK.class,
+																									   modelTypes,
 																									   null));			// owner type
-		// [1] - Map the response 
+		// [1] - Map the response
 		if (_mimeType.is(MimeTypes.APPLICATION_XML)) {
 			outOperationResult = _marshaller.forReading().fromXml(responseStr,typeToken);
-		
+
 		} else if (_mimeType.is(MimeTypes.APPLICATION_JSON)) {
 			outOperationResult = _marshaller.forReading().fromJson(responseStr,typeToken);
-			
+
 		} else {
 			throw new IllegalArgumentException(Strings.customized("{} mimeType not suported",
 																  _mimeType)) ;
-		}		
+		}
 		// [2] - Return
 		return outOperationResult;
 	}
@@ -194,12 +196,12 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 		String responseStr = httpResponse.loadAsString();
 		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
 															   									   	   restResourceUrl));
-		
+
 		// [1] - Server error (the request could NOT be processed)
 		if (httpResponse.isServerError()) {
 			outOpError = CRUDResultBuilder.using(securityContext)
 										  .on(_modelObjectType)
-										  .not(requestedOp)	
+										  .not(requestedOp)
 										  .becauseServerError(responseStr)	// the rest endpoint response is the error as TEXT
 										 		.about(requestedOid).build();
 		}
@@ -209,7 +211,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 				// Not found
 				outOpError = CRUDResultBuilder.using(securityContext)
 											  .on(_modelObjectType)
-											  .not(requestedOp)													
+											  .not(requestedOp)
 											  .becauseClientRequestedEntityWasNOTFound()
 											 		 .about(requestedOid).build();
 			} else {
@@ -219,16 +221,16 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 				String errorMessageHeader = httpResponse.getSingleValuedHeaderAsString("x-r01-errorMessage");
 				//String requestedOperationHeader = httpResponse.getSingleValuedHeaderAsString("x-r01-requestedOperation");
 				String errorJavaTypeHeader = httpResponse.getSingleValuedHeaderAsString("x-r01-errorType");
-				
+
 				Class<? extends Throwable> errorJavaType = null;
 				if (Strings.isNOTNullOrEmpty(errorJavaTypeHeader)) errorJavaType = ReflectionUtils.typeFromClassName(errorJavaTypeHeader);
-				
+
 				if (errorJavaType != null && ReflectionUtils.isSubClassOf(errorJavaType,PersistenceException.class)) {
-					COREServiceErrorType persistErrorType = Strings.isNOTNullOrEmpty(errorCodeHeader) 
-																		? COREServiceErrorType.fromEncodedString(errorCodeHeader) 
+					COREServiceErrorType persistErrorType = Strings.isNOTNullOrEmpty(errorCodeHeader)
+																		? COREServiceErrorType.fromEncodedString(errorCodeHeader)
 																		: null;
 					int extErrorCode = Strings.isNOTNullOrEmpty(extErrorCodeHeader) ? Numbers.toInt(extErrorCodeHeader) : -1;
-					
+
 					if (persistErrorType != null) {
 						outOpError = CRUDResultBuilder.using(securityContext)
 													  .on(_modelObjectType)
@@ -252,7 +254,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 		else {
 			outOpError = CRUDResultBuilder.using(securityContext)
 										  .on(_modelObjectType)
-										  .not(requestedOp)	
+										  .not(requestedOp)
 										  .becauseServerError(responseStr)	// the rest endpoint response is the error as TEXT
 										 		.about(requestedOid).build();
 		}
@@ -269,12 +271,12 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 		String responseStr = httpResponse.loadAsString();
 		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
 															   									   	   restResourceUrl));
-				
+
 		// [1] - Server error (the request could NOT be processed)
 		if (httpResponse.isServerError()) {
 			outOpError = CRUDResultBuilder.using(securityContext)
 										  .on(_modelObjectType)
-										  .not(requestedOp)	
+										  .not(requestedOp)
 										  .becauseServerError(responseStr)	// the rest endpoint response is the error as TEXT
 										 		.about(requestedEntity).build();
 		}
@@ -284,7 +286,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 				// Not found
 				outOpError = CRUDResultBuilder.using(securityContext)
 											  .on(_modelObjectType)
-											  .not(requestedOp)													
+											  .not(requestedOp)
 											  .becauseClientCannotConnectToServer(restResourceUrl)
 											 		.about(requestedEntity.getOid()).build();
 			} else {
@@ -293,7 +295,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 				String errorMessage = httpResponse.getSingleValuedHeaderAsString("x-r01-errorMessage");
 				outOpError = CRUDResultBuilder.using(securityContext)
 											  .on(_modelObjectType)
-											  .not(requestedOp)	
+											  .not(requestedOp)
 											  .becauseClientBadRequest(errorMessage)
 											  		.about(requestedEntity).build();
 			}
@@ -302,7 +304,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 		else {
 			outOpError = CRUDResultBuilder.using(securityContext)
 										  .on(_modelObjectType)
-										  .not(requestedOp)	
+										  .not(requestedOp)
 										  .becauseServerError(responseStr)	// the rest endpoint response is the error as TEXT
 										 		.about(requestedEntity).build();
 		}
@@ -311,6 +313,6 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 	}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////	 
-	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 }
