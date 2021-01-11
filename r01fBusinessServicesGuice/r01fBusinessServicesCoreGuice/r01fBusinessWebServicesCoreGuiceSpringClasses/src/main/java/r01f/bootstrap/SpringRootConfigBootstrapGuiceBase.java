@@ -124,7 +124,7 @@ public abstract class SpringRootConfigBootstrapGuiceBase
 	  return new GuiceExposedServicesToBeanProcessor(servicesBootstrap);
 	}
 
-	@Inject						   //Inject ServiceBootstrapSpringHandler
+	@Inject						   // Inject ServiceBootstrapSpringHandler
 	@Bean @ModelObjectsMarshaller  // Expose as @ModelObjectsMarshaller
 	public Marshaller marshaller(final ServiceBootstrapSpringHandler servicesBootstrap) {
 		return servicesBootstrap.getInjector()
