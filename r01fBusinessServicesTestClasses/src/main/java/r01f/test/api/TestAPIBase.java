@@ -71,7 +71,7 @@ public abstract class TestAPIBase {
 		A api = GUICE_INJECTOR.getProvider(Key.get(apiType,
 				                          ClientAPIForSystemUser.class)).get();
 		if (api == null) {
-			throw  new IllegalArgumentException( Strings.customized( "There is NO instance binded as @ClientAPIForSystemUser for api {} "
+			throw new IllegalStateException( Strings.customized( "There is NO instance binded as @ClientAPIForSystemUser for api {} "
 																	+ " .Check at client api level (XXXClientBootstrapGuiceModule) "
 																	+ "   ..if exists a client api provider for System User ", apiType) );
 		}
