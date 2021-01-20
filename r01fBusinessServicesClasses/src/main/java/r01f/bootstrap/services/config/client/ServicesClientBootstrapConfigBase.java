@@ -43,7 +43,7 @@ abstract class ServicesClientBootstrapConfigBase
 	/**
 	 * How is this module exposed to the client API
 	 */
-	@Getter protected final Collection<ServicesClientConfigForCoreModule<?,?>> _coreModuleConfigs;
+	@Getter protected final Collection<ServicesClientConfigForCoreModule<?,?>> _clientModuleConfigs;
 	/**
 	 * any client sub-module config
 	 */
@@ -54,10 +54,10 @@ abstract class ServicesClientBootstrapConfigBase
 	@SuppressWarnings("unchecked")
 	public <E extends ServicesCoreModuleExposition,
 		    P extends ServicesClientProxyToCoreImpl> ServicesClientConfigForCoreModule<E,P> getConfigForCoreModule(final CoreAppCode coreAppCode,final CoreModule coreModule) {
-		if (CollectionUtils.isNullOrEmpty(_coreModuleConfigs)) {
+		if (CollectionUtils.isNullOrEmpty(_clientModuleConfigs)) {
 			throw new IllegalStateException("NO config for core modules found at client config");
 		}
-		ServicesClientConfigForCoreModule<?,?> outCfg = FluentIterable.from(_coreModuleConfigs)
+		ServicesClientConfigForCoreModule<?,?> outCfg = FluentIterable.from(_clientModuleConfigs)
 															.filter(new Predicate<ServicesClientConfigForCoreModule<?,?>>() {
 																			@Override
 																			public boolean apply(final ServicesClientConfigForCoreModule<?,?> cfg) {
@@ -93,6 +93,6 @@ abstract class ServicesClientBootstrapConfigBase
 								  _clientApiAppCode,
 								  _clientApiType,
 								  _serviceInterfacesBaseType,
-								  _coreModuleConfigs != null ? _coreModuleConfigs.size() : 0);
+								  _clientModuleConfigs != null ? _clientModuleConfigs.size() : 0);
 	}
 }

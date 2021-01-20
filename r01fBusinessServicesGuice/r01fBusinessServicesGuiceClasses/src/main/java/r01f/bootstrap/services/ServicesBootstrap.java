@@ -108,7 +108,7 @@ public class ServicesBootstrap {
 				//		 	  ... so if both the core impl and the proxy to the core impl are available,
 				//		          the core impl will be used
 				clientAndCoreBootstrap.add(_createClientApiAndServiceInterfaceBindingsModule(bootstrapCfg.getClientConfig().getClientApiType(),
-					                                                                         bootstrapCfg.getClientConfig().getCoreModuleConfigs(),
+					                                                                         bootstrapCfg.getClientConfig().getClientModuleConfigs(),
 																							 serviceInterfaceMatchings));
 
 				// [c] - bind event bus for core events

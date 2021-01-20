@@ -9,6 +9,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.Module;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import r01f.bootstrap.services.config.core.ServicesCoreModuleEventsConfig;
 import r01f.concurrent.Threads;
 import r01f.securitycontext.SecurityIDS.LoginID;
 import r01f.securitycontext.SecurityOIDs.UserOID;
+import r01f.services.annotations.ClientAPIForSystemUser;
 import r01f.services.client.ClientAPI;
 import r01f.types.TimeLapse;
 import r01f.util.types.Strings;
@@ -42,9 +44,8 @@ public abstract class TestAPIBase {
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected static Collection<ServicesBootstrapConfig> SERVICES_BOOTSTRAP_CONFIG;
 	protected static Injector GUICE_INJECTOR;
-	
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static Injector getGuiceInjector() {
 		return GUICE_INJECTOR;
@@ -52,19 +53,43 @@ public abstract class TestAPIBase {
 	public static <A extends ClientAPI> A getClientApi(final Class<A> apiType) {
 		return GUICE_INJECTOR.getInstance(apiType);
 	}
-/////////////////////////////////////////////////////////////////////////////////////////	
+	/**
+	 * Get a client api binded as @ClientAPIForSystemUser
+     * ..... so (IMPORTANT !) requires a ClientAPIForSystemUser Provider at client api bootstrap guice module , fe
+     * 	    @Provides					// provides a client api
+			@ClientAPIForSystemUser		// for SYSTEM system usage
+			@Singleton					// BEWARE!!!
+			@SuppressWarnings({ "rawtypes","static-method" })
+			private MT01GeoClientAPI _provideMasterClientAPI(@SecurityContextProviderForSystemUser final Provider<SecurityContext> securityContextProvider,
+													    	   			   @ModelObjectsMarshaller final Marshaller modelObjectsMarshaller,
+													    	  @Named(MT01AppCodes.API_APPCODE_STR) final Map<Class,ServiceInterface> srvcIfaceMappings
+	 * @param <A>
+	 * @param apiType
+	 * @return
+	 */
+	public static <A extends ClientAPI> A getClientApiForSystemUser(final Class<A> apiType) {
+		A api = GUICE_INJECTOR.getProvider(Key.get(apiType,
+				                          ClientAPIForSystemUser.class)).get();
+		if (api == null) {
+			throw new IllegalStateException( Strings.customized( "There is NO instance binded as @ClientAPIForSystemUser for api {} "
+																	+ " .Check at client api level (XXXClientBootstrapGuiceModule) "
+																	+ "   ..if exists a client api provider for System User ", apiType) );
+		}
+		return api;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
 //  RUN EXACTLY ONCE AT THE VERY BEGINNING OF THE TEST AS A WHOLE
 //  (in fact they're run even before the type is constructed -that's why they're static)
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected static void _setUpBeforeClass(final ServicesBootstrapConfig... srvcBootstrap) {
 		if (srvcBootstrap == null) throw new IllegalArgumentException();
-		_setUpBeforeClass(Lists.newArrayList(srvcBootstrap));		
+		_setUpBeforeClass(Lists.newArrayList(srvcBootstrap));
 	}
 	protected static void _setUpBeforeClass(final ServicesBootstrapConfig srvcBootstrap,
 											final Module... commonClientModules) {
 		if (srvcBootstrap == null) throw new IllegalArgumentException();
 		_setUpBeforeClass(Lists.newArrayList(srvcBootstrap),
-											 commonClientModules);		
+											 commonClientModules);
 	}
 	protected static void _setUpBeforeClass(final Collection<ServicesBootstrapConfig> servicesBootstrapConfig,
 											final Module... commonClientModules) {
@@ -76,11 +101,11 @@ public abstract class TestAPIBase {
 										    final ServicesCoreModuleEventsConfig coreEventsCfg,
 											final Module... commonClientModules) {
 		SERVICES_BOOTSTRAP_CONFIG = servicesBootstrapConfig;
-		
+
 		GUICE_INJECTOR = Guice.createInjector(ServicesBootstrapUtil.getBootstrapGuiceModules(SERVICES_BOOTSTRAP_CONFIG)
 																		.withCommonEventsExecutor(coreEventsCfg)
 																		.withCommonBindingModules(commonClientModules));
-		
+
 		// If stand-alone (no app-server is used), init the JPA service or any service that needs to be started
 		// like the search engine index
 		// 		If the core is available at client classpath, start it
@@ -94,37 +119,37 @@ public abstract class TestAPIBase {
 		ServicesBootstrapUtil.stopServices(GUICE_INJECTOR);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected void runTest(final int iterationNum) {
-		try {			
+		try {
 			Stopwatch stopWatch = Stopwatch.createStarted();
-			
+
 			for (int i=0; i < iterationNum; i++) {
 				Stopwatch itStopWatch = Stopwatch.createStarted();
 				System.out.println("\n\n\n\nSTART =========== Iteration " + i + " ===================\n\n\n\n");
-				
+
 				_doTest();		// Iteration test
-				
+
 				System.out.println("\n\n\n\nEND =========== Iteration " + i + " > " + itStopWatch.elapsed(TimeUnit.SECONDS) + "seconds ===================\n\n\n\n");
 			}
-			
+
 			System.out.println("\n\n\n\n******* ELAPSED TIME: " + NumberFormat.getNumberInstance(Locale.getDefault()).format(stopWatch.elapsed(TimeUnit.SECONDS)) + " seconds");
 			stopWatch.stop();
 		} catch (Throwable th) {
 			th.printStackTrace(System.out);
-			
-		} 
+
+		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 	@SuppressWarnings("static-method")
 	protected void _doTest() {
 		log.warn("MUST implement this!");
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected static void _giveTimeForBackgroundJobsToFinish(final long milis) {
 		_giveTimeForBackgroundJobsToFinish(milis,
@@ -150,5 +175,5 @@ public abstract class TestAPIBase {
 		_giveTimeForBackgroundJobsToFinish(lapse.asMilis(),
 										   msg,msgParams);
 	}
-	
+
 }
