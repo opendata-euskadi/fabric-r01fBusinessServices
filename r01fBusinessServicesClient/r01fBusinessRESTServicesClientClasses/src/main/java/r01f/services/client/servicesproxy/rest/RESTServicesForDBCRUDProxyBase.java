@@ -65,7 +65,7 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 		return _responseToCRUDResultMapper;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  CRUD
+//  EXISTS
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Override @SuppressWarnings({ "unchecked","serial" })
 	public PersistenceOperationResult<Boolean> exists(final SecurityContext securityContext,
@@ -99,6 +99,9 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 		// return
 		return outResult;
 	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	LAST UPDATE & TOUCH
+/////////////////////////////////////////////////////////////////////////////////////////	
 	@Override @SuppressWarnings({ "unchecked","serial" })
 	public PersistenceOperationResult<Date> getLastUpdateDate(final SecurityContext securityContext,
 															  final O oid) {
@@ -130,95 +133,6 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 		}
 		// return
 		return outResult;
-	}
-	@Override @SuppressWarnings("unchecked")
-	public CRUDResult<M> load(final SecurityContext securityContext,
-			   	  			  final O oid) {
-		// do the http call
-		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
-															.pathOfEntity(oid));
-		String ctxXml = _marshaller.forWriting()
-								   .toXml(securityContext);
-		HttpResponse httpResponse = DelegateForRawREST.GET(restResourceUrl,
-										 				   ctxXml);
-		// map the response
-		CRUDResult<M> outResponse = this.getResponseToCRUDResultMapperForModelObject()
-												.mapHttpResponseForEntity(securityContext,
-															 			  PersistenceRequestedOperation.LOAD,
-															  			  restResourceUrl,httpResponse)
-												.identifiedOnErrorBy(oid);
-		// check that the received entity is the expected one
-		if (outResponse.hasSucceeded()) _checkReceivedEntity(oid,outResponse.getOrThrow());
-
-		// log & return
-		_logResponse(restResourceUrl,outResponse);
-		return outResponse;
-	}
-	@Override
-	public CRUDResult<M> create(final SecurityContext securityContext,
-								final M entity) {
-		return this.create(securityContext,
-						   entity,
-						   null);	// no async callback
-	}
-	@Override
-	public CRUDResult<M> create(final SecurityContext securityContext,
-								final M entity,
-								final COREServiceMethodCallbackSpec callbackSpec) {
-		// do the http call
-		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
-															   			  .pathOfAllEntities());	//   .pathOfEntity(entity.getOid())); 	// _resourcePathForRecord(record,PersistenceRequestedOperation.CREATE);
-		String ctxXml = _marshaller.forWriting().toXml(securityContext);
-		String entityXml = _marshaller.forWriting().toXml(entity);
-		HttpResponse httpResponse = DelegateForRawREST.POST(restResourceUrl,
-										  					ctxXml,
-										  					entityXml);
-		// map the response
-
-		CRUDResult<M> outResponse = this.getResponseToCRUDResultMapperForModelObject()
-												.mapHttpResponseForEntity(securityContext,
-															              PersistenceRequestedOperation.CREATE,
-															  			  entity,
-															  			  restResourceUrl,httpResponse);
-		// check that the received entity is the expected one just if requested entity oid is not null .
-		// It could be possible on creating a new entity not to send an entity oid
-		if (outResponse.hasSucceeded() && entity.getOid() != null) _checkReceivedEntity(entity.getOid(),outResponse.getOrThrow());
-
-		// log & return
-		_logResponse(restResourceUrl,outResponse);
-		return outResponse;
-	}
-	@Override
-	public CRUDResult<M> update(final SecurityContext securityContext,
-								final M entity) {
-		return this.update(securityContext,
-						   entity,
-						   null);		// no async callback
-	}
-	@Override @SuppressWarnings("unchecked")
-	public CRUDResult<M> update(final SecurityContext securityContext,
-								final M entity,
-								final COREServiceMethodCallbackSpec callbackSpec) {
-		// do the http call
-		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
-													 		   			  .pathOfEntity(entity.getOid())); 	// _resourcePathForRecord(record,PersistenceRequestedOperation.UPDATE);
-		String ctxXml = _marshaller.forWriting().toXml(securityContext);
-		String entityXml = _marshaller.forWriting().toXml(entity);
-		HttpResponse httpResponse = DelegateForRawREST.PUT(restResourceUrl,
-										 				   ctxXml,
-										 				   entityXml);
-		// map the response
-		CRUDResult<M> outResponse = this.getResponseToCRUDResultMapperForModelObject()
-												.mapHttpResponseForEntity(securityContext,
-																 		  PersistenceRequestedOperation.UPDATE,
-															  			  entity,
-															  			  restResourceUrl,httpResponse);
-		// check that the received entity is the expected one
-		if (outResponse.hasSucceeded() ) _checkReceivedEntity(entity.getOid(),outResponse.getOrThrow());
-
-		// log & return
-		_logResponse(restResourceUrl,outResponse);
-		return outResponse;
 	}
 	@Override @SuppressWarnings({ "unchecked","serial" })
 	public PersistenceOperationResult<Boolean> touch(final SecurityContext securityContext,
@@ -253,6 +167,107 @@ public abstract class RESTServicesForDBCRUDProxyBase<O extends PersistableObject
 		// return
 		return outResult;
 	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	LOAD
+/////////////////////////////////////////////////////////////////////////////////////////	
+	@Override @SuppressWarnings("unchecked")
+	public CRUDResult<M> load(final SecurityContext securityContext,
+			   	  			  final O oid) {
+		// do the http call
+		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
+															.pathOfEntity(oid));
+		String ctxXml = _marshaller.forWriting()
+								   .toXml(securityContext);
+		HttpResponse httpResponse = DelegateForRawREST.GET(restResourceUrl,
+										 				   ctxXml);
+		// map the response
+		CRUDResult<M> outResponse = this.getResponseToCRUDResultMapperForModelObject()
+												.mapHttpResponseForEntity(securityContext,
+															 			  PersistenceRequestedOperation.LOAD,
+															  			  restResourceUrl,httpResponse)
+												.identifiedOnErrorBy(oid);
+		// check that the received entity is the expected one
+		if (outResponse.hasSucceeded()) _checkReceivedEntity(oid,outResponse.getOrThrow());
+
+		// log & return
+		_logResponse(restResourceUrl,outResponse);
+		return outResponse;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	CREATE
+/////////////////////////////////////////////////////////////////////////////////////////	
+	@Override
+	public CRUDResult<M> create(final SecurityContext securityContext,
+								final M entity) {
+		return this.create(securityContext,
+						   entity,
+						   null);	// no async callback
+	}
+	@Override
+	public CRUDResult<M> create(final SecurityContext securityContext,
+								final M entity,
+								final COREServiceMethodCallbackSpec callbackSpec) {
+		// do the http call
+		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
+															   			  .pathOfAllEntities());	//   .pathOfEntity(entity.getOid())); 	// _resourcePathForRecord(record,PersistenceRequestedOperation.CREATE);
+		String ctxXml = _marshaller.forWriting().toXml(securityContext);
+		String entityXml = _marshaller.forWriting().toXml(entity);
+		HttpResponse httpResponse = DelegateForRawREST.POST(restResourceUrl,
+										  					ctxXml,
+										  					entityXml);
+		// map the response
+
+		CRUDResult<M> outResponse = this.getResponseToCRUDResultMapperForModelObject()
+												.mapHttpResponseForEntity(securityContext,
+															              PersistenceRequestedOperation.CREATE,
+															  			  entity,
+															  			  restResourceUrl,httpResponse);
+		// check that the received entity is the expected one just if requested entity oid is not null .
+		// It could be possible on creating a new entity not to send an entity oid
+		if (outResponse.hasSucceeded() && entity.getOid() != null) _checkReceivedEntity(entity.getOid(),outResponse.getOrThrow());
+
+		// log & return
+		_logResponse(restResourceUrl,outResponse);
+		return outResponse;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	UPDATE
+/////////////////////////////////////////////////////////////////////////////////////////	
+	@Override
+	public CRUDResult<M> update(final SecurityContext securityContext,
+								final M entity) {
+		return this.update(securityContext,
+						   entity,
+						   null);		// no async callback
+	}
+	@Override @SuppressWarnings("unchecked")
+	public CRUDResult<M> update(final SecurityContext securityContext,
+								final M entity,
+								final COREServiceMethodCallbackSpec callbackSpec) {
+		// do the http call
+		Url restResourceUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForModelObjectPersistence.class)
+													 		   			  .pathOfEntity(entity.getOid())); 	// _resourcePathForRecord(record,PersistenceRequestedOperation.UPDATE);
+		String ctxXml = _marshaller.forWriting().toXml(securityContext);
+		String entityXml = _marshaller.forWriting().toXml(entity);
+		HttpResponse httpResponse = DelegateForRawREST.PUT(restResourceUrl,
+										 				   ctxXml,
+										 				   entityXml);
+		// map the response
+		CRUDResult<M> outResponse = this.getResponseToCRUDResultMapperForModelObject()
+												.mapHttpResponseForEntity(securityContext,
+																 		  PersistenceRequestedOperation.UPDATE,
+															  			  entity,
+															  			  restResourceUrl,httpResponse);
+		// check that the received entity is the expected one
+		if (outResponse.hasSucceeded() ) _checkReceivedEntity(entity.getOid(),outResponse.getOrThrow());
+
+		// log & return
+		_logResponse(restResourceUrl,outResponse);
+		return outResponse;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	DELETE
+/////////////////////////////////////////////////////////////////////////////////////////	
 	@Override
 	public CRUDResult<M> delete(final SecurityContext securityContext,
 							    final O oid) {
