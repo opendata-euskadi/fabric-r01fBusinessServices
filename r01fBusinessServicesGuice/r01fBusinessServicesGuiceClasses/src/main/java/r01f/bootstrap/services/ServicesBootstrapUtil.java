@@ -18,7 +18,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import r01f.bootstrap.services.ServiceHandlerLifecycle;
 import r01f.bootstrap.services.config.ServicesBootstrapConfig;
 import r01f.bootstrap.services.config.core.ServicesCoreModuleEventsConfig;
 import r01f.concurrent.ExecutorServiceManager;
@@ -83,7 +82,7 @@ public abstract class ServicesBootstrapUtil {
 		public ServicesMainGuiceBootstrapCommonBindingModules withCommonEventsExecutor(final ServicesCoreModuleEventsConfig coreEventsCfg) {
 			if (coreEventsCfg == null) return this;
 
-			// all bootsrap modules shares the same client api app code
+			// all bootstrap modules shares the same client api app code
 			ClientApiAppCode clientApiAppCode = null;
 			for (ServicesBootstrapConfig bootCfg : _servicesBootstrapCfg) {
 				if (bootCfg.getCoreModulesConfig() == null) {
@@ -99,8 +98,9 @@ public abstract class ServicesBootstrapUtil {
 			return this;
 		}
 		public Iterable<Module> withoutCommonBindingModules() {
+			// this is where the modules are loaded!
 			Collection<Module> bootstrapModules = new ServicesBootstrap(_servicesBootstrapCfg)
-														.loadBootstrapModuleInstances();
+															.loadBootstrapModuleInstances();
 			return _commonEventsExecutorModule != null ? Iterables.concat(bootstrapModules,
 																		  Lists.<Module>newArrayList(_commonEventsExecutorModule))
 													   : bootstrapModules;

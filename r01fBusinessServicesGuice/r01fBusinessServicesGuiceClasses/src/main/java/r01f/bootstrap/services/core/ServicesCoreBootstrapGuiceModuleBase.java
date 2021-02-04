@@ -140,7 +140,7 @@ abstract class ServicesCoreBootstrapGuiceModuleBase
 		binder.bind(ServicesCoreBootstrapConfigWhenBeanExposed.class)
 			  .toInstance((ServicesCoreBootstrapConfigWhenBeanExposed)_coreBootstrapCfg);
 		
-		// [1] - Bind the core properties to be injected as @XmlPropertiesForAppComponent("{clientAppCode}.services")
+		// [1] - Bind the core properties to be injected as @XmlPropertiesForAppComponent("{coreAppCode}.services")
 		ServicesBootstrapUtil.bindXMLPropertiesForAppComponent(_coreBootstrapCfg.getCoreAppCode(),AppComponent.compose(_coreBootstrapCfg.getCoreModule(),
 																													   CoreModule.SERVICES),
 															   CoreModule.SERVICES,
@@ -151,7 +151,6 @@ abstract class ServicesCoreBootstrapGuiceModuleBase
 			for (Module m : _installedModules) {
 				log.warn("Install {} guice module",
 						 m.getClass());
-				
 				theBinder.install(m);
 			}
 		}		
@@ -165,7 +164,6 @@ abstract class ServicesCoreBootstrapGuiceModuleBase
 /////////////////////////////////////////////////////////////////////////////////////////
 //  ServicesCoreBootstrapGuiceModule
 /////////////////////////////////////////////////////////////////////////////////////////
-//	@Override
 	public Collection<Class<? extends Module>> getInstalledModuleTypes() {
 		return FluentIterable.from(_installedModules)
 							 .transform(new Function<Module,Class<? extends Module>>() {
@@ -176,7 +174,6 @@ abstract class ServicesCoreBootstrapGuiceModuleBase
 							 			})
 							 .toList();
 	}
-//	@Override
 	public boolean isModuleInstalled(final Class<? extends Module> modType) {
 		if (CollectionUtils.isNullOrEmpty(_installedModules)) return false;
 		

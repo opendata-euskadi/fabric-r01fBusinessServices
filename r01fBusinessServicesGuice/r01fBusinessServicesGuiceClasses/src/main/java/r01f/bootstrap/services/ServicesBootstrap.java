@@ -27,7 +27,6 @@ import r01f.bootstrap.services.config.ServicesImpl;
 import r01f.bootstrap.services.config.client.ServicesClientConfigForCoreModule;
 import r01f.bootstrap.services.config.client.ServicesClientGuiceBootstrapConfig;
 import r01f.bootstrap.services.config.client.ServicesCoreModuleExposition;
-import r01f.bootstrap.services.config.client.ServicesCoreModuleExpositionAsBeans;
 import r01f.bootstrap.services.config.client.ServicesCoreModuleExpositionAsRESTServices;
 import r01f.bootstrap.services.config.client.ServicesCoreModuleExpositionAsServlet;
 import r01f.bootstrap.services.config.core.ServicesCoreBootstrapConfig;
@@ -69,15 +68,15 @@ public class ServicesBootstrap {
 	 * @return
 	 */
 	Collection<Module> loadBootstrapModuleInstances() {
-		final List<Module> bootstrapModules = Lists.newArrayList();
+		List<Module> bootstrapModules = Lists.newArrayList();
 
 		// Usually there's a single ServicesBootstrapConfig for a client api appCode, BUT is perfectly possible to
-		// bootstrap usings multiple ServicesBootstrapConfig for the SAME client api appCode or for different client api appCode
-		// ... the first step is GROUP the ServicesBootstrapConfig byt client api appCode
+		// bootstrap using multiple ServicesBootstrapConfig for the SAME client api appCode or for different client api appCode
+		// ... the first step is GROUP the ServicesBootstrapConfig by client api appCode
 		//	   (note that the ServiceInterface to CORE impl or PROXY binding Map is binded annotated by client api appCode)
 		Map<ClientApiAppCode,Collection<ServicesBootstrapConfig>> bootstrapCfgByClientApiAppCode = _bootstrapCfgsByClientApiAppCode();
 
-		for (final Map.Entry<ClientApiAppCode,Collection<ServicesBootstrapConfig>> me : bootstrapCfgByClientApiAppCode.entrySet()) {
+		for (Map.Entry<ClientApiAppCode,Collection<ServicesBootstrapConfig>> me : bootstrapCfgByClientApiAppCode.entrySet()) {
 			ClientApiAppCode clientApiAppCode = me.getKey();
 			Collection<ServicesBootstrapConfig> bootstrapCfgs = me.getValue();
 
@@ -92,14 +91,14 @@ public class ServicesBootstrap {
 			ServiceInterfacesMatchings serviceInterfaceMatchings = _consolidateServiceInterfaceMatchings(bootstrapCfgs);
 
 			// [2] - Create the client and core matchings
-			for (final ServicesBootstrapConfig bootstrapCfg : bootstrapCfgs) {
+			for (ServicesBootstrapConfig bootstrapCfg : bootstrapCfgs) {
 
 				/*System.out.println(" ======================================================== ");
 				System.out.println(" bootstrapCfg "+bootstrapCfg.debugInfo()) ;
 				System.out.println(" ======================================================== ");*/
 				// [a] - Create a guice module for the client and for every core module
-				final Collection<Module> clientAndCoreBootstrap = _createClientAndCoreBootstrapModules(bootstrapCfg,
-																									   serviceInterfaceMatchings);
+				Collection<Module> clientAndCoreBootstrap = _createClientAndCoreBootstrapModules(bootstrapCfg,
+																								 serviceInterfaceMatchings);
 
 				// [b] - Client bindings:
 				//			- client api as singleton
@@ -130,9 +129,9 @@ public class ServicesBootstrap {
 																						})
 																				.toList();
 		if (CollectionUtils.hasData(bootstrapCfgsWithoutClient)) {
-			for (final ServicesBootstrapConfig bootstrapCfg  : bootstrapCfgsWithoutClient) {
-				final Collection<Module> clientAndCodeBootstrap = _createClientAndCoreBootstrapModules(bootstrapCfg,
-																									   null);	// no client = no service interface matchings
+			for (ServicesBootstrapConfig bootstrapCfg  : bootstrapCfgsWithoutClient) {
+				Collection<Module> clientAndCodeBootstrap = _createClientAndCoreBootstrapModules(bootstrapCfg,
+																								 null);	// no client = no service interface matchings
 				if (CollectionUtils.hasData(clientAndCodeBootstrap)) bootstrapModules.addAll(clientAndCodeBootstrap);
 			}
 		}
@@ -222,7 +221,7 @@ public class ServicesBootstrap {
 			return bootstrapModuleInstances;	// no cores
 		}
 
-		for (final ServicesCoreBootstrapConfig coreModuleCfg : bootstrapCfg.getCoreModulesConfig()) {
+		for (ServicesCoreBootstrapConfig coreModuleCfg : bootstrapCfg.getCoreModulesConfig()) {
 			// Each core bootstrap modules (the ones implementing BeanImplementedServicesCoreBootstrapGuiceModuleBase) for every core appCode / module
 			// SHOULD reside in it's own private guice module in order to avoid bindings collisions
 			// (ie JPA's guice persist modules MUST reside in separate private guice modules -see https://github.com/google/guice/wiki/GuicePersistMultiModules-)
@@ -246,7 +245,7 @@ public class ServicesBootstrap {
 			// b) create the guice module that bootstraps the core
 			ServicesCoreBootstrapGuiceModule coreBootstrapModule = _createCoreGuiceModuleInstance(guiceCoreModuleCfg);
 
-			// c) create a private guice module that will:
+			// c) create a PRIVATE guice module:
 			Module coreGuiceModule = null;
 			if (guiceCoreModuleCfg.isIsolate()) {
 				if (bootstrapCfg.getClientConfig() == null) throw new IllegalStateException("Only modules with client can be isolated!");
