@@ -244,6 +244,28 @@ public abstract class DBModuleConfigBase
 	 *			</ul>
 	 *  </li>
 	 * </ul>
+	 * 
+	 * MySQL full-text
+	 * ===============
+     * IMPORTANT!! see: http://dev.mysql.com/doc/refman/5.0/en/fulltext-search.html / http://devzone.zend.com/26/using-mysql-full-text-searching/
+     *		Tables MUST be MyISAM (InnoDB)) type; to change the table type:
+     *			ALTER TABLE [table] engine=MyISAM;
+     *
+     *		also a FULLTEXT index must be added to the cols:
+     *			ALTER TABLE [table] ADD FULLTEXT [NOMBRE INDICE](col1,col2,...);
+     *
+     *		Once the above is done, a FULL-TEXT search can be executed like:
+     *			select *
+     *			  from [table]
+     *			 where MATCH(col1,col2) AGAINST ('[text]');
+	 *
+	 * BEWARE!!! by default, the FULLTEXT index is used in "natural language mode", which, will IGNORE results that happen in 50% or more of the rows
+	 *			 ("words that are present in 50% or more of the rows are considered common and do not match."). 
+	 *			 If there's only 1 row in the table, there will ALWAYS return 0 results
+	 * 
+	 * 
+	 * MEMOIZATION
+	 * ===========
 	 * In order to avoid calls to {@link #_isFullTextSupported()} usually a {@link Memoized} instance
 	 * is used like:
 	 * <pre class='brush:java'>
@@ -287,7 +309,7 @@ public abstract class DBModuleConfigBase
 		
 		boolean outSupportsFullText = false;
 		// SELECT entity
-		//	 FROM AA14DBEntityForOrganizationalEntityBase entity 
+		//	 FROM dbEntity entity 
 		//  WHERE ... predicates ...
 		StringBuilder jpql = new StringBuilder("SELECT entity " +
 										  		 "FROM ").append(dbEntity.getSimpleName()).append(" entity ")
