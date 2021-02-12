@@ -41,8 +41,8 @@ public class ServicesCoreGuiceBootstrapConfigWhenBeanExposed
 	public ServicesCoreGuiceBootstrapConfigWhenBeanExposed(final CoreAppCode coreAppCode,final CoreModule coreModule,
 														   final Class<? extends BeanImplementedServicesCoreBootstrapGuiceModuleBase> coreBootstrapGuiceModule,
 												   	       final Collection<ServicesCoreSubModuleBootstrapConfig<?>> subModulesCfgs,
-												   	       final boolean isolate,
-												   	       final Class<? extends CoreService> coreServicesBaseType) {
+												   	       final Class<? extends CoreService> coreServicesBaseType,
+												   	       final boolean isolate) {
 		super(coreAppCode,coreModule,
 			  coreBootstrapGuiceModule,
 			  subModulesCfgs,
@@ -56,7 +56,7 @@ public class ServicesCoreGuiceBootstrapConfigWhenBeanExposed
 		this(coreAppCode,coreModule,
 			 coreBootstrapGuiceModule,
 			 subModulesCfgs,
-			 true,		// usually bean core modules contains DB modules (jpa) that MUST be binded in a private module
-			 coreServicesBaseType);
+			 coreServicesBaseType,
+			 true);		// usually bean core modules contains DB modules (jpa) that MUST be binded in a private module
 	}
 }

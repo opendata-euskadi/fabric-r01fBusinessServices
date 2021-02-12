@@ -127,6 +127,14 @@ public abstract class ServicesCoreBootstrapConfigBuilder
 															   	  	   _subModulesCfgs,
 															   	  	   _coreServicesBaseType);
 		}
+		@Override
+		public ServicesCoreBootstrapConfigWhenBeanExposed buildIsolated() {
+			return new ServicesCoreGuiceBootstrapConfigWhenBeanExposed(_coreAppCode,_coreModule,
+																	   _coreBootstrapGuiceModuleType,
+															   	  	   _subModulesCfgs,
+															   	  	   _coreServicesBaseType,
+															   	  	   true);	// isolated
+		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CORE REST
@@ -178,6 +186,13 @@ public abstract class ServicesCoreBootstrapConfigBuilder
 																  	   _coreBootstrapGuiceModuleType,
 																  	   _subModulesCfgs);
 		}
+		@Override
+		public ServicesCoreBootstrapConfigWhenRESTExposed buildIsolated() {
+			return new ServicesCoreGuiceBootstrapConfigWhenRESTExposed(_coreAppCode,_coreModule,
+																  	   _coreBootstrapGuiceModuleType,
+																  	   _subModulesCfgs,
+																  	   true);	// isolated
+		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CORE SERVLET
@@ -228,6 +243,13 @@ public abstract class ServicesCoreBootstrapConfigBuilder
 			return new ServicesCoreGuiceBootstrapConfigWhenServletExposed(_coreAppCode,_coreModule,
 																  	      _coreBootstrapGuiceModuleType,
 																  	      _subModulesCfgs);
+		}
+		@Override
+		public ServicesCoreBootstrapConfigWhenServletExposed buildIsolated() {
+			return new ServicesCoreGuiceBootstrapConfigWhenServletExposed(_coreAppCode,_coreModule,
+																  	      _coreBootstrapGuiceModuleType,
+																  	      _subModulesCfgs,
+																  	      true);	// isolate
 		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -291,5 +313,6 @@ public abstract class ServicesCoreBootstrapConfigBuilder
 		protected final Collection<ServicesCoreSubModuleBootstrapConfig<?>> _subModulesCfgs;
 		
 		public abstract C build();
+		public abstract C buildIsolated();
 	}
 }

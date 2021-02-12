@@ -41,12 +41,25 @@ public abstract class ClientAPIDelegateForModelObjectSearchServices<F extends Se
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////
+	@Deprecated
 	@Getter private final Class<F> _filterType;
+	
+	@Deprecated
 	@Getter private final Class<I> _resultItemType;
 	
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTORS
 /////////////////////////////////////////////////////////////////////////////////////////
+	public ClientAPIDelegateForModelObjectSearchServices(final Provider<SecurityContext> securityContextProvider,
+														 final Marshaller modelObjectsMarshaller,
+														 final SearchServices<F,I> services) {
+		super(securityContextProvider,
+			  modelObjectsMarshaller,
+			  services);
+		_filterType = null;
+		_resultItemType = null;
+	}
+	@Deprecated
 	public ClientAPIDelegateForModelObjectSearchServices(final Provider<SecurityContext> securityContextProvider,
 														 final Marshaller modelObjectsMarshaller,
 														 final SearchServices<F,I> services,

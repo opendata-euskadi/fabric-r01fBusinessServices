@@ -29,8 +29,15 @@ public abstract class SearchServicesForModelObjectDelegateBase<F extends SearchF
 									  				final Searcher<F,I> searcher,
 									  				final EventBus eventBus) {
 		super(coreCfg,
-			  searcher,
-			  eventBus);
+			  eventBus,
+			  searcher);
+	}
+	public SearchServicesForModelObjectDelegateBase(final ServicesCoreBootstrapConfigWhenBeanExposed coreCfg,
+									  				final EventBus eventBus,
+									  				final Searcher<F,I> searcher) {
+		super(coreCfg,
+			  eventBus,
+			  searcher);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  METHODS

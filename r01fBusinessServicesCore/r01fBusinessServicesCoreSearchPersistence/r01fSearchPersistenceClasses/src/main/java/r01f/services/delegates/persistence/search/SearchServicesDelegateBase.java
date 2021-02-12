@@ -41,11 +41,18 @@ public abstract class SearchServicesDelegateBase<F extends SearchFilter,I extend
 // 	CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
 	public SearchServicesDelegateBase(final ServicesCoreBootstrapConfigWhenBeanExposed coreCfg,
-									  final Searcher<F,I> searcher,
-									  final EventBus eventBus) {
+									  final EventBus eventBus,
+									  final Searcher<F,I> searcher) {
 		_coreConfig = coreCfg;
 		_searcher = searcher;
 		_eventBus = eventBus;
+	}
+	public SearchServicesDelegateBase(final ServicesCoreBootstrapConfigWhenBeanExposed coreCfg,
+									  final Searcher<F,I> searcher,
+									  final EventBus eventBus) {
+		this(coreCfg,
+			 eventBus,
+			 searcher);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  METHODS
