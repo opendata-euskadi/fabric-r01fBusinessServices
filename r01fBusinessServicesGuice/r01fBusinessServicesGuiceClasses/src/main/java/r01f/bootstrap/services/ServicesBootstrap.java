@@ -90,32 +90,87 @@ public class ServicesBootstrap {
 			// [1] - Consolidate the service interface matchings into a single collection
 			ServiceInterfacesMatchings serviceInterfaceMatchings = _consolidateServiceInterfaceMatchings(bootstrapCfgs);
 
-			// [2] - Create the client and core matchings
-			for (ServicesBootstrapConfig bootstrapCfg : bootstrapCfgs) {
+			// [2] - The [client api] uses a MapBinder that indexes each [service impl or proxy] by the [service interface]
+			//		 (a map like Map<Class,ServiceInterface>)
+			//		 This map is injected at the [client api] annotated by the [client api appcode]:
+			//		    @Singleton
+			//			public class MyApi
+			//				 extends BaseApi {
+			//				@Inject
+			//				public MyApi(@Named(apiAppCode) Map<Class,ServiceInterface> ifaceToImplOrProxy) {
+			//					...
+			//				}
+			//			}
+			//		 Sometimes there exists multiple [client api] for the SAME [client api app code] even in different [bootstrap configs]
+			//		 ... if the Map were created at step [3] and TWO [bootstrap configs] share the SAME [client api appcode]
+			//			 just the LAST one will remain since this second one will overwrite the first
+			//		 ... so create the MapBinders globally so there just exists a SINGLE Map for every [client api app code]
+			bootstrapModules.add(new Module() {
+										@Override
+										public void configure(final Binder binder) {
+											ClientApiAppCode clientApiAppCode = serviceInterfaceMatchings.getClientApiAppCode();
 
-				/*System.out.println(" ======================================================== ");
-				System.out.println(" bootstrapCfg "+bootstrapCfg.debugInfo()) ;
-				System.out.println(" ======================================================== ");*/
-				// [a] - Create a guice module for the client and for every core module
-				Collection<Module> clientAndCoreBootstrap = _createClientAndCoreBootstrapModules(bootstrapCfg,
-																								 serviceInterfaceMatchings);
+											// create the map binder
+											Named mapBinderNamed = Names.named(clientApiAppCode.asString());
+											@SuppressWarnings("rawtypes")
+											MapBinder<Class,ServiceInterface> srvcIfaceTypeToImplOrProxyBinder = MapBinder.newMapBinder(binder,
+																													 				 	Class.class,ServiceInterface.class,
+																													 				 	mapBinderNamed);
+											// add the service interfaces to proxy or impl matchings
+											_mapBindServiceInterfaceToProxyOrCoreImpl(srvcIfaceTypeToImplOrProxyBinder,
+																					  serviceInterfaceMatchings);
+										}
+								 });
+
+			// [3] - Client & core bindings
+			for (ServicesBootstrapConfig bootstrapCfg : bootstrapCfgs) {
+				Collection<Module> allModules = Lists.newArrayList();
+
+				// [a] - Core bindings
+				Collection<Module> coreBootstrap = _createCoreBootstrapModules(bootstrapCfg,
+																			   serviceInterfaceMatchings);
+				allModules.addAll(coreBootstrap);
 
 				// [b] - Client bindings:
+				//			- cliente guice modules
 				//			- client api as singleton
+				//			- every client proxy (if any) as singleton
 				//			- every service interface to the core impl or the proxy to the core impl
-				//		 	  this are the binding that the client will use
-				//		 	  ... so if both the core impl and the proxy to the core impl are available,
-				//		          the core impl will be used
-				clientAndCoreBootstrap.add(_createClientApiAndServiceInterfaceBindingsModule(bootstrapCfg.getClientConfig().getClientApiType(),
-					                                                                         bootstrapCfg.getClientConfig().getClientModuleConfigs(),
-																							 serviceInterfaceMatchings));
+				//		 	  (these are the binding that the client will use: if both the core impl are available, the core impl will be used
+				//			   ... if just the proxy impl is available, oviously, the proxy will be used)
+				Collection<Module> clientBootstrap = _createClientBootstrapModules(bootstrapCfg);
+				allModules.addAll(clientBootstrap);
 
+				allModules.add(new Module() {
+										@Override
+										public void configure(final Binder binder) {
+											// [1] - Bind the client api
+											_bindClientApi(binder,
+														   bootstrapCfg.getClientConfig().getClientApiType());
+											// [2] - Client to core proxies as singletons
+											_bindClientProxies(binder,
+															   serviceInterfaceMatchings);
+//											// [3] - Create a MapBinder that bind the service interface types to core impl or proxy
+//											//		 (this MapBinder is used at the client API to)
+//											Named mapBinderNamed = Names.named(serviceInterfaceMatchings.getClientApiAppCode().asString());
+//											@SuppressWarnings("rawtypes")
+//											MapBinder<Class,ServiceInterface> serviceIfaceTypeToImplOrProxyBinder = MapBinder.newMapBinder(binder,
+//																													 				 	   Class.class,ServiceInterface.class,
+//																													 				 	   mapBinderNamed);
+//											_mapBindServiceInterfaceToProxyOrCoreImpl(serviceIfaceTypeToImplOrProxyBinder,
+//																					  serviceInterfaceMatchings);
+
+											// [99] - Client to core exposition configs
+											_bindClientToCoreExpositionConfigs(binder,
+																			   bootstrapCfg.getClientConfig().getClientModuleConfigs());
+										}
+							  });
 				// [c] - bind event bus for core events
 				Module coreEventBusBindingModule = ServicesBootstrapUtil.createCoreEventBusBindingModule(bootstrapCfg.getClientApiAppCode(),
 																										 bootstrapCfg.getCoreEventsConfig());
-				clientAndCoreBootstrap.add(coreEventBusBindingModule);
+				allModules.add(coreEventBusBindingModule);
 
-				if (CollectionUtils.hasData(clientAndCoreBootstrap)) bootstrapModules.addAll(clientAndCoreBootstrap);
+				if (CollectionUtils.hasData(allModules)) bootstrapModules.addAll(allModules);
 			}
 		}
 
@@ -130,7 +185,7 @@ public class ServicesBootstrap {
 																				.toList();
 		if (CollectionUtils.hasData(bootstrapCfgsWithoutClient)) {
 			for (ServicesBootstrapConfig bootstrapCfg  : bootstrapCfgsWithoutClient) {
-				Collection<Module> clientAndCodeBootstrap = _createClientAndCoreBootstrapModules(bootstrapCfg,
+				Collection<Module> clientAndCodeBootstrap = _createCoreBootstrapModules(bootstrapCfg,
 																								 null);	// no client = no service interface matchings
 				if (CollectionUtils.hasData(clientAndCodeBootstrap)) bootstrapModules.addAll(clientAndCodeBootstrap);
 			}
@@ -182,23 +237,13 @@ public class ServicesBootstrap {
 		return outMatchings;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//
+//	CORE
 /////////////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * Creates a module for the API appCode that gets installed with:
-	 * 	- A module with the client API bindings
-	 *	- A private module with the core bindings for each core app module
-	 * @param bootstrapCfg
-	 * @param serviceInterfaceMatchings
-	 * @return
-	 */
-	@SuppressWarnings("static-method")
-	private Collection<Module> _createClientAndCoreBootstrapModules(final ServicesBootstrapConfig bootstrapCfg,
-																	final ServiceInterfacesMatchings serviceInterfaceMatchings) {
+	private static Collection<Module> _createClientBootstrapModules(final ServicesBootstrapConfig bootstrapCfg) {
 		// contains all the guice modules to be bootstraped: client & core
-		final List<Module> bootstrapModuleInstances = Lists.newArrayList();
+		List<Module> bootstrapModuleInstances = Lists.newArrayList();
 
-		// [1] - Add the CLIENT bootstrap guice module
+		// Add the CLIENT bootstrap guice module
 		if (bootstrapCfg.getClientConfig() != null) {
 			ServicesClientGuiceBootstrapConfig clientBootstrapCfg = bootstrapCfg.getClientConfigAs(ServicesClientGuiceBootstrapConfig.class);
 
@@ -209,13 +254,28 @@ public class ServicesBootstrap {
 				}
 			}
 			// b) main client bootstrap
-			final ServicesClientAPIBootstrapGuiceModuleBase clientModule = _createClientGuiceModuleInstance(clientBootstrapCfg);
+			ServicesClientAPIBootstrapGuiceModuleBase clientModule = _createClientGuiceModuleInstance(clientBootstrapCfg);
 			bootstrapModuleInstances.add(0,clientModule);	// insert first!
 		} else {
 			log.warn("NO client will be bootstrapped!");
 		}
+		// [99] - return
+		return bootstrapModuleInstances;
+	}
+	/**
+	 * Creates a module for the API appCode that gets installed with:
+	 * 	- A module with the client API bindings
+	 *	- A private module with the core bindings for each core app module
+	 * @param bootstrapCfg
+	 * @param serviceInterfaceMatchings
+	 * @return
+	 */
+	private static Collection<Module> _createCoreBootstrapModules(final ServicesBootstrapConfig bootstrapCfg,
+														   		  final ServiceInterfacesMatchings serviceInterfaceMatchings) {
+		// contains all the guice modules to be bootstraped: client & core
+		List<Module> bootstrapModuleInstances = Lists.newArrayList();
 
-		// [2] - Add a module for each CORE appCode / module
+		// Add a module for each CORE appCode / module
 		if (CollectionUtils.isNullOrEmpty(bootstrapCfg.getCoreModulesConfig())) {
 			log.warn("NO core modules will be bootstrapped!");
 			return bootstrapModuleInstances;	// no cores
@@ -264,120 +324,43 @@ public class ServicesBootstrap {
 			bootstrapModuleInstances.add(coreGuiceModule);
 		}
 
-		// [6] - return
+		// [99] - return
 		return bootstrapModuleInstances;
 	}
-	private static Module _createClientApiAndServiceInterfaceBindingsModule(final Class<? extends ClientAPI> clientApiType,
-																			final Collection<ServicesClientConfigForCoreModule<?,?>> serviceClientsConfig,
-																			final ServiceInterfacesMatchings serviceInterfaceMatchings) {
-		return new Module() {
-					@Override @SuppressWarnings("synthetic-access")
-					public void configure(final Binder binder) {
-						// [0] - Bind the client api as a singleton
-						if (clientApiType != null) binder.bind(clientApiType)
-							  							 .in(Singleton.class);
+/////////////////////////////////////////////////////////////////////////////////////////
+//	CLIENT BINDINGS
+/////////////////////////////////////////////////////////////////////////////////////////
+	private static void _bindClientApi(final Binder binder,
+									   final Class<? extends ClientAPI> clientApiType) {
+		// Bind the client api as a singleton
+		if (clientApiType != null) binder.bind(clientApiType)
+			  							 .in(Singleton.class);
+	}
+	private static void _bindClientProxies(final Binder binder,
+										   final ServiceInterfacesMatchings serviceInterfaceMatchings) {
+		// Bind client proxies as singletons
+		// BEWARE CORE impl was binded as singletons at the private module (see ServicesCoreBootstrapPrivateGuiceModule)
+		if (serviceInterfaceMatchings.hasData()) {
+			for (final ServiceInterfaceMatch ifaceMatch : serviceInterfaceMatchings) {
+				Class<? extends ServiceInterface> iface = ifaceMatch.getServiceInterfaceType();
+				Class<? extends ServiceInterface> implOrProxy = ifaceMatch.getProxyOrImplMatchingType();
 
-						// [1] - Bind client configs if needed
-						/*if (CollectionUtils.hasData(serviceClientsConfig)) {
-							ServicesCoreModuleExpositionAsBeans servicesCoreModuleExpositionAsBeans
-			 						=  _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsBeans.class, serviceClientsConfig);
+				if (ifaceMatch.isProxy()
+				 && !serviceInterfaceMatchings.existsCoreImplMatchingFor(ifaceMatch.getCoreAppCode(),ifaceMatch.getCoreModule(),
+						 											     ifaceMatch.getServiceInterfaceType())) {
+					// a proxy must NOT be binded if there's another matching for the core bean impl
 
-							if ( servicesCoreModuleExpositionAsBeans != null) {
-								log.warn(" .... servicesCoreModuleExpositionAsBeans {}",
-										servicesCoreModuleExpositionAsBeans.debugInfo());
-								binder.bind(ServicesCoreModuleExpositionAsBeans.class)
-								  .toInstance(servicesCoreModuleExpositionAsBeans);
-								log.warn("... binded clientTocoreExposionConfigAsBeans > {}",
-																							servicesCoreModuleExpositionAsBeans.debugInfo());
-							}
-							ServicesCoreModuleExpositionAsRESTServices servicesCoreModuleExpositionAsRESTServices
-							 		=  _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsRESTServices.class, serviceClientsConfig);
-							if ( servicesCoreModuleExpositionAsRESTServices != null) {
-								binder.bind(ServicesCoreModuleExpositionAsRESTServices.class)
-								  .toInstance(servicesCoreModuleExpositionAsRESTServices);
-								log.warn("... binded clientTocoreExposionConfigAsREST > {}",
-																							servicesCoreModuleExpositionAsRESTServices.debugInfo());
-							}
-							ServicesCoreModuleExpositionAsServlet servicesCoreModuleExpositionAsServlet
-					 			=  _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsServlet.class, serviceClientsConfig);
-							if ( servicesCoreModuleExpositionAsServlet != null) {
-								binder.bind(ServicesCoreModuleExpositionAsServlet.class)
-								  .toInstance(servicesCoreModuleExpositionAsServlet);
-								log.warn("... binded clientTocoreExposionConfigAsServlet > {}!",
-																								servicesCoreModuleExpositionAsServlet.debugInfo());
-							}
-						}*/
+					binder.bind(_captureSubType(implOrProxy))
+						  .in(Singleton.class);
+				} else if (ifaceMatch.isCoreImpl()) {
+					// BEWARE! - the core impls usually are binded as singletons in the private module (see ServicesCoreBootstrapPrivateGuiceModule) and exposed to the outer world
+				}
 
-						// [2] - Bind client proxies as singletons
-						// 		 BEWARE CORE impl was binded as singletons at the private module (see ServicesCoreBootstrapPrivateGuiceModule)
-						if (serviceInterfaceMatchings.hasData()) {
-
-							for (final ServiceInterfaceMatch ifaceMatch : serviceInterfaceMatchings) {
-								Class<? extends ServiceInterface> iface = ifaceMatch.getServiceInterfaceType();
-								Class<? extends ServiceInterface> implOrProxy = ifaceMatch.getProxyOrImplMatchingType();
-
-								if (ifaceMatch.isProxy()
-								 && !serviceInterfaceMatchings.existsCoreImplMatchingFor(ifaceMatch.getCoreAppCode(),ifaceMatch.getCoreModule(),
-										 											     ifaceMatch.getServiceInterfaceType())) {
-									// a proxy must NOT be binded if there's another matching for the core bean impl
-
-									binder.bind(_captureSubType(implOrProxy))
-										  .in(Singleton.class);
-								} else if (ifaceMatch.isCoreImpl()) {
-									// BEWARE! - the core impls usually are binded as singletons in the private module (see ServicesCoreBootstrapPrivateGuiceModule) and exposed to the outer world
-								}
-
-								// b) bind the service interface to the proxy or impl
-								binder.bind(_captureType(iface))
-									  .to(_captureSubType(implOrProxy));
-							}
-
-							/// Module Exposition Config of Proxy Classes (REST / SERVLET)
-							if (CollectionUtils.hasData(serviceClientsConfig)) {
-								ServicesCoreModuleExpositionAsRESTServices servicesCoreModuleExpositionAsRESTServices
-								 		=  _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsRESTServices.class, serviceClientsConfig);
-								if ( servicesCoreModuleExpositionAsRESTServices != null) {
-									binder.bind(ServicesCoreModuleExpositionAsRESTServices.class)
-											.toInstance(servicesCoreModuleExpositionAsRESTServices);
-									log.warn("... binded clientTocoreExposionConfigAsREST > {}",
-																								servicesCoreModuleExpositionAsRESTServices.debugInfo());
-								}
-								ServicesCoreModuleExpositionAsServlet servicesCoreModuleExpositionAsServlet
-						 			=  _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsServlet.class, serviceClientsConfig);
-								if ( servicesCoreModuleExpositionAsServlet != null) {
-									binder.bind(ServicesCoreModuleExpositionAsServlet.class)
-											.toInstance(servicesCoreModuleExpositionAsServlet);
-									log.warn("... binded clientTocoreExposionConfigAsServlet > {}!",
-																									servicesCoreModuleExpositionAsServlet.debugInfo());
-								}
-							}
-
-
-
-						}
-
-						// [3] - Bind the service interface types to bean impl or proxy types as:
-						//		 [a] - A MapBinder that binds the service interface type to the bean impl or proxy instance
-						//			   This MapBinder is used at the API's proxy aggregator to inject the correct service interface bean impl or proxy
-						//			   (see ServicesClientProxyLazyLoaderGuiceMethodInterceptor)
-						//		 [b] - A direct bind of the service interface type to the bean impl or proxy type
-						Named mapBinderNamed = Names.named(serviceInterfaceMatchings.getClientApiAppCode().asString());
-						@SuppressWarnings("rawtypes")
-						MapBinder<Class,ServiceInterface> serviceIfaceTypeToImplOrProxyBinder = MapBinder.newMapBinder(binder,
-																								 				 	   Class.class,ServiceInterface.class,
-																								 				 	   mapBinderNamed);
-						if (serviceInterfaceMatchings.hasData()) {
-							for (final ServiceInterfaceMatch ifaceMatch : serviceInterfaceMatchings) {
-								Class<? extends ServiceInterface> iface = ifaceMatch.getServiceInterfaceType();
-								Class<? extends ServiceInterface> implOrProxy = ifaceMatch.getProxyOrImplMatchingType();
-
-								// a an interface to impl / proxy binding to the Map used at ServicesClientProxyLazyLoaderGuiceMethodInterceptor
-								serviceIfaceTypeToImplOrProxyBinder.addBinding(_captureType(iface))
-												 			 	   .to(_captureSubType(implOrProxy));
-							}
-						}
-					}
-			   };
+				// b) bind the service interface to the proxy or impl
+				binder.bind(_captureType(iface))
+					  .to(_captureSubType(implOrProxy));
+			}
+		}
 	}
 	@SuppressWarnings("unchecked")
 	private static <S extends ServiceInterface> Class<S> _captureType(final Class<? extends ServiceInterface> type) {
@@ -387,27 +370,75 @@ public class ServicesBootstrap {
 	private static <S extends ServiceInterface> Class<? extends S> _captureSubType(final Class<? extends ServiceInterface> type) {
 		return (Class<? extends S>)type;
 	}
+	@SuppressWarnings("rawtypes")
+	private static void _mapBindServiceInterfaceToProxyOrCoreImpl(final MapBinder<Class,ServiceInterface> serviceIfaceTypeToImplOrProxyBinder,
+																  final ServiceInterfacesMatchings serviceInterfaceMatchings) {
+		if (serviceInterfaceMatchings.hasData()) {
+			for (final ServiceInterfaceMatch ifaceMatch : serviceInterfaceMatchings) {
+				Class<? extends ServiceInterface> iface = ifaceMatch.getServiceInterfaceType();
+				Class<? extends ServiceInterface> implOrProxy = ifaceMatch.getProxyOrImplMatchingType();
 
+				// a an interface to impl / proxy binding to the Map used at ServicesClientProxyLazyLoaderGuiceMethodInterceptor
+				serviceIfaceTypeToImplOrProxyBinder.addBinding(_captureType(iface))
+								 			 	   .to(_captureSubType(implOrProxy));
+			}
+		}
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+/////////////////////////////////////////////////////////////////////////////////////////
+	private static void _bindClientToCoreExpositionConfigs(final Binder binder,
+														   final Collection<ServicesClientConfigForCoreModule<?,?>> serviceClientsConfig) {
+		// Module Exposition Config of Proxy Classes (REST / SERVLET)
+		if (CollectionUtils.hasData(serviceClientsConfig)) {
+//			ServicesCoreModuleExpositionAsBeans servicesCoreModuleExpositionAsBeans = _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsBeans.class,
+//																													serviceClientsConfig);
+//
+//			if (servicesCoreModuleExpositionAsBeans != null) {
+//				binder.bind(ServicesCoreModuleExpositionAsBeans.class)
+//				  	  .toInstance(servicesCoreModuleExpositionAsBeans);
+//				log.warn("... binded clientTocoreExposionConfigAsBeans > {}",
+//						 servicesCoreModuleExpositionAsBeans.debugInfo());
+//			}
+			// REST services
+			ServicesCoreModuleExpositionAsRESTServices servicesCoreModuleExpositionAsRESTServices = _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsRESTServices.class,
+																																  serviceClientsConfig);
+			if (servicesCoreModuleExpositionAsRESTServices != null) {
+				binder.bind(ServicesCoreModuleExpositionAsRESTServices.class)
+					  .toInstance(servicesCoreModuleExpositionAsRESTServices);
+				log.warn("... binded clientTocoreExposionConfigAsREST > {}",
+						 servicesCoreModuleExpositionAsRESTServices.debugInfo());
+			}
+			// Servlet
+			ServicesCoreModuleExpositionAsServlet servicesCoreModuleExpositionAsServlet = _clientToCoreExpositionConfig(ServicesCoreModuleExpositionAsServlet.class,
+																														serviceClientsConfig);
+			if (servicesCoreModuleExpositionAsServlet != null) {
+				binder.bind(ServicesCoreModuleExpositionAsServlet.class)
+					  .toInstance(servicesCoreModuleExpositionAsServlet);
+				log.warn("... binded clientTocoreExposionConfigAsServlet > {}!",
+						 servicesCoreModuleExpositionAsServlet.debugInfo());
+			}
+		}
+	}
 	@SuppressWarnings("unchecked")
-	private static <E extends ServicesCoreModuleExposition > E _clientToCoreExpositionConfig( final  Class<E> expositionConfigType,
-												                                              final  Collection<ServicesClientConfigForCoreModule<?,?>> serviceClientsConfig ) {
+	private static <E extends ServicesCoreModuleExposition> E _clientToCoreExpositionConfig(final  Class<E> expositionConfigType,
+												                                            final  Collection<ServicesClientConfigForCoreModule<?,?>> serviceClientsConfig ) {
+		 Collection<ServicesClientConfigForCoreModule<?,?>> serviceClientConfigsWithType = FluentIterable.from(serviceClientsConfig)
+																					               .filter(new Predicate<ServicesClientConfigForCoreModule<?,?>>() {
+																													@Override
+																													public boolean apply(final ServicesClientConfigForCoreModule<?, ?> config) {
+																														ServicesCoreModuleExposition servicesCoreModuleExposition =  config.getCoreExpositionConfig();
+																														return expositionConfigType.isInstance(servicesCoreModuleExposition);
+																													}
+																										   })
+																					               .toList();
 
-		 Collection<ServicesClientConfigForCoreModule<?,?>> serviceClientsConfigOfType
-				 = FluentIterable.from(serviceClientsConfig)
-				               .filter(new Predicate<ServicesClientConfigForCoreModule<?,?>>() {
-														@Override
-														public boolean apply(final ServicesClientConfigForCoreModule<?, ?>  config) {
-															ServicesCoreModuleExposition servicesCoreModuleExposition =  config.getCoreExpositionConfig();
-															return expositionConfigType.isInstance(servicesCoreModuleExposition);
-														}}
-				               ).toList();
-
-         if ( CollectionUtils.isNullOrEmpty(serviceClientsConfigOfType)) {
+         if ( CollectionUtils.isNullOrEmpty(serviceClientConfigsWithType)) {
         	 return null;
-         } else if ( serviceClientsConfigOfType.size() > 1 ) {
-			 throw new IllegalStateException(".. Cannot have more than one configuration for just a exposition type {} "+ expositionConfigType);
+         } else if (serviceClientConfigsWithType.size() > 1) {
+			 throw new IllegalStateException(".. Cannot have more than one configuration for just a exposition type {} " + expositionConfigType);
 		 } else {
-			 ServicesClientConfigForCoreModule<?,?> clientConfigForCoreModule = CollectionUtils.firstOf(serviceClientsConfigOfType);
+			 ServicesClientConfigForCoreModule<?,?> clientConfigForCoreModule = CollectionUtils.firstOf(serviceClientConfigsWithType);
 			 return (E) clientConfigForCoreModule.getCoreExpositionConfig();
 		 }
 	}
