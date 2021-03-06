@@ -109,4 +109,11 @@ public abstract class SearchServicesDelegateBase<F extends SearchFilter,I extend
 			if (validationResult.isNOTValid()) throw new IllegalArgumentException("The provided search filter is NOT valid: " + validationResult.asNOKValidationResult().getReason());
 		}
 	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////
+	@SuppressWarnings("unchecked")
+	public <S extends SearchServices<F,I>> S getSearcherImplAs(final Class<S> implType) {
+		return (S)_searcher;
+	}
 }
