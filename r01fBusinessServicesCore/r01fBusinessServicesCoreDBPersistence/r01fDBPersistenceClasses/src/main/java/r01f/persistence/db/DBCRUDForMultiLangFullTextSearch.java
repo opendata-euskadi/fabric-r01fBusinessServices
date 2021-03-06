@@ -4,13 +4,11 @@ import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import r01f.exceptions.Throwables;
 import r01f.guids.PersistableObjectOID;
 import r01f.model.PersistableModelObject;
 import r01f.model.persistence.PersistenceOperationExecError;
@@ -90,18 +88,12 @@ public abstract class DBCRUDForMultiLangFullTextSearch<O extends PersistableObje
 /////////////////////////////////////////////////////////////////////////////////////////
 	public PersistenceOperationResult<Boolean> create(final SecurityContext securityContext,
 													  final M modelObj) {
-		if (modelObj.getEntityVersion() > 0) throw new IllegalStateException(Throwables.message("Cannot create a {} entity because the model object received at the persistence layer does have the entityVersion attribute with a NON ZERO value. This is a developer's fault; please check that when persisting the model object, the entityVersion is NOT set",
-																							     _modelObjectType));
 		return this.doCreateOrUpdateEntity(securityContext,
 									  	   modelObj,
 									  	   PersistenceRequestedOperation.CREATE);		// it's a creation
 	}
 	public PersistenceOperationResult<Boolean> update(final SecurityContext securityContext,
 													  final M entity) {
-		// some checks to help developers...
-		if (entity.getEntityVersion() == 0) throw new IllegalStateException(Throwables.message("Cannot update a {} entity because the model object received at the persistence layer does NOT have the entityVersion attribute. This is a developer's fault; please check that when persisting the model object, the entityVersion is set",
-																							   _modelObjectType));
-
 		return this.doCreateOrUpdateEntity(securityContext,
 									  	   entity,
 									  	   PersistenceRequestedOperation.UPDATE);		// it's an update
@@ -188,14 +180,8 @@ public abstract class DBCRUDForMultiLangFullTextSearch<O extends PersistableObje
 										    					  final DB dbEntityToPersist,
 										    					  final PersistenceRequestedOperation requestedOp) {
 		// [1] - Persist using manual transaction management
-	    EntityTransaction tx = this.getEntityManager()
-	    						   .getTransaction();
-	    tx.begin();
 		this.getEntityManager()
 			.persist(dbEntityToPersist);
-		tx.commit();
-		this.getEntityManager()
-			.close();
 		
 		// [99] - Build the CRUD result
 		PersistenceOperationResult<Boolean> outResult = PersistenceOperationExecResultBuilder.using(securityContext)
