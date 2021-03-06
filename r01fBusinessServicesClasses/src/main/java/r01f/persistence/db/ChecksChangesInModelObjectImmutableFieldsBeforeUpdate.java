@@ -8,7 +8,7 @@ import r01f.securitycontext.SecurityContext;
  * are NOT changed when performing an UPDATE operation
  * @param <M>
  */
-public interface ChecksChangesInModelObjectIimmutableFieldsBeforeUpdate<M extends ModelObject> {
+public interface ChecksChangesInModelObjectImmutableFieldsBeforeUpdate<M extends ModelObject> {
 	/**
 	 * Inspects the updated object to check if any of the immutable properties is 
 	 * changed from the stored object's ones 
