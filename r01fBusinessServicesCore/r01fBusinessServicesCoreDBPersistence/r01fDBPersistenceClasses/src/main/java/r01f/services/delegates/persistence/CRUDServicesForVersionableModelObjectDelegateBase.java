@@ -186,9 +186,9 @@ public abstract class CRUDServicesForVersionableModelObjectDelegateBase<O extend
 
 		// [3] Find the currently active version and if it exists override it with the new version
 		CRUDResult<M> currentlyActiveEntityLoad = this.getServiceImplAs(CRUDServicesForVersionableModelObject.class)
-															.loadActiveVersionAt(securityContext,
-			   						     							   	   		 entityToBeActivated.getOid().getOid(),	// version independent oid
-			   						     							   	   		 new Date());							// this moment active entity
+													  .loadActiveVersionAt(securityContext,
+			   						     							   	   entityToBeActivated.getOid().getVersionIndependentOid(),	// version independent oid
+			   						     							   	   new Date());												// this moment active entity
 		if (currentlyActiveEntityLoad.hasSucceeded()) {
 			Date passivationDate = activationDate;
 

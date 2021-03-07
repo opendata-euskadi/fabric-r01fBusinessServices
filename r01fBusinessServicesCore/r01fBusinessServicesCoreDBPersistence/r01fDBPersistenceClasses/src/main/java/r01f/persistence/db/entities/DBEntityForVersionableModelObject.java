@@ -15,7 +15,15 @@ public interface DBEntityForVersionableModelObject<PK extends DBPrimaryKeyForVer
 //  
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * Gets the entity version
+	 * @return the version independent oid
+	 */
+	public abstract String getVersionIndependentOid();
+	/**
+	 * @param versionIndOid
+	 */
+	public abstract void setVersionIndependentOid(final String versionIndOid);
+	/**
+	 * @return the entity version
 	 */
 	public abstract String getVersion();
 	/**

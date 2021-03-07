@@ -120,7 +120,7 @@ public abstract class DBCRUDForVersionableModelObjectBase<O extends OIDForVersio
 		log.debug("> loading a {} entity with oid={} active at {}",_DBEntityType,oid,date);
 
 		// [1] - Load the active version entity at the provided date
-		String namedQuery = ReflectionUtils.classNameFromClassNameIncludingPackage(_DBEntityType.getName()) + "VersionActiveAt";
+		String namedQuery = ReflectionUtils.classNameFromClassNameIncludingPackage(_DBEntityType.getName()) + ".versionActiveAt";
 		Collection<DB> activeVersionEntities = this.getEntityManager().createNamedQuery(namedQuery)		// this named query MUST exist at the entity with this name
 															 				.setParameter("theOid",oid.asString())
 															 				.setParameter("theDate",Dates.asCalendar(date))
