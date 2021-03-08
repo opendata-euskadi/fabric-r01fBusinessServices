@@ -315,7 +315,8 @@ public abstract class DBModuleConfigBase
 										  		 "FROM ").append(dbEntity.getSimpleName()).append(" entity ")
 										.append("WHERE ");
 		if (theDBSpec.getVendor().is(DBVendor.MySQL)) {
-			jpql.append(Strings.customized("SQL('MATCH(?) AGAINST(?)',entity.{},:text)",
+			jpql.append(Strings.customized("SQL('MATCH(?) " +
+											  "AGAINST(?)',entity.{},:text)",
 										   fieldName));
 		} else if (theDBSpec.getVendor().is(DBVendor.ORACLE)) {
 			// SELECT t.*
