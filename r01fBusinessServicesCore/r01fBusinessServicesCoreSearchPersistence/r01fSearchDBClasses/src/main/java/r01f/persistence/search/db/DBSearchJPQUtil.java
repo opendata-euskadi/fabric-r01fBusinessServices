@@ -103,8 +103,8 @@ public abstract class DBSearchJPQUtil {
 					
 					// Generate:  SQL(   'MATCH(colXX) 
 					//				     AGAINST(? IN BOOLEAN MODE)',':text')
-					template = "SQL(  'MATCH({}) " + 
-					  			    "AGAINST(? IN BOOLEAN MODE)','{}')";
+					template = "SQL('MATCH({}) " + 
+					  			  "AGAINST(? IN BOOLEAN MODE)','{}')";
 				} 
 				else if (dbModuleConfig.getDbSpec().getVendor()
 													.is(DBVendor.ORACLE)) {
@@ -134,8 +134,12 @@ public abstract class DBSearchJPQUtil {
 			filteringText = text.split(" ")[0];			// use only the FIRST word (no multiple word is allowed)
 		}
 		filteringText = DBSearchJPQUtil.sanitizeFullTextQueryText(filteringText); 	// a minimal sanitization of the filtering text
+		
+		String theDBFieldSpec = dbFieldSpec.startsWith("_") ? dbFieldSpec.substring(1) : dbFieldSpec;	// remove the _ (WTF!!!!)
+		theDBFieldSpec = dbModuleConfig.isFullTextSearchSupported(entityManager) ? dbFieldSpec			// SQL(...) queries requires the PHYSICAL column
+																				 : "_" + dbFieldSpec;	// LIKE queries requires the MAPPED property
 		String outPredStr = Strings.customized(template,
-			          			  			   dbFieldSpec,filteringText);	// the field and the value!!!
+			          			  			   theDBFieldSpec,filteringText);	// the field and the value!!!
 		return outPredStr;
 	}
 }
