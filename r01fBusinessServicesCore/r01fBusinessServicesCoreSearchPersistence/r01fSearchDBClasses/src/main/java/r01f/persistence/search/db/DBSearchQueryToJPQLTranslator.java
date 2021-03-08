@@ -30,7 +30,6 @@ import r01f.model.search.query.SearchResultsOrdering;
 import r01f.patterns.FactoryFrom;
 import r01f.persistence.db.DBEntity;
 import r01f.persistence.db.config.DBModuleConfig;
-import r01f.persistence.db.config.DBVendor;
 import r01f.types.CanBeRepresentedAsString;
 import r01f.util.types.Strings;
 import r01f.util.types.collections.CollectionUtils;
@@ -54,7 +53,7 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 	protected FactoryFrom<F,TranslatesSearchFilterClauseToJPQLWherePredicate> _translatesFilterClauseToJpqlPredicateFactory;
 	protected FactoryFrom<Query,SetsJPQLWherePredicateParamFromSearchFilterClauseValue> _setsJpqlWherePredicateParamsFromFilterClauseValueFactory;
 	
-	protected String _entityAlias = "entity";
+	protected String _dbEntityAlias = "entity";
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -174,14 +173,14 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 /////////////////////////////////////////////////////////////////////////////////////////
 	public String composeCountJPQL(final F filter) {
 		TranslatesIndexableFieldIDToDBEntityField translatesFieldToDBEntityField = _createTranslatesIndexableFieldIDToDBEntityField(filter);
-		String jpql = _composeJPQL("COUNT(" + _entityAlias + ")",	// count query
+		String jpql = _composeJPQL("COUNT(" + _dbEntityAlias + ")",	// count query
 								   filter,null,		// no ordering color
 								   translatesFieldToDBEntityField);
 		return jpql;
 	}
 	public String composeRetrieveJPQL(final F filter,final Collection<SearchResultsOrdering> ordering) {
 		TranslatesIndexableFieldIDToDBEntityField translatesFieldToDBEntityField = _createTranslatesIndexableFieldIDToDBEntityField(filter);
-		String jpql = _composeJPQL(_entityAlias,	// not a count query
+		String jpql = _composeJPQL(_dbEntityAlias,	// not a count query
 						    	   filter,ordering,
 						    	   translatesFieldToDBEntityField);
 		return jpql;
@@ -189,7 +188,7 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 	public String composeRetrieveOidsJPQL(final F filter) {
 		TranslatesIndexableFieldIDToDBEntityField translatesFieldToDBEntityField = _createTranslatesIndexableFieldIDToDBEntityField(filter);
 		String oidDBEntityField = _dbEntityFieldNameForOid(translatesFieldToDBEntityField);
-		String jpql = _composeJPQL(Strings.customized(_entityAlias+".{}",
+		String jpql = _composeJPQL(Strings.customized(_dbEntityAlias+".{}",
 											   		  oidDBEntityField),
 								   			   		  filter,null,	// no ordering
 								   			   		  translatesFieldToDBEntityField);
@@ -211,7 +210,7 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 							      final TranslatesIndexableFieldIDToDBEntityField translatesFieldToDBEntityField) {
 		// [0] - SELECT
 		StringBuilder jpql = new StringBuilder(Strings.customized("SELECT {} " +
-										  		  					"FROM {} " + _entityAlias + " ",
+										  		  					"FROM {} " + _dbEntityAlias + " ",
 										  		  			      colSpec,		// "COUNT(entity)" : "entity",
 										  		  			      _dbEntityTypeNameFor(filter)));
 		// [1] - WHERE
@@ -324,21 +323,7 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 		}		
     }
 	protected static String _jpqlJoinFor(final QueryClauseOccur occur) {
-		String outJPQL = null;
-		switch(occur) {
-		case MUST:
-			outJPQL = " AND ";
-			break;
-		case MUST_NOT:
-			outJPQL = " AND NOT ";
-			break;
-		case SHOULD:
-			outJPQL = " OR ";
-			break;
-		default:
-			throw new IllegalArgumentException();
-		}
-		return outJPQL;
+		return DBSearchJPQUtil.jpqlJoinFor(occur);
 	}
 	protected static String _jpqlPrevOpFor(final QueryClauseOccur occur) {
 		String outJPQL = null;
@@ -401,93 +386,17 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 			if (eqQry == null || eqQry.getValue() == null) return null;
 			
 			String dbFieldId = _translatesFieldToDBEntityField.dbEntityFieldNameFor(eqQry.getFieldId()); 
-			String outJPQL = Strings.customized(_entityAlias + ".{} = :{}",
+			String outJPQL = Strings.customized(_dbEntityAlias + ".{} = :{}",
 								    			dbFieldId,eqQry.getFieldId());
 			return outJPQL;
 		}
 		@Override
 		public String wherePredicateFrom(final ContainsTextQueryClause containsTextQry) {
-			if (Strings.isNullOrEmpty(containsTextQry.getText())) return null;
-			
-			String template = null;
-			if (containsTextQry.isBegining()) {
-				template = "upper(" + _entityAlias + ".{}) LIKE '{}%'";
-			} else if (containsTextQry.isEnding()) {
-				template = "upper(" + _entityAlias + ".{}) LIKE '%{}'";			
-			} else if (containsTextQry.isContaining()) {
-				template = "upper(" + _entityAlias + ".{}) LIKE '%{}%'";
-			} else if (containsTextQry.isFullText()) {
-				boolean fullTextSearchEnabled = _dbModuleConfig.isFullTextSearchSupported(_entityManager); 
-				log.info("FullText search enabled: {}",
-						 fullTextSearchEnabled);
-				if (fullTextSearchEnabled) {
-					// Full text search is ENABLED: the filter expression is db platform-dependent
-					// 								use SQL operator available since eclipselink 2.5
-					// 								see http://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic_JPA_Development/Querying/Support_for_Native_Database_Functions#SQL
-					if (_dbModuleConfig.getDbSpec().getVendor()
-												   .is(DBVendor.MySQL)) {
-					    // IMPORTANT!! see: http://dev.mysql.com/doc/refman/5.0/en/fulltext-search.html / http://devzone.zend.com/26/using-mysql-full-text-searching/
-					    //		Tables MUST be MyISAM (InnoDB)) type; to change the table type:
-					    //			ALTER TABLE [table] engine=MyISAM;
-					    //
-					    //		also a FULLTEXT index must be added to the cols:
-					    //			ALTER TABLE [table] ADD FULLTEXT [NOMBRE INDICE](col1,col2,...);
-					    //		
-					    //		Once the above is done, a FULL-TEXT search can be executed like:
-					    //			select * 
-					    //			  from [table]
-					    //			 where MATCH(col1,col2) AGAINST ('[text]');
-						
-						// Generate:  SQL(   'MATCH(colXX) 
-						//				     AGAINST(? IN BOOLEAN MODE)',':text')
-						template = "SQL(  'MATCH({}) " + 
-						  			    "AGAINST(? IN BOOLEAN MODE)','{}')";
-					} 
-					else if (_dbModuleConfig.getDbSpec().getVendor()
-														.is(DBVendor.ORACLE)) {
-						// IMPORTANT!! see: http://docs.oracle.com/cd/B28359_01/text.111/b28304/csql.htm#i997503
-						// 		Oracle Text MUST be enabled
-						
-						// Generate: SQL('CONTAINS(?,?,1) > 0,colXX,:text)
-						template = "SQL('CONTAINS(?,?,1) > 0',{},'{}')";
-					}
-				}
-				else {
-					// simulate full text
-					template = "upper(" + _entityAlias + ".{}) LIKE '%{}%'";
-				}
-			}
 			String dbFieldId = _translatesFieldToDBEntityField.dbEntityFieldNameFor(containsTextQry.getFieldId());
-			String text = containsTextQry.getText()
-										 .trim().toUpperCase();	// important!!
-			String filteringText = null;
-			if (containsTextQry.isFullText()
-			 && _dbModuleConfig.isFullTextSearchSupported(_entityManager)) {
-				// when full text search is enabled, multiple words are supported
-				filteringText = text;
-			} 
-			else {
-				// when full text search is NOT enabled, LIKE operations ONLY supports a single word
-				// (otherwise multiple LIKE clauses are needed:  X LIKE %..% OR X LIKE %..%) 
-				filteringText = text.split(" ")[0];			// use only the FIRST word (no multiple word is allowed)
-			}
-			// a minimal sanitization of the filtering text
-			filteringText = new StringBuilder(filteringText		// it's already in UPPERCASE					
-								   				  .replaceAll("%","")		// remove all %
-												  .replaceAll("'","")		// remove all '
-												  .replaceAll("\"","")		// remove all "
-												  .replaceAll("SELECT","")
-												  .replaceAll("ALTER","")	
-												  .replaceAll("DROP","")	
-												  .replaceAll("DELETE","")
-												  .replaceAll("INSERT","")
-												  .replaceAll("UPDATE","")
-												  .replaceAll("EXPORT","")
-												  .replaceAll("IMPORT",""))
-								  .toString();
-			String outPredStr = Strings.customized(template,
-				          			  			   dbFieldId,filteringText);		// the field and the value!!!
-			return outPredStr;
+			String fullTextWherePredicate = DBSearchJPQUtil.fullTextWherePredicateFrom(_dbModuleConfig,_entityManager,
+																			   		   _dbEntityAlias,dbFieldId,
+																			   		   containsTextQry);
+			return fullTextWherePredicate;
 		}
 		@Override
 		public String wherePredicateFrom(final RangeQueryClause<?> rangeQry) {
@@ -496,13 +405,13 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 			String outJPQL = null;
 			// TODO mind the bound types... now only CLOSED (inclusive) bounds are being having into account 
 			if (rangeQry.getRange().hasLowerBound() && rangeQry.getRange().hasUpperBound()) {
-				outJPQL = Strings.customized(_entityAlias+".{} BETWEEN :{}Start AND :{}End",		// SQL between is INCLUSIVE (>= lower and <= lower)
+				outJPQL = Strings.customized(_dbEntityAlias+".{} BETWEEN :{}Start AND :{}End",		// SQL between is INCLUSIVE (>= lower and <= lower)
 											 dbFieldId, rangeQry.getFieldId(),rangeQry.getFieldId());
 			} else if (rangeQry.getRange().hasLowerBound()) {
-				outJPQL = Strings.customized(_entityAlias+".{} >= :{}",
+				outJPQL = Strings.customized(_dbEntityAlias+".{} >= :{}",
 											 dbFieldId, rangeQry.getFieldId());
 			} else if (rangeQry.getRange().hasUpperBound()) {
-				outJPQL = Strings.customized(_entityAlias+".{} <= :{}",
+				outJPQL = Strings.customized(_dbEntityAlias+".{} <= :{}",
 											 dbFieldId, rangeQry.getFieldId());
 			}
 			return outJPQL;
@@ -510,11 +419,10 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 		@Override
 		public String wherePredicateFrom(final ContainedInQueryClause<?> containedInQry) {
 			String dbFieldId = _translatesFieldToDBEntityField.dbEntityFieldNameFor(containedInQry.getFieldId());
-			String outJPQL = Strings.customized(_entityAlias+".{} IN :{}",
+			String outJPQL = Strings.customized(_dbEntityAlias+".{} IN :{}",
 												dbFieldId,containedInQry.getFieldId());
 			return outJPQL;
 		}
-
 		@Override
 		public String wherePredicateFrom(final NullQueryClause nullQry) {
 			String dbFieldId = _translatesFieldToDBEntityField.dbEntityFieldNameFor(nullQry.getFieldId());
@@ -522,7 +430,7 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 			if (!nullQry.isNull()) {
 				nullStr = "NOT";
 			}
-			String outJPQL = Strings.customized(_entityAlias+".{} IS {} NULL",
+			String outJPQL = Strings.customized(_dbEntityAlias+".{} IS {} NULL",
 												dbFieldId,nullStr);
 			return outJPQL;
 		}
@@ -680,13 +588,13 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 		orderBy.append("ORDER BY ");
 		for (SearchResultsOrdering ord : ordering) {
 			String ordDBEntityFieldName = translatesFieldToDBEntityField.dbEntityFieldNameFor(ord.getFieldId());
-			orderBy.append(Strings.customized(_entityAlias+".{} {}",
+			orderBy.append(Strings.customized(_dbEntityAlias+".{} {}",
 											  ordDBEntityFieldName,ord.getDirection().getCode()));
 		}
 		// BEWARE!!! 	ORACLE BUG with paging & ordering: the order clause MUST include the primary key
 		//				see: http://adfinmunich.blogspot.com.es/2012/03/problem-with-pagination-and-ordering-in.html
 		//					 http://www.eclipse.org/forums/index.php/m/638599/
-		orderBy.append(Strings.customized(","+_entityAlias+".{} ASC",
+		orderBy.append(Strings.customized(","+_dbEntityAlias+".{} ASC",
 										  _dbEntityFieldNameForOid(translatesFieldToDBEntityField)));
 		return orderBy.toString();
 	}
