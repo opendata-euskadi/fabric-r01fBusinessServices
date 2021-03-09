@@ -83,6 +83,26 @@ import r01f.util.types.Strings;
  *   			@Getter @Setter protected String _oid;
  * 		}
  * </pre>
+ * 
+ * Another alternative to this table would be to create a [DB VIEW] with the required info form the [descriptor xml]
+ * For example if the [model object]'s db table has a [xml-descriptor] column that contains entries like: 
+ * <pre class='brush:xml'>
+ * 		<myModelObj oid='theOid'>
+ * 			<nameByLang>
+ * 				<SPANISH><![CDATA[A text in spanish]]></SPANISH>
+ * 				<SPANISH><![CDATA[A text in basque]]></SPANISH>
+ * 				...
+ * 			</nameByLang>
+ * 		</myModelObj>
+ * </pre>
+ * The [DB VIEW] in ORACLE can be created from the following SQL:
+ * <pre class='brush:sql'>
+ * 		SELECT OID,
+ *			   REPLACE(REPLACE(XMLTYPE("DESCRIPTOR").EXTRACT('/myModelObj/nameByLang/SPANISH/text()').GETSTRINGVAL(), '<![CDATA[', ''), ']]>', '') AS ES,
+ *			   REPLACE(REPLACE(XMLTYPE("DESCRIPTOR").EXTRACT('/myModelObj/nameByLang/BASQUE/text()').GETSTRINGVAL(), '<![CDATA[', ''), ']]>', '') AS EU
+ *		  FROM MyDBTable;
+ * </pre>
+ * ... then a full-text index must be created for every column
  */
 @MappedSuperclass
 
