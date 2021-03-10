@@ -136,8 +136,8 @@ public abstract class DBSearchJPQUtil {
 		filteringText = DBSearchJPQUtil.sanitizeFullTextQueryText(filteringText); 	// a minimal sanitization of the filtering text
 		
 		String theDBFieldSpec = dbFieldSpec.startsWith("_") ? dbFieldSpec.substring(1) : dbFieldSpec;	// remove the _ (WTF!!!!)
-		theDBFieldSpec = dbModuleConfig.isFullTextSearchSupported(entityManager) ? dbFieldSpec			// SQL(...) queries requires the PHYSICAL column
-																				 : "_" + dbFieldSpec;	// LIKE queries requires the MAPPED property
+		theDBFieldSpec = dbModuleConfig.isFullTextSearchSupported(entityManager) ? theDBFieldSpec			// SQL(...) queries requires the PHYSICAL column
+																				 : "_" + theDBFieldSpec;	// LIKE queries requires the MAPPED property
 		String outPredStr = Strings.customized(template,
 			          			  			   theDBFieldSpec,filteringText);	// the field and the value!!!
 		return outPredStr;
