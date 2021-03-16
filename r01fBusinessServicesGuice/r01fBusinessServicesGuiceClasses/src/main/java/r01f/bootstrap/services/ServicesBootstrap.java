@@ -90,6 +90,7 @@ public class ServicesBootstrap {
 			// [1] - Consolidate the service interface matchings into a single collection
 			ServiceInterfacesMatchings serviceInterfaceMatchings = _consolidateServiceInterfaceMatchings(bootstrapCfgs);
 
+<<<<<<< HEAD
 			// [2] - The [client api] uses a MapBinder that indexes each [service impl or proxy] by the [service interface]
 			//		 (a map like Map<Class,ServiceInterface>)
 			//		 This map is injected at the [client api] annotated by the [client api appcode]:
@@ -109,7 +110,12 @@ public class ServicesBootstrap {
 										@Override
 										public void configure(final Binder binder) {
 											ClientApiAppCode clientApiAppCode = serviceInterfaceMatchings.getClientApiAppCode();
+=======
+			// [2] - Create the client and core matchings
+			for (ServicesBootstrapConfig bootstrapCfg : bootstrapCfgs) {
+>>>>>>> branch 'master' of https://src1.alm02.itbatera.euskadi.eus/fabric/r01fbusinessservices.git
 
+<<<<<<< HEAD
 											// create the map binder
 											Named mapBinderNamed = Names.named(clientApiAppCode.asString());
 											@SuppressWarnings("rawtypes")
@@ -130,6 +136,14 @@ public class ServicesBootstrap {
 				Collection<Module> coreBootstrap = _createCoreBootstrapModules(bootstrapCfg,
 																			   serviceInterfaceMatchings);
 				allModules.addAll(coreBootstrap);
+=======
+				/*System.out.println(" ======================================================== ");
+				System.out.println(" bootstrapCfg "+bootstrapCfg.debugInfo()) ;
+				System.out.println(" ======================================================== ");*/
+				// [a] - Create a guice module for the client and for every core module
+				Collection<Module> clientAndCoreBootstrap = _createClientAndCoreBootstrapModules(bootstrapCfg,
+																								 serviceInterfaceMatchings);
+>>>>>>> branch 'master' of https://src1.alm02.itbatera.euskadi.eus/fabric/r01fbusinessservices.git
 
 				// [b] - Client bindings:
 				//			- cliente guice modules
@@ -185,7 +199,11 @@ public class ServicesBootstrap {
 																				.toList();
 		if (CollectionUtils.hasData(bootstrapCfgsWithoutClient)) {
 			for (ServicesBootstrapConfig bootstrapCfg  : bootstrapCfgsWithoutClient) {
+<<<<<<< HEAD
 				Collection<Module> clientAndCodeBootstrap = _createCoreBootstrapModules(bootstrapCfg,
+=======
+				Collection<Module> clientAndCodeBootstrap = _createClientAndCoreBootstrapModules(bootstrapCfg,
+>>>>>>> branch 'master' of https://src1.alm02.itbatera.euskadi.eus/fabric/r01fbusinessservices.git
 																								 null);	// no client = no service interface matchings
 				if (CollectionUtils.hasData(clientAndCodeBootstrap)) bootstrapModules.addAll(clientAndCodeBootstrap);
 			}
