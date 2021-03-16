@@ -153,7 +153,7 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//  Model objet to DBEntity transform (WRITING)
+//  Model object to DBEntity transform (WRITING)
 /////////////////////////////////////////////////////////////////////////////////////////
 	protected DB createDBEntityInstanceFor(final M modelObj) {
 		DB outEntity = ReflectionUtils.<DB>createInstanceOf(_DBEntityType);
@@ -383,8 +383,8 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 
 		// [2]: Check immutable properties
 		if (performedOp == PersistencePerformedOperation.UPDATED
-		 && this instanceof ChecksChangesInModelObjectIimmutableFieldsBeforeUpdate) {
-			ChecksChangesInModelObjectIimmutableFieldsBeforeUpdate<M> checksImmutableFieldsChanges = (ChecksChangesInModelObjectIimmutableFieldsBeforeUpdate<M>)this;
+		 && this instanceof ChecksChangesInModelObjectImmutableFieldsBeforeUpdate) {
+			ChecksChangesInModelObjectImmutableFieldsBeforeUpdate<M> checksImmutableFieldsChanges = (ChecksChangesInModelObjectImmutableFieldsBeforeUpdate<M>)this;
 
 			// a) get a model obj from the CUREENTLY-STORED data
 			M actualStoredObj = _transformDBEntityToModelObject(securityContext,
@@ -600,15 +600,16 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 
 		return outName;
 	}
-
-
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Build CRUD Result Error If Entity Exists On Concurrency Or Throw Exception :
 	 * 	The previous existence of the entity is checked at the beginning of this method
-			// BUT there's an edge case where the two threads concurrently try to create the same entity at the same moment
-			// ... if both threads check the entity existence at the same time there's a remote situation in which both gets
-			// a false result (the entity does not previously exists) BUT one thread create the entity and the other fails
-			// because the entity already existed
+	 * BUT there's an edge case where the two threads concurrently try to create the same entity at the same moment
+	 * ... if both threads check the entity existence at the same time there's a remote situation in which both gets
+	 * a false result (the entity does not previously exists) BUT one thread create the entity and the other fails
+	 * because the entity already existed
 	 * @param securityContext
 	 * @param modelObj
 	 * @param requestedOp
@@ -618,83 +619,50 @@ public abstract class DBCRUDForModelObjectBase<O extends PersistableObjectOID,M 
 	protected CRUDError<M> _buildCRUDResultErrorIfEntityExistsOnConcurrencyOrThrow(final SecurityContext securityContext,
 												   				               	   final M modelObj,
 												   				               	   final PersistenceRequestedOperation requestedOp,
-												   				               	   final  PersistenceException persistEx) {
+												   				               	   final PersistenceException persistEx) {
 		log.warn(">>>_buildCRUDResultErrorIfEntityExistsOnConcurrencyOrThrow....");
 
 		if (persistEx.getCause() instanceof org.eclipse.persistence.exceptions.DatabaseException
-			 && persistEx.getCause().getCause() instanceof SQLException) {
+		 && (persistEx.getCause().getCause() instanceof SQLException || persistEx.getCause().getCause() instanceof SQLIntegrityConstraintViolationException)) {
 
-				SQLException sqlEx = (SQLException)persistEx.getCause().getCause();
-
-				if (1 == sqlEx.getErrorCode()
-					|| 1062 == sqlEx.getErrorCode()) {
-					log.warn(">> CRUD Error ORA-00001/MySQL-01062 because Entity {} already exists! ",modelObj.getOid().asString());
-					return CRUDResultBuilder.using(securityContext)
-							.on(_modelObjectType)
-							.notCreated()
-							.becauseClientRequestedEntityAlreadyExists()
-							.about(modelObj)
-							.build();
-				} else if (1400 == sqlEx.getErrorCode()) {
-					log.warn(">> CRUD Error ORA-01400: CANNOT MAKE A NULL INSERT! ",modelObj.getOid().asString());
-					return CRUDResultBuilder.using(securityContext)
-							.on(_modelObjectType)
-							.notCreated()
-							.because(persistEx)
-							.about(modelObj)
-							.build();
-				} else if ("23000".equals(sqlEx.getSQLState())) { //Check if this code number is in some Constants Class.
-				    log.warn(">> CRUD SQL State Error with Entity {}. Check logs! ",modelObj.getOid().asString());
-					return CRUDResultBuilder.using(securityContext)
-											.on(_modelObjectType)
-											.notCreated()
-											.because(persistEx)
-											.about(modelObj)
-											.build();
-				} else {
-					// another type of exception
-					log.warn(">> exception {} will be throw {}",persistEx.getLocalizedMessage());
-					throw persistEx;
-				}
-			} else if (persistEx.getCause() instanceof org.eclipse.persistence.exceptions.DatabaseException
-					&& persistEx.getCause().getCause() instanceof SQLIntegrityConstraintViolationException) {
-
-				SQLIntegrityConstraintViolationException sqlEx = (SQLIntegrityConstraintViolationException)persistEx.getCause().getCause();
-
-				if (1 == sqlEx.getErrorCode()
-					|| 1062 == sqlEx.getErrorCode()) {
-					log.warn(">> CRUD Error ORA-00001/MySQL-01062 because Entity {} already exists! ",modelObj.getOid().asString());
-					return CRUDResultBuilder.using(securityContext)
-							.on(_modelObjectType)
-							.notCreated()
-							.becauseClientRequestedEntityAlreadyExists()
-							.about(modelObj)
-							.build();
-				} else if (1400 == sqlEx.getErrorCode()) {
-					log.warn(">> CRUD Error ORA-01400: CANNOT MAKE A NULL INSERT! ",modelObj.getOid().asString());
-					return CRUDResultBuilder.using(securityContext)
-							.on(_modelObjectType)
-							.notCreated()
-							.because(persistEx)
-							.about(modelObj)
-							.build();
-				} else if ("23000".equals(sqlEx.getSQLState())) { //Check if this code number is in some Constants Class.
-				    log.warn(">> CRUD SQL State Error with Entity {}. Check logs! ",modelObj.getOid().asString());
-					return CRUDResultBuilder.using(securityContext)
-											.on(_modelObjectType)
-											.notCreated()
-											.because(persistEx)
-											.about(modelObj)
-											.build();
-				} else {
-					// another type of exception
-					log.warn(">> exception {} will be throw {}",persistEx.getLocalizedMessage());
-					throw persistEx;
-				}
+			SQLException sqlEx = (SQLException)persistEx.getCause().getCause();
+			
+			if (1 == sqlEx.getErrorCode()
+			 || 1062 == sqlEx.getErrorCode()) {
+				log.warn(">> CRUD Error ORA-00001/MySQL-01062 because Entity {} already exists! ",
+						 modelObj.getOid().asString());
+				return CRUDResultBuilder.using(securityContext)
+										.on(_modelObjectType)
+										.notCreated()
+										.becauseClientRequestedEntityAlreadyExists()
+										.about(modelObj)
+										.build();
+			} else if (1400 == sqlEx.getErrorCode()) {
+				log.warn(">> CRUD Error ORA-01400: CANNOT MAKE A NULL INSERT!",
+						 modelObj.getOid().asString());
+				return CRUDResultBuilder.using(securityContext)
+										.on(_modelObjectType)
+										.notCreated()
+										.because(persistEx)
+										.about(modelObj)
+										.build();
+			} else if ("23000".equals(sqlEx.getSQLState())) { // Check if this code number is in some Constants Class.
+			    log.warn(">> CRUD SQL State Error with Entity {}. Check logs!",
+			    		 modelObj.getOid().asString());
+				return CRUDResultBuilder.using(securityContext)
+										.on(_modelObjectType)
+										.notCreated()
+										.because(persistEx)
+										.about(modelObj)
+										.build();
 			} else {
 				// another type of exception
 				log.warn(">> exception {} will be throw {}",persistEx.getLocalizedMessage());
 				throw persistEx;
 			}
+		}
+		// another type of exception
+		log.warn(">> exception {} will be throw {}",persistEx.getLocalizedMessage());
+		throw persistEx;
 	}
 }

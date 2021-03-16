@@ -129,7 +129,7 @@ public abstract class RESTServicesForVersionableCRUDServicesProxyBase<O extends 
 								  final COREServiceMethodCallbackSpec callbackSpec) {
 		// do the http call: a CREATION (POST) of the entiy at the /versions/activeVersion resource path
 		Url restResourceVersionUrl = this.composeURIFor(this.getServicesRESTResourceUrlPathBuilderAs(RESTServiceResourceUrlPathBuilderForVersionableModelObjectPersistenceBase.class)
-																				.pathOfActiveVersion(entityToBeActivated.getOid().getOid()));	// Version independent oid
+																				.pathOfActiveVersion(entityToBeActivated.getOid().getVersionIndependentOid()));	// Version independent oid
 		String securityContextXml = _marshaller.forWriting().toXml(securityContext);
 		String entityXml = _marshaller.forWriting().toXml(entityToBeActivated);
 		HttpResponse httpResponse = DelegateForRawREST.POST(restResourceVersionUrl,

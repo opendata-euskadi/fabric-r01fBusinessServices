@@ -1,16 +1,28 @@
 package r01f.persistence.index.lucene;
 
+import java.io.Reader;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
+
+import javax.inject.Provider;
+
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.Term;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.Term;
 import r01f.enums.EnumWithCode;
 import r01f.exceptions.Throwables;
 import r01f.facets.HasOID;
 import r01f.facets.util.Facetables;
-import r01f.guids.*;
+import r01f.guids.OID;
+import r01f.guids.OIDBase;
+import r01f.guids.OIDForVersionableModelObject;
+import r01f.guids.VersionIndependentOID;
+import r01f.guids.VersionOID;
 import r01f.locale.Language;
 import r01f.locale.LanguageTexts;
 import r01f.model.IndexableModelObject;
@@ -22,7 +34,11 @@ import r01f.model.metadata.TypeMetaDataForPersistableModelObjectBase;
 import r01f.model.persistence.PersistenceRequestedOperation;
 import r01f.persistence.index.IndexableFieldValuesExtractor;
 import r01f.persistence.index.IndexerBase;
-import r01f.persistence.index.document.*;
+import r01f.persistence.index.document.IndexDocumentFieldConfigSet;
+import r01f.persistence.index.document.IndexDocumentFieldID;
+import r01f.persistence.index.document.IndexDocumentFieldValue;
+import r01f.persistence.index.document.IndexDocumentFieldValueSet;
+import r01f.persistence.index.document.IndexDocumentStandardFieldType;
 import r01f.persistence.lucene.LuceneIndex;
 import r01f.securitycontext.SecurityContext;
 import r01f.types.CanBeRepresentedAsString;
@@ -37,12 +53,6 @@ import r01f.util.types.StringConverter;
 import r01f.util.types.Strings;
 import r01f.util.types.collections.CollectionUtils;
 import r01f.util.types.locale.Languages;
-
-import javax.inject.Provider;
-import java.io.Reader;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
 
 /**
  * Base Lucene indexer that encapsulates the logic described at {@link LuceneDocumentFactoryForIndexableObject} to create a lucene's {@link Document}
@@ -122,7 +132,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 																		   												   this.getModelObjectType(),OIDForVersionableModelObject.class));
 			OIDForVersionableModelObject versionableOid = (OIDForVersionableModelObject)oid;
 			_removeFromIndex(securityContext,
-							 versionableOid.getOid(),versionableOid.getVersion());
+							 versionableOid.getVersionIndependentOid(),versionableOid.getVersion());
 		} else {
 			_removeFromIndex(securityContext,
 							 oid);
@@ -215,7 +225,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 		String luceneIdStr = null;
 		if (oid instanceof OIDForVersionableModelObject) {
 			OIDForVersionableModelObject vOid = (OIDForVersionableModelObject)oid;
-			VersionIndependentOID versionIndependentOid = vOid.getOid();
+			VersionIndependentOID versionIndependentOid = vOid.getVersionIndependentOid();
 			VersionOID versionOid = vOid.getVersion();
 			if (versionOid != null) {
 				luceneIdStr = _idFor(versionIndependentOid,versionOid);

@@ -86,7 +86,7 @@ public abstract class CRUDOKEventListenerBase
 	}
 	public CRUDOKEventListenerBase(final Class<? extends ModelObject> type,
 								   final CRUDOKEventFilter crudOperationOKEventFilter) {
-		this(new CRUDOKEventFilter() {
+		this(new CRUDOKEventFilter() {			
 						CRUDOKEventFilter byTypeFilter = _createCRUDOKEventFilterByModelObjectType(type);
 						
 						@Override 

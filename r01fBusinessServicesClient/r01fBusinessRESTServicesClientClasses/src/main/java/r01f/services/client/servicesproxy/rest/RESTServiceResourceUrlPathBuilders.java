@@ -215,7 +215,7 @@ public class RESTServiceResourceUrlPathBuilders {
 		}
 		@Override
 		public UrlPath pathOfEntity(final O oid) {
-			return Paths.forUrlPaths().join(this.pathOfAllVersions(oid.getOid()),			// beware!!
+			return Paths.forUrlPaths().join(this.pathOfAllVersions(oid.getVersionIndependentOid()),			// beware!!
 					   						oid.getVersion());
 		}
 		public UrlPath pathOfVersionIndependent(final VersionIndependentOID oid) {

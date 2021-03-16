@@ -165,7 +165,7 @@ public abstract class ClientAPIDelegateForVersionableModelObjectCRUDServices<O e
 			// Get the source entity and change it's oid --> it's the destination entity
 			M srcEntity = srcEntityLoad.getOrThrow();
 			O dstOid = OIDs.createOIDForVersionableModelObject((Class<M>)srcEntity.getClass(),
-															   srcOid.getOid(),dstVersion);
+															   srcOid.getVersionIndependentOid(),dstVersion);
 			srcEntity.setOid(dstOid);							// change the oid = the same version independent oid and other version oid
 			srcEntity.asVersionable().setStartOfUseDate(null);	// ... and the version info
 			srcEntity.asVersionable().setEndOfUseDate(null);
