@@ -2,15 +2,11 @@ package r01f.bootstrap;
 
 import java.util.Collection;
 
-import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.servlet.GuiceServletContextListener;
 
-import lombok.extern.slf4j.Slf4j;
 import r01f.bootstrap.services.ServicesBootstrapUtil;
 import r01f.bootstrap.services.config.ServicesBootstrapConfig;
 import r01f.bootstrap.services.config.core.ServicesCoreModuleEventsConfig;
@@ -36,9 +32,8 @@ import r01f.xmlproperties.XMLPropertiesForApp;
  *		</listener>
  * </pre>
  */
-@Slf4j
 public abstract class ServletContextListenerBase
-	          extends GuiceServletContextListener {
+	          extends GuiceServletContextListenerBase {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +41,6 @@ public abstract class ServletContextListenerBase
 	private final Collection<Module> _commonGuiceModules;
 	private final ServicesCoreModuleEventsConfig _commonEventsConfig;
 
-	protected Injector _injector;
 /////////////////////////////////////////////////////////////////////////////////////////
 // 	CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -106,48 +100,9 @@ public abstract class ServletContextListenerBase
 //  Overridden methods of GuiceServletContextListener
 /////////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	protected Injector getInjector() {
-		if (_injector == null) {
-			_injector = Guice.createInjector(ServicesBootstrapUtil.getBootstrapGuiceModules(_servicesBootstrapConfig)
-							 					                          .withCommonEventsExecutor(_commonEventsConfig)
-																		  .withCommonBindingModules(_commonGuiceModules));
-		} else {
-			log.warn("The Guice Injector is already created!!!");
-		}
-		return _injector;
-	}
-	@Override
-	public void contextInitialized(final ServletContextEvent servletContextEvent) {
-		log.warn("=============================================");
-		log.warn("Loading {} Servlet Context with {}...",
-				 servletContextEvent.getServletContext().getContextPath(),
-				 this.getClass().getSimpleName());
-		log.warn("=============================================");
-
-		super.contextInitialized(servletContextEvent);
-
-		// Init JPA's Persistence Service, Lucene indexes and everything that has to be started
-		// (see https://github.com/google/guice/wiki/ModulesShouldBeFastAndSideEffectFree)
-		ServicesBootstrapUtil.startServices(_injector);
-	}
-	@Override
-	public void contextDestroyed(final ServletContextEvent servletContextEvent) {
-		log.warn("=============================================");
-		log.warn("DESTROYING {} Servlet Context with {} > closing search engine indexes if they are in use, release background jobs threads and so on...",
-				 servletContextEvent.getServletContext().getContextPath(),
-				 this.getClass().getSimpleName());
-		log.warn("=============================================");
-
-		// Close JPA's Persistence Service, Lucene indexes and everything that has to be closed
-		// (see https://github.com/google/guice/wiki/ModulesShouldBeFastAndSideEffectFree)
-		ServicesBootstrapUtil.stopServices(_injector);
-
-		// finalize
-		super.contextDestroyed(servletContextEvent);
-
-		log.warn("=============================================");
-		log.warn("{} Servlet Context DESTROYED!!...",
-				 servletContextEvent.getServletContext().getContextPath());
-		log.warn("=============================================");
+	protected Iterable<Module> _createGuiceModules() {
+		return ServicesBootstrapUtil.getBootstrapGuiceModules(_servicesBootstrapConfig)
+		                          .withCommonEventsExecutor(_commonEventsConfig)
+								  .withCommonBindingModules(_commonGuiceModules);
 	}
 }
