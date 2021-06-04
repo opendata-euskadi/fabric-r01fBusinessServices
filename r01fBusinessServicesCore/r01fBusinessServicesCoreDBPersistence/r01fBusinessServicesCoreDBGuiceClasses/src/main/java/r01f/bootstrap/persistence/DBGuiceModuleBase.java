@@ -64,7 +64,7 @@ public abstract class DBGuiceModuleBase
 		// Create the module
 		String jpaModuleName = _persistenceUnitName(_dbConfig.getUnitType());
 		JpaPersistModule jpaModule = new JpaPersistModule(jpaModuleName);	// for an alternative way see http://stackoverflow.com/questions/18101488/does-guice-persist-provide-transaction-scoped-or-application-managed-entitymanag
-
+		
 		jpaModule.properties(props);
 		theBinder.install(jpaModule);
 
@@ -97,8 +97,8 @@ public abstract class DBGuiceModuleBase
 //		final String persistenceUnitName = Strings.customized("persistenceUnit.{}.{}",
 //													 	 	  jpaServiceName,			// ie: "r01t.urlAlias"
 //													 	 	  persistenceUnitType);		// ie: "persistenceUnit.r01n.myComponent.dataSource"
-		final String persistenceUnitName = Strings.customized("persistenceUnit.{}",
-												 	 	      jpaServiceName);			// ie: "r01t.urlAlias"
+		String persistenceUnitName = Strings.customized("persistenceUnit.{}",
+												 	 	jpaServiceName);			// ie: "r01t.urlAlias"
 		return persistenceUnitName;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////

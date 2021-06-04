@@ -5,6 +5,32 @@
 	<modelVersion>4.0.0</modelVersion>
 
 <!-- ====================================================================== -->
+<!-- PROPERTIES                                                             -->
+<!-- ====================================================================== -->
+	<properties>
+		<!-- Dependencies versions -->
+		<eclipselink.version>2.7.8</eclipselink.version>	<!-- v2.7.8 requires jdk1.8 for jdk 1.6 use 2.5.2-->
+		<!-- 
+		EclipseLink 3.0 notes
+		*********************
+		Elipselink 3.0 requires Jakarta Persist where javax.persistence.* package is replaced by jakarta.persistence* package
+		... this means that [guice persist] CANNOT BE USED with Eclipselink 3.0 since it's based on javax.persistence.*
+			(for example [guce persist] uses javax.persistence.EntityManager)
+		The dependencies for Eclipselink 3.0 are:
+		<dependency>
+		    <groupId>javax.persistence</groupId>
+		    <artifactId>javax.persistence-api</artifactId>
+		    <version>2.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>jakarta.persistence</groupId>
+		    <artifactId>jakarta.persistence-api</artifactId>
+		    <version>3.0.0</version>
+		</dependency>
+		-->
+	</properties>
+
+<!-- ====================================================================== -->
 <!-- PARENT                                                                 -->
 <!-- ====================================================================== -->
 	<parent>
@@ -48,7 +74,7 @@
 		<dependency>
 		    <groupId>org.eclipse.persistence</groupId>
 		    <artifactId>eclipselink</artifactId>
-		    <version>2.5.2</version>
+		    <version>${eclipselink.version}</version>
 		</dependency>
 	</dependencies>
 	
