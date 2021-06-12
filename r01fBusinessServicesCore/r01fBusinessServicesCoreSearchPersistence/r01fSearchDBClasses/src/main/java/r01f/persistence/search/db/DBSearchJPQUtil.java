@@ -112,7 +112,7 @@ public abstract class DBSearchJPQUtil {
 					// 		Oracle Text MUST be enabled
 					
 					// Generate: SQL('CONTAINS(?,?,1) > 0,colXX,:text)
-					template = "SQL('CONTAINS(?,?,1) > 0',{},'{}')";
+					template = "SQL('CONTAINS(?,?,1) > 0','{}','{}')";
 				}
 			}
 			else {
