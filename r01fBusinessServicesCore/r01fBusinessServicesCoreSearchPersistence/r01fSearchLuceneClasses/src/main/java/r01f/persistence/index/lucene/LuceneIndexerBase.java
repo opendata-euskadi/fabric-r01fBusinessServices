@@ -29,8 +29,8 @@ import r01f.model.IndexableModelObject;
 import r01f.model.facets.Versionable.HasVersionableFacet;
 import r01f.model.metadata.FieldID;
 import r01f.model.metadata.FieldMetaData;
+import r01f.model.metadata.HasMetaDataForPersistableModelObject;
 import r01f.model.metadata.TypeMetaData;
-import r01f.model.metadata.TypeMetaDataForPersistableModelObjectBase;
 import r01f.model.persistence.PersistenceRequestedOperation;
 import r01f.persistence.index.IndexableFieldValuesExtractor;
 import r01f.persistence.index.IndexerBase;
@@ -119,7 +119,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 												PersistenceRequestedOperation.UPDATE);	// update an existing record
 
 		// update lucene index (it deletes the reg and inserts it again)
-		FieldID docIdFieldId = FieldID.from(TypeMetaDataForPersistableModelObjectBase.SEARCHABLE_METADATA.DOCID);
+		FieldID docIdFieldId = FieldID.from(HasMetaDataForPersistableModelObject.SEARCHABLE_METADATA.DOCID);
 		_luceneIndex.reIndex(new Term(docIdFieldId.asString(),
 								  	  _luceneDOCIDFieldValueFrom(modelObject)),
 							 doc);
@@ -141,7 +141,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 	@SuppressWarnings("unused")
 	private void _removeFromIndex(final SecurityContext securityContext,
 								  final OID oid) {
-		FieldID docIdFieldId = FieldID.from(TypeMetaDataForPersistableModelObjectBase.SEARCHABLE_METADATA.DOCID);
+		FieldID docIdFieldId = FieldID.from(HasMetaDataForPersistableModelObject.SEARCHABLE_METADATA.DOCID);
 		Term idTerm = new Term(docIdFieldId.asString(),
 							   _idFor(oid));
 		// UN-index
@@ -151,7 +151,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 								  final VersionIndependentOID oid,final VersionOID version) {
 		if (!this.getModelObjectMetaData().hasFacet(HasVersionableFacet.class)) throw new UnsupportedOperationException(Throwables.message("The model object {} is NOT a versionable object, so removeFromIndex(oid) MUST be used",
 																																		  this.getModelObjectType()));
-		FieldID docIdFieldId = FieldID.from(TypeMetaDataForPersistableModelObjectBase.SEARCHABLE_METADATA.DOCID);
+		FieldID docIdFieldId = FieldID.from(HasMetaDataForPersistableModelObject.SEARCHABLE_METADATA.DOCID);
 		Term idTerm = new Term(docIdFieldId.asString(),
 							   _idFor(oid,version));
 		// UN-index
@@ -166,7 +166,7 @@ public abstract class LuceneIndexerBase<P extends IndexableModelObject>
 																	  	  reqOp);
 		// [2] - Add the id field (every document has an id field)
 		FieldMetaData docIdField = this.getModelObjectMetaData()
-											.findFieldByIdOrThrow(TypeMetaDataForPersistableModelObjectBase.SEARCHABLE_METADATA.DOCID)
+											.findFieldByIdOrThrow(HasMetaDataForPersistableModelObject.SEARCHABLE_METADATA.DOCID)
 												.asFieldMetaData();
 		fieldsValues.add(IndexDocumentFieldValue.forMetaData(docIdField)
 									  			.andValue(// anonymous oid type to avoid creating a new oid type just for this
