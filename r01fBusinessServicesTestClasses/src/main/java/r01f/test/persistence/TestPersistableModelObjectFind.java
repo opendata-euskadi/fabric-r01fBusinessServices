@@ -43,12 +43,10 @@ public class TestPersistableModelObjectFind<O extends PersistableObjectOID,M ext
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 /////////////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * Tests the CRUD API (creates an entity, updates it, loads it and finally deletes it)
-	 * @param modelObject
-	 */
-	@SuppressWarnings("rawtypes")
 	public void testFind() {
+		this.testFind(true);	// delete created objs
+	}
+	public void testFind(final boolean deleteCreatedObjs) {
 		log.warn("[init][TEST BASIC FIND {}]-----------------------------------------------------------------------",
 				 _managesTestMockObjs.getModelObjType());
 
@@ -95,7 +93,7 @@ public class TestPersistableModelObjectFind<O extends PersistableObjectOID,M ext
 				 _managesTestMockObjs.getModelObjType(),NumberFormat.getNumberInstance(Locale.getDefault()).format(stopWatch.elapsed(TimeUnit.MILLISECONDS)));
 
 		// [99]: Delete previously created test objects to restore DB state
-		_managesTestMockObjs.tearDownCreatedMockObjs();
+		if (deleteCreatedObjs) _managesTestMockObjs.tearDownCreatedMockObjs();
 	}
 	protected void testDependentObjectsFind() {
 		// [5] - If it's a dependent model object, test the specific methods

@@ -39,11 +39,12 @@ public class TestPersistableModelObjectCRUD<O extends PersistableObjectOID,M ext
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 /////////////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * Tests the CRUD API (creates an entity, updates it, loads it and finally deletes it)
-	 * @param modelObject
-	 */
 	public void testPersistence(final CommandOn<M> modelObjectStateUpdateCommand) {
+		this.testPersistence(modelObjectStateUpdateCommand,
+							 true);		// test delete
+	}
+	public void testPersistence(final CommandOn<M> modelObjectStateUpdateCommand,
+								final boolean testDelete) {
 		log.warn("[init][TEST BASIC PERSISTENCE {}]-----------------------------------------------------------------------",
 				 _modelObjFactory.getModelObjType());
 
@@ -57,10 +58,10 @@ public class TestPersistableModelObjectCRUD<O extends PersistableObjectOID,M ext
 											modelObjectStateUpdateCommand);
 
 		// [3] Delete the entity
-		this.testDelete(updatedModelObj);
+		if (testDelete) this.testDelete(updatedModelObj);
 
 		// WARNING!!! There's NO need to call _modelObjFactory.tearDownCreatedMockModelObjs() because all created model objs
-		//			  have been removed
+		//			  have been removed while calling delete
 		// _modelObjFactory.tearDownCreatedMockModelObjs();
 
 		log.warn("[end ][TEST BASIC PERSISTENCE {}] (elapsed time: {} milis) -------------------------",
