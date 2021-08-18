@@ -9,6 +9,7 @@ import javax.persistence.Query;
 
 import com.google.common.collect.Lists;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,8 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 	protected FactoryFrom<F,TranslatesSearchFilterClauseToJPQLWherePredicate> _translatesFilterClauseToJpqlPredicateFactory;
 	protected FactoryFrom<Query,SetsJPQLWherePredicateParamFromSearchFilterClauseValue> _setsJpqlWherePredicateParamsFromFilterClauseValueFactory;
 	
-	protected String _dbEntityAlias = "entity";
+	@Getter public String _dbEntityAlias = "entity";
+	@Getter public String _dbOidAlias = "_factDimOid";
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
