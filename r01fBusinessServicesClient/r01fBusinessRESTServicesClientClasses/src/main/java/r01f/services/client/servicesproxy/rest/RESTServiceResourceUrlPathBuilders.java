@@ -14,6 +14,8 @@ import r01f.guids.OIDForVersionableModelObject;
 import r01f.guids.VersionIndependentOID;
 import r01f.securitycontext.SecurityIDS.LoginID;
 import r01f.securitycontext.SecurityOIDs.UserOID;
+import r01f.types.IsPath;
+import r01f.types.Path;
 import r01f.types.Range;
 import r01f.types.url.Host;
 import r01f.types.url.UrlPath;
@@ -30,16 +32,16 @@ import r01f.xmlproperties.XMLPropertiesForAppComponent;
 @Slf4j
 public class RESTServiceResourceUrlPathBuilders {
 /////////////////////////////////////////////////////////////////////////////////////////
-//  
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * Encapsulates the service endpoint url (the host & base path) 
+	 * Encapsulates the service endpoint url (the host & base path)
 	 * which usually is loaded from the properties file
 	 * at a standard section as:
 	 * <pre class='brush:xml'>
 	 * 	<restEndPoints>
-	 *		<host>http://localhost:8080/</host>				
-	 *		<persistenceEndPointBasePath>xxRESTServicesWar</persistenceEndPointBasePath>	 
+	 *		<host>http://localhost:8080/</host>
+	 *		<persistenceEndPointBasePath>xxRESTServicesWar</persistenceEndPointBasePath>
 	 *	</restEndPoints>
 	 * </pre>
 	 */
@@ -48,20 +50,20 @@ public class RESTServiceResourceUrlPathBuilders {
 	public static class RESTServiceEndPointUrl {
 		@Getter private final Host _host;
 		@Getter private final UrlPath _endPointBasePath;
-		
+
 		public RESTServiceEndPointUrl(final ServicesCoreModuleExpositionAsRESTServices coreModuleRESTExposition) {
 			_host = coreModuleRESTExposition.getHost();
 			_endPointBasePath = coreModuleRESTExposition.getBaseUrlPath();
-		
+
 		}
-		
+
 		public RESTServiceEndPointUrl(final XMLPropertiesForAppComponent clientProps,
-									  final String selector) {			
+									  final String selector) {
 			this(clientProps.propertyAt("client/restEndPoints/host")
 					   		.asHost(Host.localhost()),
 				 clientProps.propertyAt(Strings.customized("client/restEndPoints/{}EndPointBasePath",selector))
 					  		.asUrlPath());
-			
+
 			// warn if the properties could NOT be retrieved
 			if (_host == null || _endPointBasePath == null) {
 				// the config is NOT valid!
@@ -70,7 +72,7 @@ public class RESTServiceResourceUrlPathBuilders {
 																   selector));
 			}
 			// ... or log
-			else if (log.isTraceEnabled()) { 
+			else if (log.isTraceEnabled()) {
 				log.trace("REST service endpoint for {} at {}: host={}, basePath={}",
 					  	  selector,Strings.customized("client/restEndPoints/{}EndPointBasePath",selector),
 					  	  _host,_endPointBasePath);
@@ -88,12 +90,12 @@ public class RESTServiceResourceUrlPathBuilders {
 	}
 	@GwtIncompatible("Not used from GWT")
 	@RequiredArgsConstructor
-	public static abstract class RESTServiceResourceUrlPathBuilderBase 
+	public static abstract class RESTServiceResourceUrlPathBuilderBase
 					  implements RESTServiceResourceUrlPathBuilder {
 		private final Host _host;					// localhost
 		private final UrlPath _endPointBasePath;	// xxFooWar
 		private final UrlPath _resourcePath;		// bar/baz
-		
+
 		public RESTServiceResourceUrlPathBuilderBase(final RESTServiceEndPointUrl endPointUrl,
 													 final UrlPath resourcePath) {
 			this(endPointUrl.getHost(),
@@ -101,7 +103,7 @@ public class RESTServiceResourceUrlPathBuilders {
 				 resourcePath);
 			if (resourcePath == null) throw new IllegalArgumentException("The REST resource url path is mandatory");
 		}
-		
+
 		@Override
 		public Host getHost() {
 			return _host;
@@ -118,23 +120,23 @@ public class RESTServiceResourceUrlPathBuilders {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  MODEL OBJECT
 /////////////////////////////////////////////////////////////////////////////////////////
-	@GwtIncompatible("Not used from GWT")
+	@GwtIncompatible("Not used from GWT") @SuppressWarnings("unchecked")
 	public static interface RESTServiceResourceUrlPathBuilderForModelObjectPersistence<O extends OID>
 					extends RESTServiceResourceUrlPathBuilder {
 		public UrlPath pathOfEntity(final O oid);
-		public UrlPath pathOfAllEntities();
-		public UrlPath pathOfEntityList();	
+		public UrlPath pathOfAllEntities(final Path... prePathElements); /*   Sometimes to build a full "path of all entities", some extra info is required */
+		public UrlPath pathOfEntityList();
 		public UrlPath pathOfEntityListByCreateDate(final Range<Date> dateRange);
 		public UrlPath pathOfEntityListByLastUpdateDate(final Range<Date> dateRange);
 		public UrlPath pathOfEntityListByCreator(final UserOID creatorUserOid);
 		public UrlPath pathOfEntityListByCreator(final LoginID creatorUserCode);
 		public UrlPath pathOfEntityListByLastUpdator(final UserOID lastUpdatorUserOid);
-		public UrlPath pathOfEntityListByLastUpdator(final LoginID lastUpdatorUserCode);		
+		public UrlPath pathOfEntityListByLastUpdator(final LoginID lastUpdatorUserCode);
 	}
-	@GwtIncompatible("Not used from GWT")
+	@GwtIncompatible("Not used from GWT")  @SuppressWarnings("unchecked")
 	public static abstract class RESTServiceResourceUrlPathBuilderForModelObjectPersistenceBase<O extends OID>
 						 extends RESTServiceResourceUrlPathBuilderBase
-			 		  implements RESTServiceResourceUrlPathBuilderForModelObjectPersistence<O> {		
+			 		  implements RESTServiceResourceUrlPathBuilderForModelObjectPersistence<O> {
 		public RESTServiceResourceUrlPathBuilderForModelObjectPersistenceBase(final RESTServiceEndPointUrl endPointUrl,
 																			  final UrlPath resourcePath) {
 			super(endPointUrl,
@@ -146,14 +148,14 @@ public class RESTServiceResourceUrlPathBuilders {
 			super(host,
 				  endPointBasePath,
 				  resourcePath);
-		}		
+		}
 		@Override
 		public UrlPath pathOfEntity(final O oid) {
 			return Paths.forUrlPaths().join(this.pathOfResource(),
 					   						oid);
 		}
 		@Override
-		public UrlPath pathOfAllEntities() {
+		public UrlPath pathOfAllEntities(final Path...prePathElements) {
 			return this.pathOfResource();
 		}
 		@Override
@@ -220,7 +222,7 @@ public class RESTServiceResourceUrlPathBuilders {
 		}
 		public UrlPath pathOfVersionIndependent(final VersionIndependentOID oid) {
 			return Paths.forUrlPaths().join(this.pathOfResource(),
-					   						oid);	
+					   						oid);
 		}
 		public UrlPath pathOfAllVersions(final VersionIndependentOID oid) {
 			return Paths.forUrlPaths().join(this.pathOfVersionIndependent(oid),
