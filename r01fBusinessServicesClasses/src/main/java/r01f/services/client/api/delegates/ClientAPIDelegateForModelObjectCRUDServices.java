@@ -60,8 +60,8 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 */
 	public Date getLastUpdateDateOf(final O oid) {
 		PersistenceOperationResult<Date> lastUpdateExec = this.getServiceProxy()
-																.getLastUpdateDate(this.getSecurityContext(),
-																				   oid);
+															  .getLastUpdateDate(this.getSecurityContext(),
+																			   	 oid);
 		return lastUpdateExec.getOrThrow();
 	}
 	/**
@@ -72,8 +72,8 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 	 */
 	public M load(final O oid) {
 		CRUDResult<M> loadOpResult = this.getServiceProxy()
-												.load(this.getSecurityContext(),
-	 	  		 								      oid);
+										 .load(this.getSecurityContext(),
+											   oid);
 		log.debug(loadOpResult.debugInfo().toString());
 
 		M outRecord = loadOpResult.getOrThrow();
@@ -196,15 +196,15 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 		if (((DirtyStateTrackable)record).getTrackingStatus().isThisNew()) {
 			// 2.1) the record is new
 			saveOpResult = this.getServiceProxy()
-									.create(this.getSecurityContext(),
-				 				   		  	record);
+							   .create(this.getSecurityContext(),
+			 				   		   record);
 			outRecord = saveOpResult.getOrThrow();
 
 		} else if (trckReceivedRecord.isDirty()) {
 			// 2.1) - The record already existed (it's an update)
 			saveOpResult = this.getServiceProxy()
-										.update(this.getSecurityContext(),
-										 		record);
+							   .update(this.getSecurityContext(),
+								 	   record);
 			outRecord = saveOpResult.getOrThrow();
 
 		} else {
@@ -263,9 +263,9 @@ public abstract class ClientAPIDelegateForModelObjectCRUDServices<O extends Pers
 		} else if (trckReceivedRecord.isDirty()) {
 			// 2.1) - The record already existed (it's an update)
 			saveOpResult = this.getServiceProxy()
-										.update(this.getSecurityContext(),
-										 		record,
-										 		callbackSpec);
+							   .update(this.getSecurityContext(),
+								 	   record,
+								 	   callbackSpec);
 			outRecord = saveOpResult.getOrThrow();
 
 		} else {
