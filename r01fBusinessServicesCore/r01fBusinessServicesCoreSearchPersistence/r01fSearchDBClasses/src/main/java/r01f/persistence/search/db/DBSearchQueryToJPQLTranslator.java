@@ -55,7 +55,6 @@ public class DBSearchQueryToJPQLTranslator<F extends SearchFilter,
 	protected FactoryFrom<Query,SetsJPQLWherePredicateParamFromSearchFilterClauseValue> _setsJpqlWherePredicateParamsFromFilterClauseValueFactory;
 	
 	@Getter public String _dbEntityAlias = "entity";
-	@Getter public String _dbOidAlias = "_factDimOid";
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
