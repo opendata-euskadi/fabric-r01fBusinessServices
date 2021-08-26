@@ -117,9 +117,9 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 			 // create a default transformer using the marshaller
 			 DBBase.createTransformsDBEntityIntoModelObjectUsing(marshaller,		
 																 modelObjectType),
-			  dbCfg,
-			  entityManager,
-			  marshaller);
+			 dbCfg,
+			 entityManager,
+			 marshaller);
 	}
 	public DBBaseForModelObject(final Class<M> modelObjectType,final Class<DB> dbEntityType,
 								final TransformsDBEntityIntoModelObject<DB,M> dbEntityIntoModelObjectTransformer,
@@ -319,8 +319,8 @@ public abstract class DBBaseForModelObject<O extends PersistableObjectOID,M exte
 							    final O oid) {
 		PK pk = this.dbEntityPrimaryKeyFor(oid);
 		if (pk == null) return null;
-		return doLoadDBEntity(securityContext,
-							  pk);
+		return this.doLoadDBEntity(securityContext,
+							  	   pk);
 	}
 	/**
 	 * Loads the db entity using the pk
