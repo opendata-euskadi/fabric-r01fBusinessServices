@@ -124,6 +124,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 												  final OID targetEntityOid,
 												  final Url restResourceUrl,final HttpResponse httpResponse) {
 		CRUDResult<M> outOperationResult = null;
+
 		if (httpResponse.isSuccess()) {
 			outOperationResult = _mapHttpResponseForSuccess(securityContext,
 															requestedOp,
@@ -147,8 +148,10 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 
 		// [0] - Load the response
 		String responseStr = httpResponse.loadAsString();		// DO not move!!
-		if (Strings.isNullOrEmpty(responseStr)) throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE. This is a developer mistake! It MUST return the target entity data",
-															   	   									   restResourceUrl));
+		if (Strings.isNullOrEmpty(responseStr)) {
+			throw new COREServiceProxyException(Throwables.message("The REST service {} worked BUT it returned an EMPTY RESPONSE."
+																	+ " This is a developer mistake! It MUST return the target entity data into CRUDResult",  restResourceUrl));
+		}
 		/*	 Marshaller tries to marshall "M" just a PersistableObject Interface and NOT as the concrete class... so crashes...
 			   outOperationResult = _marshaller.forReading().fromJson(responseStr,
 														  new TypeToken<CRUDOK<M>>() { /* nothing */
@@ -159,6 +162,8 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 		TypeToken<CRUDOK<M>> typeToken =  (TypeToken<CRUDOK<M>>)TypeToken.of(new ParameterizedTypeImpl(CRUDOK.class,
 																									   modelTypes,
 																									   null));			// owner type
+
+
 		// [1] - Map the response
 		if (_mimeType.is(MimeTypes.APPLICATION_XML)) {
 			outOperationResult = _marshaller.forReading().fromXml(responseStr,typeToken);
@@ -166,9 +171,16 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 		} else if (_mimeType.is(MimeTypes.APPLICATION_JSON)) {
 			outOperationResult = _marshaller.forReading().fromJson(responseStr,typeToken);
 
+
 		} else {
 			throw new IllegalArgumentException(Strings.customized("{} mimeType not suported",
 																  _mimeType)) ;
+		}
+		if (outOperationResult == null) {
+			throw new COREServiceProxyException(Throwables.message("The REST service {}"
+																	+ " worked BUT RESPONSE:  {}"
+																	+ "  ....CANNOT BE PARSED to a  CRUDResult object for {}" ,
+																			restResourceUrl, responseStr , _modelObjectType));
 		}
 		// [2] - Return
 		return outOperationResult;
