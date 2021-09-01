@@ -37,7 +37,8 @@ import r01f.util.types.collections.CollectionUtils;
 
 @Slf4j
 @Accessors(prefix="_")
-public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableObjectOID,M extends PersistableModelObject<O>> {
+public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableObjectOID,M extends PersistableModelObject<O>>
+	implements RESTResponseToCRUDResultMapper<O,M> {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -110,6 +111,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 			return outOperationResult;
 		}
 	}
+	@Override
 	public CRUDResult<M> mapHttpResponseForEntity(final SecurityContext securityContext,
 												  final PersistenceRequestedOperation requestedOp,
 												  final M targetEntity,
@@ -119,6 +121,7 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 											 targetEntity.getOid(),
 											 restResourceUrl,httpResponse);
 	}
+	@Override
 	public CRUDResult<M> mapHttpResponseForEntity(final SecurityContext securityContext,
 												  final PersistenceRequestedOperation requestedOp,
 												  final OID targetEntityOid,
@@ -326,5 +329,4 @@ public class RESTResponseToCRUDResultMapperForModelObject<O extends PersistableO
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 }
