@@ -34,29 +34,29 @@ public class ServicesCoreGuiceBootstrapConfigWhenBeanExposed
 	 * The packages where CoreService, interface 1 and interface 2 resides MUST be handed 
 	 * to the subtypeOfScan method of org.reflections
 	 */
-	@Getter private final Class<? extends CoreService> _coreServiceImplBaseType;
+	@Getter private final Collection<Class<? extends CoreService>> _coreServiceImplBaseTypes;
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CONSTRUCTOR
 /////////////////////////////////////////////////////////////////////////////////////////
 	public ServicesCoreGuiceBootstrapConfigWhenBeanExposed(final CoreAppCode coreAppCode,final CoreModule coreModule,
 														   final Class<? extends BeanImplementedServicesCoreBootstrapGuiceModuleBase> coreBootstrapGuiceModule,
 												   	       final Collection<ServicesCoreSubModuleBootstrapConfig<?>> subModulesCfgs,
-												   	       final Class<? extends CoreService> coreServicesBaseType,
+												   	       final Collection<Class<? extends CoreService>> coreServicesBaseTypes,
 												   	       final boolean isolate) {
 		super(coreAppCode,coreModule,
 			  coreBootstrapGuiceModule,
 			  subModulesCfgs,
 			  isolate);
-		_coreServiceImplBaseType = coreServicesBaseType;
+		_coreServiceImplBaseTypes = coreServicesBaseTypes;
 	}
 	public ServicesCoreGuiceBootstrapConfigWhenBeanExposed(final CoreAppCode coreAppCode,final CoreModule coreModule,
 														   final Class<? extends BeanImplementedServicesCoreBootstrapGuiceModuleBase> coreBootstrapGuiceModule,
 												      	   final Collection<ServicesCoreSubModuleBootstrapConfig<?>> subModulesCfgs,
-												      	   final Class<? extends CoreService> coreServicesBaseType) {
+												      	   final Collection<Class<? extends CoreService>> coreServicesBaseTypes) {
 		this(coreAppCode,coreModule,
 			 coreBootstrapGuiceModule,
 			 subModulesCfgs,
-			 coreServicesBaseType,
+			 coreServicesBaseTypes,
 			 true);		// usually bean core modules contains DB modules (jpa) that MUST be binded in a private module
 	}
 }

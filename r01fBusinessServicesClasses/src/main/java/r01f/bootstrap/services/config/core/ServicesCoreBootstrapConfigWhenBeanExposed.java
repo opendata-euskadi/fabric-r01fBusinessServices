@@ -1,5 +1,7 @@
 package r01f.bootstrap.services.config.core;
 
+import java.util.Collection;
+
 import lombok.experimental.Accessors;
 import r01f.services.core.CoreService;
 
@@ -20,5 +22,5 @@ public interface ServicesCoreBootstrapConfigWhenBeanExposed
 	 * The packages where CoreService, interface 1 and interface 2 resides MUST be handed 
 	 * to the subtypeOfScan method of org.reflections
 	 */
-	public Class<? extends CoreService> getCoreServiceImplBaseType();
+	public Collection<Class<? extends CoreService>> getCoreServiceImplBaseTypes();
 }

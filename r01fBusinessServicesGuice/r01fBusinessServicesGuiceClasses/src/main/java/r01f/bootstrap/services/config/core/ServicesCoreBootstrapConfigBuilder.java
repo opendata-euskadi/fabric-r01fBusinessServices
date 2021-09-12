@@ -72,12 +72,16 @@ public abstract class ServicesCoreBootstrapConfigBuilder
 		protected final CoreModule _coreModule;
 		protected final Class<? extends BeanImplementedServicesCoreBootstrapGuiceModuleBase> _coreBootstrapGuiceModuleType;
 		
-		public ServicesConfigBuilderBeanCOREBootstapSubModuleStep findServicesExtending(final Class<? extends CoreService> servicesImplIfaceType) {
+		@SafeVarargs
+		public final ServicesConfigBuilderBeanCOREBootstapSubModuleStep findServicesExtending(final Class<? extends CoreService>... servicesImplIfaceTypes) {
+			return this.findServicesExtending(Lists.newArrayList(servicesImplIfaceTypes));
+		}
+		public final ServicesConfigBuilderBeanCOREBootstapSubModuleStep findServicesExtending(final Collection<Class<? extends CoreService>> servicesImplIfaceTypes) {
 			return new ServicesConfigBuilderBeanCOREBootstapSubModuleStep(_coreAppCode,_coreModule,
 																		  _coreBootstrapGuiceModuleType,
-																		  servicesImplIfaceType);
+																		  servicesImplIfaceTypes);
 		}
-		public ServicesConfigBuilderBeanCOREBootstapSubModuleStep doNOTFindServices() {
+		public final ServicesConfigBuilderBeanCOREBootstapSubModuleStep doNOTFindServices() {
 			return new ServicesConfigBuilderBeanCOREBootstapSubModuleStep(_coreAppCode,_coreModule,
 																		  _coreBootstrapGuiceModuleType,
 																		  null);
@@ -87,14 +91,14 @@ public abstract class ServicesCoreBootstrapConfigBuilder
  		 extends ServicesConfigBuilderCOREBootstapSubModuleStepBase<BeanImplementedServicesCoreBootstrapGuiceModuleBase,
  		 															ServicesConfigBuilderBeanCOREBootstapModuleBuildStep> {
 		
-		protected final Class<? extends CoreService> _coreServicesBaseType;
+		protected final Collection<Class<? extends CoreService>> _coreServicesBaseTypes;
 		
 		public ServicesConfigBuilderBeanCOREBootstapSubModuleStep(final CoreAppCode coreAppCode,final CoreModule coreModule,
 								   								  final Class<? extends BeanImplementedServicesCoreBootstrapGuiceModuleBase> coreBootstrapGuiceModuleType,
-																  final Class<? extends CoreService> coreServicesBaseType) {
+																  final Collection<Class<? extends CoreService>> coreServicesBaseTypes) {
 			super(coreAppCode,coreModule,
 				  coreBootstrapGuiceModuleType);
-			_coreServicesBaseType = coreServicesBaseType;
+			_coreServicesBaseTypes = coreServicesBaseTypes;
 		}
 		@Override
 		ServicesConfigBuilderBeanCOREBootstapModuleBuildStep _createNextStep(final CoreAppCode coreAppCode,final CoreModule coreModule,
@@ -103,36 +107,36 @@ public abstract class ServicesCoreBootstrapConfigBuilder
 			return new ServicesConfigBuilderBeanCOREBootstapModuleBuildStep(coreAppCode,coreModule,
 																			coreBootstrapGuiceModuleType,
 																			subModulesCfgs,
-																			_coreServicesBaseType);
+																			_coreServicesBaseTypes);
 		}
 	}
 	public final class ServicesConfigBuilderBeanCOREBootstapModuleBuildStep
 		 extends ServicesConfigBuilderCOREBootstapModuleBuildStepBase<BeanImplementedServicesCoreBootstrapGuiceModuleBase,
 		 															  ServicesCoreBootstrapConfigWhenBeanExposed> {
-		protected final Class<? extends CoreService> _coreServicesBaseType;
+		protected final Collection<Class<? extends CoreService>> _coreServicesBaseTypes;
 		
 		public ServicesConfigBuilderBeanCOREBootstapModuleBuildStep(final CoreAppCode coreAppCode,final CoreModule coreModule,
 								   								    final Class<? extends BeanImplementedServicesCoreBootstrapGuiceModuleBase> coreBootstrapGuiceModuleType,
 																    final Collection<ServicesCoreSubModuleBootstrapConfig<?>> subModulesCfgs,
-																    final Class<? extends CoreService> coreServicesBaseType) {
+																    final Collection<Class<? extends CoreService>> coreServicesBaseTypes) {
 			super(coreAppCode,coreModule,
 				  coreBootstrapGuiceModuleType,
 				  subModulesCfgs);
-			_coreServicesBaseType = coreServicesBaseType;
+			_coreServicesBaseTypes = coreServicesBaseTypes;
 		}
 		@Override
 		public ServicesCoreBootstrapConfigWhenBeanExposed build() {
 			return new ServicesCoreGuiceBootstrapConfigWhenBeanExposed(_coreAppCode,_coreModule,
 																	   _coreBootstrapGuiceModuleType,
 															   	  	   _subModulesCfgs,
-															   	  	   _coreServicesBaseType);
+															   	  	   _coreServicesBaseTypes);
 		}
 		@Override
 		public ServicesCoreBootstrapConfigWhenBeanExposed buildIsolated() {
 			return new ServicesCoreGuiceBootstrapConfigWhenBeanExposed(_coreAppCode,_coreModule,
 																	   _coreBootstrapGuiceModuleType,
 															   	  	   _subModulesCfgs,
-															   	  	   _coreServicesBaseType,
+															   	  	   _coreServicesBaseTypes,
 															   	  	   true);	// isolated
 		}
 	}

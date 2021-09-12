@@ -65,7 +65,7 @@ public class ServiceMatcher {
 											   otherClassLoader);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//
+//	SERVICE INTERFACE FIND
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Finds {@link ServiceInterface}-implementing interfaces
@@ -134,7 +134,7 @@ public class ServiceMatcher {
 		return serviceInterfaceTypes;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//
+//	SERVICE INTERFACE TO PROXY MATCH
 /////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Returns a {@link ServiceInterfacesMatchings} object that encapsulates a collection of {@link ServiceInterfaceMatch} objects
@@ -166,24 +166,24 @@ public class ServiceMatcher {
 		// [2.1] - CORE impl matchings
 		log.warn("....................................................................................................");
 		if (CollectionUtils.hasData(servicesBootstrapCfg.getCoreModulesConfig())) {
-			for (final ServicesCoreBootstrapConfig coreModuleCfg : servicesBootstrapCfg.getCoreModulesConfig()) {
+			for (ServicesCoreBootstrapConfig coreModuleCfg : servicesBootstrapCfg.getCoreModulesConfig()) {
 				if (coreModuleCfg.getImplType() != ServicesImpl.Bean) continue;		// skip no bean core modules
 
-				Class<? extends CoreService> coreServiceImplsBaseType = coreModuleCfg.as(ServicesCoreBootstrapConfigWhenBeanExposed.class)
-							 			   											 .getCoreServiceImplBaseType();
+				Collection<Class<? extends CoreService>> coreServiceImplsBaseTypes = coreModuleCfg.as(ServicesCoreBootstrapConfigWhenBeanExposed.class)
+							 			   											 			  .getCoreServiceImplBaseTypes();
 
 				log.warn("[START]-Matching service interfaces to CORE impl for {}/{}: core bean service interface implementations MUST extend {}",
 						 coreModuleCfg.getCoreAppCode(),coreModuleCfg.getCoreModule(),
-						 coreServiceImplsBaseType);
+						 coreServiceImplsBaseTypes);
 
 				Map<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> serviceIfaceTypeToCoreImplType = null;
 				serviceIfaceTypeToCoreImplType = this.findServiceInterfaceMatchings(serviceInterfaceTypes,
-													  								   null,	// no proxy
-																					   coreServiceImplsBaseType);
+													  								null,	// no proxy
+																					coreServiceImplsBaseTypes);
 				log.warn("[END]-Matching service interfaces to CORE impl for {}/{}: found {} matchings implementing {}",
 						 coreModuleCfg.getCoreAppCode(),coreModuleCfg.getCoreModule(),
 						 CollectionUtils.hasData(serviceIfaceTypeToCoreImplType) ? serviceIfaceTypeToCoreImplType.size() : 0,
-						 coreServiceImplsBaseType);
+						 coreServiceImplsBaseTypes);
 
 				if (CollectionUtils.hasData(serviceIfaceTypeToCoreImplType)) {
 					for (Map.Entry<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> matchEntry : serviceIfaceTypeToCoreImplType.entrySet()) {
@@ -199,7 +199,7 @@ public class ServiceMatcher {
 		}
 
 		// [2.2] - client proxy to CORE impl matchings
-		for (final ServicesClientConfigForCoreModule<?,?> clientCfgForCore : clientBootstrapCfg.getClientModuleConfigs()) {
+		for (ServicesClientConfigForCoreModule<?,?> clientCfgForCore : clientBootstrapCfg.getClientModuleConfigs()) {
 			if (clientCfgForCore.getCoreImplType() == ServicesImpl.Bean) continue;		// skip bean cores (no client proxy is used)
 
 			Class<? extends ServiceProxyImpl> serviceProxyImplsBaseType = clientCfgForCore.getServiceProxyImplsBaseType();
@@ -210,7 +210,7 @@ public class ServiceMatcher {
 			Map<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> serviceIfaceTypeToProxyToCoreImplType = null;
 		    serviceIfaceTypeToProxyToCoreImplType = this.findServiceInterfaceMatchings(serviceInterfaceTypes,
 												  								       serviceProxyImplsBaseType,
-												  								       null);	// no bean impl
+												  								       (Class<? extends CoreService>)null);	// no bean impl
 			log.warn("[END]-Matching service interfaces to CLIENT PROXY TO CORE impl for {}/{}: found {} matchings implementing {}",
 					 clientCfgForCore.getCoreAppCode(),clientCfgForCore.getCoreModule(),
 					 CollectionUtils.hasData(serviceIfaceTypeToProxyToCoreImplType) ? serviceIfaceTypeToProxyToCoreImplType.size() : 0,
@@ -247,49 +247,75 @@ public class ServiceMatcher {
 	 */
 	public Map<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> findServiceInterfaceMatchings(final Class<? extends ServiceInterface> serviceInterfacesBaseType,
 																						 						  final Class<? extends ServiceProxyImpl> serviceProxyImplsBaseType,
-																						 						  final Class<? extends CoreService> coreServicesBaseType) {
+																						 						  final Collection<Class<? extends CoreService>> coreServicesBaseTypes) {
 		// [1] - Find service interfaces
 		Set<Class<? extends ServiceInterface>> serviceInterfaceTypes = this.findServiceInterfaceTypes(serviceInterfacesBaseType);
 
 		// [2] - Match
 		return this.findServiceInterfaceMatchings(serviceInterfaceTypes,
 												  serviceProxyImplsBaseType,
-												  coreServicesBaseType);
+												  coreServicesBaseTypes);
 	}
 	/**
 	 * Tries to find the best {@link ServiceInterface} matching: if a {@link CoreService} impl is available it matches this one,
 	 * but if it's not, it tries to match a {@link ServiceProxyImpl} one; if none is available an exception is thrown
 	 * @param serviceInterfaceTypes
-	 * @param serviceProxiesPckg
-	 * @param coreImplsPckg
+	 * @param serviceProxyImplsBaseType
+	 * @param coreServiceBaseTypes
+	 * @return
+	 */
+	public Map<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> findServiceInterfaceMatchings(final Set<Class<? extends ServiceInterface>> serviceInterfaceTypes,
+																						 						  final Class<? extends ServiceProxyImpl> serviceProxyImplsBaseType,
+																						 						  final Collection<Class<? extends CoreService>> coreServiceBaseTypes) {
+		log.warn("[2]: find matching for {} service interfaces: proxies MUST extend {} / core bean MUST extend {}",
+				  serviceInterfaceTypes.size(),
+				  serviceProxyImplsBaseType,// proxies
+				  coreServiceBaseTypes);	// core impls
+		
+		Map<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> outMatchings = Maps.newHashMap();
+		for (Class<? extends CoreService> coreServiceBaseType : coreServiceBaseTypes) {
+			Map<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> thisMatchings = this.findServiceInterfaceMatchings(serviceInterfaceTypes,
+																																		serviceProxyImplsBaseType,
+																																		coreServiceBaseType);
+			if (CollectionUtils.hasData(thisMatchings)) outMatchings.putAll(thisMatchings);
+		}
+		
+		// Return
+		log.warn("... found {} service interface matchings",
+				 outMatchings.size());
+		return outMatchings;
+	}
+	/**
+	 * Tries to find the best {@link ServiceInterface} matching: if a {@link CoreService} impl is available it matches this one,
+	 * but if it's not, it tries to match a {@link ServiceProxyImpl} one; if none is available an exception is thrown
+	 * @param serviceInterfaceTypes
+	 * @param serviceProxyImplsBaseType
+	 * @param coreServiceBaseType
 	 * @return
 	 */
 	@SuppressWarnings({ "unchecked", "null" })
 	public Map<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> findServiceInterfaceMatchings(final Set<Class<? extends ServiceInterface>> serviceInterfaceTypes,
 																						 						  final Class<? extends ServiceProxyImpl> serviceProxyImplsBaseType,
 																						 						  final Class<? extends CoreService> coreServiceBaseType) {
-		log.warn("[2]: find matching for {} service interfaces: proxies MUST extend {} / core bean MUST extend {}",
-				  serviceInterfaceTypes.size(),
-				  serviceProxyImplsBaseType,// proxies
-				  coreServiceBaseType);		// core impls
-
 		// [1] - Find service interface to proxy matchings
-		Map<Class<? extends ServiceInterface>,Class<? extends ServiceProxyImpl>> serviceInterfacesToProxyMatchs = serviceProxyImplsBaseType != null
-																														? this.findServiceInterfaceToProxyMatch(serviceInterfaceTypes,
-																																								serviceProxyImplsBaseType)
-																														: null;	// no proxies
+		Map<Class<? extends ServiceInterface>,
+			Class<? extends ServiceProxyImpl>> serviceInterfacesToProxyMatches = serviceProxyImplsBaseType != null
+																					? this.findServiceInterfaceToProxyMatch(serviceInterfaceTypes,
+																															serviceProxyImplsBaseType)
+																					: null;	// no proxies
 		if (log.isDebugEnabled()) {
 			log.debug("... found {} proxy impls extending {}",
-					  serviceInterfacesToProxyMatchs != null ? serviceInterfacesToProxyMatchs.size() : 0,
+					  serviceInterfacesToProxyMatches != null ? serviceInterfacesToProxyMatches.size() : 0,
 					  serviceProxyImplsBaseType);
-			if (serviceInterfacesToProxyMatchs != null) for (Map.Entry<Class<? extends ServiceInterface>,Class<? extends ServiceProxyImpl>> me : serviceInterfacesToProxyMatchs.entrySet()) log.debug("\t{} > {}",me.getKey(),me.getValue());
+			if (serviceInterfacesToProxyMatches != null) for (Map.Entry<Class<? extends ServiceInterface>,Class<? extends ServiceProxyImpl>> me : serviceInterfacesToProxyMatches.entrySet()) log.debug("\t{} > {}",me.getKey(),me.getValue());
 		}
 
 		// [2] - Find service interface to core matchings
-		Map<Class<? extends ServiceInterface>,Class<? extends CoreService>> serviceInterfacesToCoreImplMatchs = coreServiceBaseType != null
-																														? this.findServiceInterfaceToCoreImplMatch(serviceInterfaceTypes,
-																																					     		   coreServiceBaseType)
-																														: null;			// no bean impls
+		Map<Class<? extends ServiceInterface>,
+			Class<? extends CoreService>> serviceInterfacesToCoreImplMatchs = coreServiceBaseType != null
+																					? this.findServiceInterfaceToCoreImplMatch(serviceInterfaceTypes,
+																												     		   coreServiceBaseType)
+																					: null;			// no bean impls
 		if (log.isDebugEnabled()) {
 			log.debug("... found {} core impls extending {}",
 					  serviceInterfacesToCoreImplMatchs != null ? serviceInterfacesToCoreImplMatchs.size() : 0,
@@ -298,7 +324,6 @@ public class ServiceMatcher {
 		}
 
 		// [3] - mix both
-		log.warn("[3]: Match service interface with proxy or core impl");
 		Map<Class<? extends ServiceInterface>,Class<? extends ServiceInterface>> outMatchings = Maps.newHashMapWithExpectedSize(serviceInterfaceTypes.size());
 		for (Class<? extends ServiceInterface> serviceInterfaceType : serviceInterfaceTypes) {
 			Class<? extends ServiceInterface> matchedType = null;
@@ -311,7 +336,7 @@ public class ServiceMatcher {
 			}
 			// b) try to find a proxy type
 			if (matchedType == null) {
-				Class<? extends ServiceProxyImpl> proxyType = serviceInterfacesToProxyMatchs != null ? serviceInterfacesToProxyMatchs.get(serviceInterfaceType)
+				Class<? extends ServiceProxyImpl> proxyType = serviceInterfacesToProxyMatches != null ? serviceInterfacesToProxyMatches.get(serviceInterfaceType)
 																									 : null;
 				if (proxyType != null) matchedType = (Class<? extends ServiceInterface>)proxyType;
 			}
@@ -324,9 +349,6 @@ public class ServiceMatcher {
 			// c) add to the out matchings
 			if (matchedType != null) outMatchings.put(serviceInterfaceType,matchedType);
 		}
-		// [4] - Return
-		log.warn("... found {} service interface matchings",
-				 outMatchings.size());
 		return outMatchings;
 	}
 	/**
