@@ -53,14 +53,15 @@ public abstract class ServicesClientBootstrapConfigBuilder
 		protected final ClientApiAppCode _clientApiAppCode;
 		protected final Class<? extends ClientAPI> _clientApiType;
 
-		public ServicesClientBootstrapConfigBuilderCoreConfigStep ofServiceInterfacesExtending(final Class<? extends ServiceInterface>... serviceInterfaceBaseTypes) {
+		@SafeVarargs
+		public final ServicesClientBootstrapConfigBuilderCoreConfigStep ofServiceInterfacesExtending(final Class<? extends ServiceInterface>... serviceInterfaceBaseTypes) {
 			return this.ofServiceInterfacesExtending(Lists.newArrayList(serviceInterfaceBaseTypes));
 		}
-		public ServicesClientBootstrapConfigBuilderCoreConfigStep ofServiceInterfacesExtending(final Collection<Class<? extends ServiceInterface>> serviceInterfaceBaseTypes) {
+		public final ServicesClientBootstrapConfigBuilderCoreConfigStep ofServiceInterfacesExtending(final Collection<Class<? extends ServiceInterface>> serviceInterfaceBaseTypes) {
 			return new ServicesClientBootstrapConfigBuilderCoreConfigStep(_clientApiAppCode,
 																		  _clientApiType,serviceInterfaceBaseTypes);
 		}
-		public ServicesClientBootstrapConfigBuilderCoreConfigStep doNotFindServiceInterfaces() {
+		public final ServicesClientBootstrapConfigBuilderCoreConfigStep doNotFindServiceInterfaces() {
 			return new ServicesClientBootstrapConfigBuilderCoreConfigStep(_clientApiAppCode,
 																		  _clientApiType,
 																		  null);	// no service interfaces
