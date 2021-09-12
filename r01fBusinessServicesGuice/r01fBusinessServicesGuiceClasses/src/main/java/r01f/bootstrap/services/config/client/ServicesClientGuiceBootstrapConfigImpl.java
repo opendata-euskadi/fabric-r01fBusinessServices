@@ -33,25 +33,25 @@ public class ServicesClientGuiceBootstrapConfigImpl
 /////////////////////////////////////////////////////////////////////////////////////////
 	public ServicesClientGuiceBootstrapConfigImpl(final ClientApiAppCode clientApiAppCode,
 												  final Class<? extends ClientAPI> clientApiType,
-												  final Class<? extends ServiceInterface> serviceInterfaceBaseType,
+												  final Collection<Class<? extends ServiceInterface>> serviceInterfaceBaseTypes,
 												  final Class<? extends ServicesClientAPIBootstrapGuiceModuleBase> clientBootstrapGuiceModuleType,final Collection<Module> moreClientBootstrapGuiceModules,
 												  final Collection<ServicesClientConfigForCoreModule<?,?>> coreModuleCfgs) {
 		this(clientApiAppCode,
 			 clientApiType,
-			 serviceInterfaceBaseType,
+			 serviceInterfaceBaseTypes,
 			 clientBootstrapGuiceModuleType,moreClientBootstrapGuiceModules,
 			 coreModuleCfgs,
 			 null);	// no sub-module config		
 	}
 	public ServicesClientGuiceBootstrapConfigImpl(final ClientApiAppCode clientApiAppCode,
 												  final Class<? extends ClientAPI> clientApiType,
-												  final Class<? extends ServiceInterface> serviceInterfaceBaseType,
+												  final Collection<Class<? extends ServiceInterface>> serviceInterfaceBaseTypes,
 												  final Class<? extends ServicesClientAPIBootstrapGuiceModuleBase> clientBootstrapGuiceModuleType,final Collection<Module> moreClientBootstrapGuiceModules,
 												  final Collection<ServicesClientConfigForCoreModule<?,?>> coreModuleCfgs,
 												  final Collection<ServicesClientSubModuleBootstrapConfig<?>> subModulesCfgs) {
 		super(clientApiAppCode, 
 			  clientApiType, 
-			  serviceInterfaceBaseType,
+			  serviceInterfaceBaseTypes,
 			  coreModuleCfgs,
 			  subModulesCfgs);
 		_clientBootstrapGuiceModuleType = clientBootstrapGuiceModuleType;

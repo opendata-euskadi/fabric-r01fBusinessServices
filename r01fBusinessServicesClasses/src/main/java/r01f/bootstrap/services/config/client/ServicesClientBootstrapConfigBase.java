@@ -39,7 +39,7 @@ abstract class ServicesClientBootstrapConfigBase
 	/**
 	 * The java package where the services interfaces can be found
 	 */
-	@Getter protected final Class<? extends ServiceInterface> _serviceInterfacesBaseType;
+	@Getter protected final Collection<Class<? extends ServiceInterface>> _serviceInterfacesBaseTypes;
 	/**
 	 * How is this module exposed to the client API
 	 */
@@ -92,7 +92,7 @@ abstract class ServicesClientBootstrapConfigBase
 		return Strings.customized("{} client api {} for service interfaces extending {} ({} core modules)",
 								  _clientApiAppCode,
 								  _clientApiType,
-								  _serviceInterfacesBaseType,
+								  _serviceInterfacesBaseTypes,
 								  _clientModuleConfigs != null ? _clientModuleConfigs.size() : 0);
 	}
 }

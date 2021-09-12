@@ -53,9 +53,12 @@ public abstract class ServicesClientBootstrapConfigBuilder
 		protected final ClientApiAppCode _clientApiAppCode;
 		protected final Class<? extends ClientAPI> _clientApiType;
 
-		public ServicesClientBootstrapConfigBuilderCoreConfigStep ofServiceInterfacesExtending(final Class<? extends ServiceInterface> serviceInterfaceBaseType) {
+		public ServicesClientBootstrapConfigBuilderCoreConfigStep ofServiceInterfacesExtending(final Class<? extends ServiceInterface>... serviceInterfaceBaseTypes) {
+			return this.ofServiceInterfacesExtending(Lists.newArrayList(serviceInterfaceBaseTypes));
+		}
+		public ServicesClientBootstrapConfigBuilderCoreConfigStep ofServiceInterfacesExtending(final Collection<Class<? extends ServiceInterface>> serviceInterfaceBaseTypes) {
 			return new ServicesClientBootstrapConfigBuilderCoreConfigStep(_clientApiAppCode,
-																		      _clientApiType,serviceInterfaceBaseType);
+																		  _clientApiType,serviceInterfaceBaseTypes);
 		}
 		public ServicesClientBootstrapConfigBuilderCoreConfigStep doNotFindServiceInterfaces() {
 			return new ServicesClientBootstrapConfigBuilderCoreConfigStep(_clientApiAppCode,
@@ -70,7 +73,7 @@ public abstract class ServicesClientBootstrapConfigBuilder
 	public final class ServicesClientBootstrapConfigBuilderCoreConfigStep {
 		protected final ClientApiAppCode _clientApiAppCode;
 		protected final Class<? extends ClientAPI> _clientApiType;
-		protected final Class<? extends ServiceInterface> _serviceInterfacesBaseType;
+		protected final Collection<Class<? extends ServiceInterface>> _serviceInterfacesBaseTypes;
 		
 		public ServicesClientBootstrapConfigBuilderBuildStep bootstrappedWith(final Class<? extends ServicesClientAPIBootstrapGuiceModuleBase> clientBootstrapGuiceModuleType,
 																			  final Module... moreClientBootstrapGuiceModules) {
@@ -85,7 +88,7 @@ public abstract class ServicesClientBootstrapConfigBuilder
 											  																		.forCoreExposedAsBeans();
 			Collection<ServicesClientConfigForCoreModule<?,?>> coreModuleConfigs = Lists.<ServicesClientConfigForCoreModule<?,?>>newArrayList(beanCoreModuleCfg);
 			return new ServicesClientBootstrapConfigBuilderBuildStep(_clientApiAppCode,
-																	 _clientApiType,_serviceInterfacesBaseType,
+																	 _clientApiType,_serviceInterfacesBaseTypes,
 																	 coreModuleConfigs,
 																	 clientBootstrapGuiceModuleType,moreClientBootrapGuiceModules);
 		}
@@ -96,7 +99,7 @@ public abstract class ServicesClientBootstrapConfigBuilder
 		public ServicesClientBootstrapConfigBuilderGuiceModuleStep forCoreModules(final Collection<ServicesClientConfigForCoreModule<?,?>> clientCoreModuleCfgs) {
 			if (CollectionUtils.isNullOrEmpty(clientCoreModuleCfgs)) throw new IllegalArgumentException("No client config for core modules!");
 			return new ServicesClientBootstrapConfigBuilderGuiceModuleStep(_clientApiAppCode,
-																	 	   _clientApiType,_serviceInterfacesBaseType,
+																	 	   _clientApiType,_serviceInterfacesBaseTypes,
 																	 	   clientCoreModuleCfgs);
 		}
 	}
@@ -107,7 +110,7 @@ public abstract class ServicesClientBootstrapConfigBuilder
 	public final class ServicesClientBootstrapConfigBuilderGuiceModuleStep {
 		protected final ClientApiAppCode _clientApiAppCode;
 		protected final Class<? extends ClientAPI> _clientApiType;
-		protected final Class<? extends ServiceInterface> _serviceInterfacesBaseType;
+		protected final Collection<Class<? extends ServiceInterface>> _serviceInterfacesBaseTypes;
 		protected final Collection<ServicesClientConfigForCoreModule<?,?>> _coreModuleConfigs;
 		
 		public ServicesClientBootstrapConfigBuilderBuildStep bootstrappedWith(final Class<? extends ServicesClientAPIBootstrapGuiceModuleBase> clientBootstrapGuiceModuleType,
@@ -119,7 +122,7 @@ public abstract class ServicesClientBootstrapConfigBuilder
 		public ServicesClientBootstrapConfigBuilderBuildStep bootstrappedWith(final Class<? extends ServicesClientAPIBootstrapGuiceModuleBase> clientBootstrapGuiceModuleType,
 																			  final Collection<Module> moreClientBootrapGuiceModules) {
 			return new ServicesClientBootstrapConfigBuilderBuildStep(_clientApiAppCode,
-																	 _clientApiType,_serviceInterfacesBaseType,
+																	 _clientApiType,_serviceInterfacesBaseTypes,
 																	 _coreModuleConfigs,
 																	 clientBootstrapGuiceModuleType,moreClientBootrapGuiceModules);
 		}
@@ -131,7 +134,7 @@ public abstract class ServicesClientBootstrapConfigBuilder
 	public final class ServicesClientBootstrapConfigBuilderBuildStep {
 		protected final ClientApiAppCode _clientApiAppCode;
 		protected final Class<? extends ClientAPI> _clientApiType;
-		protected final Class<? extends ServiceInterface> _serviceInterfacesBaseType;
+		protected final Collection<Class<? extends ServiceInterface>> _serviceInterfacesBaseTypes;
 		protected final Collection<ServicesClientConfigForCoreModule<?,?>> _coreModuleConfigs;
 		protected final Class<? extends ServicesClientAPIBootstrapGuiceModuleBase> _clientBootstrapGuiceModuleType;
 		protected final Collection<Module> _moreClientBootrapGuiceModules;
@@ -143,7 +146,7 @@ public abstract class ServicesClientBootstrapConfigBuilder
 		}
 		public ServicesClientGuiceBootstrapConfig build() {
 			return new ServicesClientGuiceBootstrapConfigImpl(_clientApiAppCode,
-								  			 		          _clientApiType,_serviceInterfacesBaseType,
+								  			 		          _clientApiType,_serviceInterfacesBaseTypes,
 								  			 			      _clientBootstrapGuiceModuleType,_moreClientBootrapGuiceModules,
 								  			 			      _coreModuleConfigs,
 								  			 			      _subModulesCfgs);

@@ -8,6 +8,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import lombok.extern.slf4j.Slf4j;
 import r01f.bootstrap.services.config.ServicesBootstrapConfig;
@@ -71,12 +72,33 @@ public class ServiceMatcher {
 	 * @param serviceInterfacesPckg
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public Set<Class<? extends ServiceInterface>> findServiceInterfaceTypes(final Class<? extends ServiceInterface> serviceInterfacesBaseType) {
+	public Set<Class<? extends ServiceInterface>> findServiceInterfaceTypes(final Collection<Class<? extends ServiceInterface>> serviceInterfacesBaseTypes) {
 		log.warn("...........................................................................................................");
 		log.warn("[1]: find service interface extending {}",
-				 serviceInterfacesBaseType);
-
+				 serviceInterfacesBaseTypes);
+		
+		Set<Class<? extends ServiceInterface>> serviceInterfaceTypes = Sets.newLinkedHashSet();
+		
+		// iterate all over the base types
+		for (Class<? extends ServiceInterface> serviceInterfaceBaseType : serviceInterfacesBaseTypes) {
+			Set<Class<? extends ServiceInterface>> thisServiceInterfaceTypes = this.findServiceInterfaceTypes(serviceInterfaceBaseType);
+			if (CollectionUtils.hasData(thisServiceInterfaceTypes)) serviceInterfaceTypes.addAll(thisServiceInterfaceTypes);
+		}
+		
+		if (log.isDebugEnabled()) {
+			log.debug("... found {} service interface extending {}",
+					  serviceInterfaceTypes.size(),serviceInterfacesBaseTypes);
+			for (Class<? extends ServiceInterface> serviceIface : serviceInterfaceTypes) log.debug("\t-{}",serviceIface);
+		}
+		return serviceInterfaceTypes;
+	}
+	/**
+	 * Finds {@link ServiceInterface}-implementing interfaces
+	 * @param serviceInterfacesPckg
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public Set<Class<? extends ServiceInterface>> findServiceInterfaceTypes(final Class<? extends ServiceInterface> serviceInterfacesBaseType) {
 		// [0] - java packages where look for service interface types (required by org.reflections)
 		Collection<JavaPackage> javaPackagesContainingServiceInterfaceTypes = _packagesWhereToLookForTypesExtending(serviceInterfacesBaseType);
 
@@ -109,11 +131,6 @@ public class ServiceMatcher {
 		// [3] - Return
 		if (CollectionUtils.isNullOrEmpty(serviceInterfaceTypes)) throw new IllegalStateException("Could NOT find any " + ServiceInterface.class.getSimpleName() + " types extending " + serviceInterfacesBaseType + " at java packages " + javaPackagesContainingServiceInterfaceTypes +
 																								  " ensure that the intefacees extends " + ServiceInterface.class + " and are annotated with @" + ExposedServiceInterface.class.getSimpleName());
-		if (log.isDebugEnabled()) {
-			log.debug("... found {} service interface extending {}",
-					  serviceInterfaceTypes.size(),serviceInterfacesBaseType);
-			for (Class<? extends ServiceInterface> serviceIface : serviceInterfaceTypes) log.debug("\t-{}",serviceIface);
-		}
 		return serviceInterfaceTypes;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -128,7 +145,7 @@ public class ServiceMatcher {
 	public ServiceInterfacesMatchings serviceInterfacesToImplOrProxyMatchings(final ServicesBootstrapConfig servicesBootstrapCfg) {
 		ServicesClientBootstrapConfig clientBootstrapCfg = servicesBootstrapCfg.getClientConfig();
 
-		if (clientBootstrapCfg.getServiceInterfacesBaseType() == null) {
+		if (CollectionUtils.isNullOrEmpty(clientBootstrapCfg.getServiceInterfacesBaseTypes())) {
 			log.warn("service interfaces will NOT be searched!");
 			return ServiceInterfacesMatchings.createEmpty(clientBootstrapCfg.getClientApiAppCode());
 		}
@@ -139,8 +156,8 @@ public class ServiceMatcher {
 
 		// [1] - Find service interfaces
 		log.warn("\t- service interface MUST extend {}",
-				 clientBootstrapCfg.getServiceInterfacesBaseType());
-		Set<Class<? extends ServiceInterface>> serviceInterfaceTypes = this.findServiceInterfaceTypes(clientBootstrapCfg.getServiceInterfacesBaseType());
+				 clientBootstrapCfg.getServiceInterfacesBaseTypes());
+		Set<Class<? extends ServiceInterface>> serviceInterfaceTypes = this.findServiceInterfaceTypes(clientBootstrapCfg.getServiceInterfacesBaseTypes());
 
 		// [2] - Try to find matching for each service interface at the core modules
 		ServiceInterfacesMatchings outMatchings = ServiceInterfacesMatchings.create(clientBootstrapCfg.getClientApiAppCode(),

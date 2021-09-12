@@ -17,7 +17,7 @@ public interface ServicesClientBootstrapConfig
 
 	public ClientApiAppCode getClientApiAppCode();
 	public Class<? extends ClientAPI> getClientApiType();
-	public Class<? extends ServiceInterface> getServiceInterfacesBaseType();
+	public Collection<Class<? extends ServiceInterface>> getServiceInterfacesBaseTypes();
 	public <CFG extends ContainsConfigData> CFG getSubModuleConfigFor(final AppComponent component);
 
 	public Collection<ServicesClientConfigForCoreModule<?,?>> getClientModuleConfigs();
