@@ -61,11 +61,17 @@ public abstract class TestPersistableModelObjectBase<O extends PersistableObject
 		Threads.safeSleep(TimeLapse.of("5s"));
 
 		// [99]: Ensure created records are removed
-		if (deleteCreatedObjs) _managesTestMockObjects.tearDownCreatedMockObjs();
+		if (deleteCreatedObjs) this.tearDownCreatedMockObjs();
 	}
 	protected abstract void testOtherCRUDMethods();
 	protected abstract void testOtherFindMethods();
 	protected abstract void testOtherMethods();
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////
+	public void tearDownCreatedMockObjs() {
+		_managesTestMockObjects.tearDownCreatedMockObjs();
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //  CRUD
 /////////////////////////////////////////////////////////////////////////////////////////
